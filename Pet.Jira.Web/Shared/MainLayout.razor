@@ -4,12 +4,25 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="sidebar">
-    <NavMenu />
-</div>
+<MudLayout Style="height: 100vh">
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@open" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6" MaxWidth="MaxWidth.ExtraLarge">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
-<div class="main">
-    <div class="content px-4">
-        @Body
-    </div>
-</div>
+@code{
+    bool open = true;
+
+    void ToggleDrawer()
+    {
+        open = !open;
+    }
+}
