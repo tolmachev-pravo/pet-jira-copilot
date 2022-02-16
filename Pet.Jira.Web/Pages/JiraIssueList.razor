@@ -1,0 +1,148 @@
+﻿@page "/issues"
+
+@using MediatR;
+@using Pet.Jira.Web.CQRS;
+@using Pet.Jira.Adapter;
+@using System.ComponentModel.DataAnnotations;
+@inject IMediator _mediator;
+@inject ISnackbar _snackbar;
+
+<h3>Worklog</h3>
+
+<EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Query"
+                                  @bind-Value="issueQuery.Query" />
+                    <MudTextField Label="Count"
+                                  @bind-Value="issueQuery.Count" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@if (pageModel.InProgress)
+{
+    <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else if (pageModel.State == ListState.Unknown)
+{
+}
+else
+{
+    <MudSimpleTable Dense=true Hover=true Style="overflow-x: auto;">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Issue</th>
+                <th>Diff</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in pageModel.DateWorklogs)
+            {
+                <tr>
+                    <td colspan="5">
+                        @item.Key.ToShortDateString() (@item.Key.DayOfWeek) - @item.Sum
+                    </td>
+                </tr>
+                @foreach (var entity in item.Value)
+                {
+                    <tr>
+                        <td>@entity.From</td>
+                        <td>@entity.To</td>
+                        <td><a href="@entity.IssueLink">@entity.IssueName</a> @entity.IssueSummary</td>
+                        <td> <input @bind="@entity.Diff" /></td>
+                        <td>
+                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </MudSimpleTable>
+}
+
+@functions {
+    IssueQuery issueQuery = new IssueQuery();
+    CQRS.Queries.Issue.List.Model model;
+    Dictionary<DateTime, IEnumerable<TimeLog>> dictionary;
+    PageModel pageModel = new PageModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task AddWorklog(TimeLog entity)
+    {
+        await _mediator.Send(new CQRS.Commands.Worklog.Insert.Command(new CQRS.Commands.Worklog.Insert.Model
+        {
+            At = entity.To,
+            IssueKey = entity.IssueName,
+            TimeSpent = entity.Diff
+        }));
+        _snackbar.Add(
+            $"Worklog {entity.IssueName} added successfully!",
+            Severity.Normal,
+            config => { config.ActionColor = Color.Info; });
+    }
+
+    private class PageModel
+    {
+        public IEnumerable<DateWorklog> DateWorklogs { get; set; }
+        public ListState State { get; set; }
+        public bool InProgress => State == ListState.IsProgress;
+    }
+
+    private class DateWorklog
+    {
+        public DateTime Key { get; set; }
+        public IEnumerable<TimeLog> Value { get; set; }
+        public TimeSpan Sum => new TimeSpan(Value.Sum(item => item.Diff.Ticks));
+    }
+
+    private enum ListState
+    {
+        Unknown,
+        IsProgress,
+        Success
+    }
+
+    public class IssueQuery
+    {
+        [Required]
+        public string Query { get; set; } = "assignee = currentUser() AND updatedDate >= -1w ORDER BY updatedDate DESC";
+
+        [Required]
+        public int Count { get; set; } = 20;
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        pageModel.State = ListState.IsProgress;
+        model = await _mediator.Send(new CQRS.Queries.Issue.List.Query()
+        {
+            Jql = issueQuery.Query,
+            Count = issueQuery.Count
+        });
+        dictionary = model.TimeLogs.GroupBy(record => record.To.Date).ToDictionary(record => record.Key, record => record.Select(item => item));
+        pageModel.DateWorklogs = model.TimeLogs.GroupBy(record => record.To.Date).Select(record => new DateWorklog
+        {
+            Key = record.Key,
+            Value = record.Select(item => item)
+        });
+        pageModel.State = ListState.Success;
+        StateHasChanged();
+    }
+}
