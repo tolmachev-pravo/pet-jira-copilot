@@ -7,72 +7,76 @@
 @inject IMediator _mediator;
 @inject ISnackbar _snackbar;
 
-<h3>Worklog</h3>
+<MudGrid Spacing="2" Justify="Justify.Center">
+    <MudItem xs="12">
+        <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Filter</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTextField Label="Query" @bind-Value="issueQuery.Query" For="@(() => issueQuery.Query)"/>
+                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)"/>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudItem>
 
-<EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudGrid>
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Query"
-                                  @bind-Value="issueQuery.Query" />
-                    <MudTextField Label="Count"
-                                  @bind-Value="issueQuery.Count" />
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-
-@if (pageModel.InProgress)
-{
-    <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
-    </MudOverlay>
-}
-else if (pageModel.State == ListState.Unknown)
-{
-}
-else
-{
-    <MudSimpleTable Dense=true Hover=true Style="overflow-x: auto;">
-        <thead>
-            <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Issue</th>
-                <th>Diff</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in pageModel.DateWorklogs)
-            {
-                <tr>
-                    <td colspan="5">
-                        @item.Key.ToShortDateString() (@item.Key.DayOfWeek) - @item.Sum
-                    </td>
-                </tr>
-                @foreach (var entity in item.Value)
-                {
+    <MudItem xs="12">
+        @if (pageModel.InProgress)
+        {
+            <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
+                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+            </MudOverlay>
+        }
+        else if (pageModel.State == ListState.Success)
+        {
+            <MudSimpleTable Dense=true Hover=true Style="overflow-x: auto;">
+                <thead>
                     <tr>
-                        <td>@entity.From</td>
-                        <td>@entity.To</td>
-                        <td><a href="@entity.IssueLink">@entity.IssueName</a> @entity.IssueSummary</td>
-                        <td> <input @bind="@entity.Diff" /></td>
-                        <td>
-                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
-                        </td>
+                        <th style="min-width:40px">From</th>
+                        <th style="min-width:40px">To</th>
+                        <th>Issue</th>
+                        <th>Diff</th>
+                        <th></th>
                     </tr>
-                }
-            }
-        </tbody>
-    </MudSimpleTable>
-}
+                </thead>
+                <tbody>
+                    @foreach (var item in pageModel.DateWorklogs)
+                    {
+                        <tr>
+                            <td colspan="5">
+                                @item.Key.ToShortDateString() (@item.Key.DayOfWeek) - @item.Sum
+                            </td>
+                        </tr>
+                        @foreach (var entity in item.Value)
+                        {
+                            <tr>
+                                <td>@entity.From.ToString("HH:mm")</td>
+                                <td>@entity.To.ToString("HH:mm")</td>
+                                <td><MudLink Href="@entity.IssueLink" Typo="Typo.body2">@entity.IssueName</MudLink> @entity.IssueSummary</td>
+                                <td> <input @bind="@entity.Diff" /></td>
+                                <td>
+                                    <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </MudSimpleTable>
+        }
+    </MudItem>
+</MudGrid>
 
 @functions {
     IssueQuery issueQuery = new IssueQuery();
@@ -125,7 +129,8 @@ else
         public string Query { get; set; } = "assignee = currentUser() AND updatedDate >= -1w ORDER BY updatedDate DESC";
 
         [Required]
-        public int Count { get; set; } = 20;
+        [Range(1, 300)]
+        public int? Count { get; set; } = 20;
     }
 
     private async Task OnValidSubmit(EditContext context)
@@ -134,7 +139,7 @@ else
         model = await _mediator.Send(new CQRS.Queries.Issue.List.Query()
         {
             Jql = issueQuery.Query,
-            Count = issueQuery.Count
+            Count = issueQuery.Count.Value
         });
         dictionary = model.TimeLogs.GroupBy(record => record.To.Date).ToDictionary(record => record.Key, record => record.Select(item => item));
         pageModel.DateWorklogs = model.TimeLogs.GroupBy(record => record.To.Date).Select(record => new DateWorklog
