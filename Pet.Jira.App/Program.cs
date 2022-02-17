@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Pet.Jira.Adapter;
 
 namespace Pet.Jira.App
 {
@@ -116,8 +117,9 @@ namespace Pet.Jira.App
                     .AddConsole()
                     .SetMinimumLevel(LogLevel.Trace)
                 )
-                .AddSingleton<IConfigurationRoot>(configuration)
+                .AddSingleton<IConfiguration>(configuration)
                 .AddSingleton<IStartup, Startup>()
+                .AddSingleton<IJiraConfiguration, JiraConfiguration>()
                 .AddTransient<JiraService>();
         }
 

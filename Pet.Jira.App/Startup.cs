@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.Extensions.Logging;
+using Pet.Jira.Adapter;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Pet.Jira.App
 {
@@ -24,7 +21,7 @@ namespace Pet.Jira.App
 
         public async Task Run()
         {
-            await _jiraService.Test();
+            await _jiraService.GetCurrentUserEstimatedWorklogsAsync("-28d", 40);
         }
     }
 }
