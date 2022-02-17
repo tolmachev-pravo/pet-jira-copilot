@@ -8,7 +8,7 @@
 @inject ISnackbar _snackbar;
 
 <MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="12">
+    <MudItem xs="3">
         <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <MudGrid>
@@ -20,8 +20,8 @@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudTextField Label="Query" @bind-Value="issueQuery.Query" For="@(() => issueQuery.Query)"/>
-                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)"/>
+                            <MudDateRangePicker Label="Date range" @bind-DateRange="issueQuery.DateRange"/>
+                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" />
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
@@ -32,7 +32,7 @@
         </EditForm>
     </MudItem>
 
-    <MudItem xs="12">
+    <MudItem xs="9">
         @if (pageModel.InProgress)
         {
             <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
@@ -52,23 +52,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in pageModel.DateWorklogs)
+                    @foreach (var item in pageModel.DayUserWorklogs)
                     {
                         <tr>
                             <td colspan="5">
-                                @item.Key.ToShortDateString() (@item.Key.DayOfWeek) - @item.Sum
+                                @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.EstimatedWorklogsSum.ToString(@"hh\:mm\:ss") of @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
                             </td>
                         </tr>
-                        @foreach (var entity in item.Value)
+                        @foreach (var entity in item.EstimatedWorklogs)
                         {
                             <tr>
-                                <td>@entity.From.ToString("HH:mm")</td>
-                                <td>@entity.To.ToString("HH:mm")</td>
-                                <td><MudLink Href="@entity.IssueLink" Typo="Typo.body2">@entity.IssueName</MudLink> @entity.IssueSummary</td>
-                                <td> <input @bind="@entity.Diff" /></td>
+                                <td>@entity.StartDate.ToString("HH:mm")</td>
+                                <td>@entity.EndDate.ToString("HH:mm")</td>
+                                <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
+                                <td> <input @bind="@entity.TimeSpent" /></td>
                                 <td>
                                     <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
                                 </td>
+                            </tr>
+                        }
+                        @foreach (var entity in item.ActualWorklogs)
+                        {
+                            <tr>
+                                <td>@entity.StartDate.ToString("HH:mm")</td>
+                                <td></td>
+                                <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
+                                <td>@entity.TimeSpent</td>
+                                <td><MudAvatar Color="Color.Tertiary">A</MudAvatar></td>
                             </tr>
                         }
                     }
@@ -81,39 +91,31 @@
 @functions {
     IssueQuery issueQuery = new IssueQuery();
     CQRS.Queries.Issue.List.Model model;
-    Dictionary<DateTime, IEnumerable<TimeLog>> dictionary;
     PageModel pageModel = new PageModel();
 
     protected override async Task OnInitializedAsync()
     {
     }
 
-    private async Task AddWorklog(TimeLog entity)
+    private async Task AddWorklog(EstimatedWorklog entity)
     {
         await _mediator.Send(new CQRS.Commands.Worklog.Insert.Command(new CQRS.Commands.Worklog.Insert.Model
         {
-            At = entity.To,
-            IssueKey = entity.IssueName,
-            TimeSpent = entity.Diff
+            At = entity.EndDate,
+            IssueKey = entity.Issue.Key,
+            TimeSpent = entity.TimeSpent
         }));
         _snackbar.Add(
-            $"Worklog {entity.IssueName} added successfully!",
+            $"Worklog {entity.Issue.Key} added successfully!",
             Severity.Normal,
             config => { config.ActionColor = Color.Info; });
     }
 
     private class PageModel
     {
-        public IEnumerable<DateWorklog> DateWorklogs { get; set; }
+        public IEnumerable<DayUserWorklog> DayUserWorklogs { get; set; }
         public ListState State { get; set; }
         public bool InProgress => State == ListState.IsProgress;
-    }
-
-    private class DateWorklog
-    {
-        public DateTime Key { get; set; }
-        public IEnumerable<TimeLog> Value { get; set; }
-        public TimeSpan Sum => new TimeSpan(Value.Sum(item => item.Diff.Ticks));
     }
 
     private enum ListState
@@ -126,7 +128,13 @@
     public class IssueQuery
     {
         [Required]
-        public string Query { get; set; } = "assignee = currentUser() AND updatedDate >= -1w ORDER BY updatedDate DESC";
+        public DateRange? DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
+
+        [Required]
+        public DateTime? StartDate => DateRange.Start;
+
+        [Required]
+        public DateTime? EndDate => DateRange.End;
 
         [Required]
         [Range(1, 300)]
@@ -138,15 +146,11 @@
         pageModel.State = ListState.IsProgress;
         model = await _mediator.Send(new CQRS.Queries.Issue.List.Query()
         {
-            Jql = issueQuery.Query,
+            StartDate = issueQuery.StartDate.Value,
+            EndDate = issueQuery.EndDate.Value,
             Count = issueQuery.Count.Value
         });
-        dictionary = model.TimeLogs.GroupBy(record => record.To.Date).ToDictionary(record => record.Key, record => record.Select(item => item));
-        pageModel.DateWorklogs = model.TimeLogs.GroupBy(record => record.To.Date).Select(record => new DateWorklog
-        {
-            Key = record.Key,
-            Value = record.Select(item => item)
-        });
+        pageModel.DayUserWorklogs = model.Worklogs;
         pageModel.State = ListState.Success;
         StateHasChanged();
     }
