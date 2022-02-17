@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.App", "Pet.Jira.App\Pet.Jira.App.csproj", "{B2D92543-F29B-4311-8721-63F25B2B2189}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D1DE250A-BEE9-4821-BB67-AF3C3CDA9807} = {D1DE250A-BEE9-4821-BB67-AF3C3CDA9807}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Web", "Pet.Jira.Web\Pet.Jira.Web.csproj", "{010785C7-A42A-479B-B8B5-BE7B2C293C29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Web", "Pet.Jira.Web\Pet.Jira.Web.csproj", "{010785C7-A42A-479B-B8B5-BE7B2C293C29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Adapter", "Pet.Jira.Adapter\Pet.Jira.Adapter.csproj", "{D1DE250A-BEE9-4821-BB67-AF3C3CDA9807}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Adapter", "Pet.Jira.Adapter\Pet.Jira.Adapter.csproj", "{D1DE250A-BEE9-4821-BB67-AF3C3CDA9807}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
