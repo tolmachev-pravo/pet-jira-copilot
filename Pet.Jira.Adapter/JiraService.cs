@@ -9,15 +9,22 @@ namespace Pet.Jira.Adapter
 {
     public class JiraService
     {
+        private const string InProgressStatusId = "3";
+        private const string StatusFieldName = "status";
+        private const int StartWorkingTime = 10;
+        private const int EndWorkingTime = 19;
+
         private readonly Atlassian.Jira.Jira _jiraClient;
+        private readonly IJiraConfiguration _config;
 
         public JiraService(
             IJiraConfiguration config)
         {
             _jiraClient = Atlassian.Jira.Jira.CreateRestClient(config.Url, config.UserName, config.Password);
+            _config = config;
         }
 
-        public async Task<IPagedQueryResult<Issue>> GetIssues(string jql, int count) =>
+        public async Task<IPagedQueryResult<Atlassian.Jira.Issue>> GetIssues(string jql, int count) =>
             await _jiraClient.Issues.GetIssuesFromJqlAsync(
                 new IssueSearchOptions(jql)
                 {
@@ -25,70 +32,150 @@ namespace Pet.Jira.Adapter
                     ValidateQuery = true
                 });
 
-        public async Task<Dictionary<DateTime, List<TimeLog>>> GetCalculatedIssueTimeLogs(string issueJql, int issueCount)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<ActualWorklog>> GetCurrentUserActualWorklogsAsync(
+            string period,
+            int count)
         {
-            var issues = await GetIssues(issueJql, issueCount);
-            var timeLogs = new List<TimeLog> { };
-
+            var issues = await GetIssues(
+                jql: $"worklogDate >= '{period}' AND worklogAuthor = currentUser() ORDER BY updatedDate DESC",
+                count: count);
+            var actualWorklogs = new List<ActualWorklog> { };
             foreach (var issue in issues)
             {
-                var changeLog = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key.Value);
-                DateTime from = DateTime.MinValue;
-                foreach (var changeLogItem in changeLog)
+                var worklogs = await _jiraClient.Issues.GetWorklogsAsync(issue.Key.Value);
+                worklogs = worklogs.Where(record => record.Author == _config.UserName).ToList();
+                actualWorklogs.AddRange(worklogs.Select(worklog => new ActualWorklog
                 {
-                    if (changeLogItem.Items.Any(item => item.FieldName == "status" && item.ToId == "3"))
+                    StartDate = worklog.StartDate.Value,
+                    TimeSpent = TimeSpan.FromSeconds(worklog.TimeSpentInSeconds),
+                    Issue = new Issue
                     {
-                        from = changeLogItem.CreatedDate;
+                        Key = issue.Key.Value,
+                        Summary = issue.Summary,
+                        Link = Path.Combine(_jiraClient.Url, "browse", issue.Key.Value)
+                    }
+                }));
+            }
+            return actualWorklogs;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="period"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<EstimatedWorklog>> GetCurrentUserEstimatedWorklogsAsync(
+            string period,
+            int count)
+        {
+            var issues = await GetIssues(
+                jql: $"assignee = currentUser() AND updatedDate >= '{period}' ORDER BY updatedDate DESC",
+                count: count);
+            var rawEstimatedWorklogs = new List<EstimatedWorklog> { };
+            foreach (var issue in issues)
+            {
+                var changeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key.Value);
+                changeLogs = changeLogs.Where(record => record.Items.Any(item => item.FieldName == StatusFieldName)).ToList();
+                DateTime startDate = DateTime.MinValue;
+                foreach (var changeLog in changeLogs)
+                {
+                    if (changeLog.Items.Any(item => item.FieldName == StatusFieldName && item.ToId == InProgressStatusId))
+                    {
+                        startDate = changeLog.CreatedDate;
                     }
 
-                    if (changeLogItem.Items.Any(item => item.FieldName == "status" && item.FromId == "3"))
+                    if (changeLog.Items.Any(item => item.FieldName == StatusFieldName && item.FromId == InProgressStatusId))
                     {
-                        timeLogs.Add(new TimeLog
+                        rawEstimatedWorklogs.Add(new EstimatedWorklog
                         {
-                            From = from,
-                            To = changeLogItem.CreatedDate,
-                            IssueName = issue.Key.Value,
-                            IssueSummary = issue.Summary,
-                            IssueLink = Path.Combine(_jiraClient.Url, "browse", issue.Key.Value)
+                            StartDate = startDate,
+                            EndDate = changeLog.CreatedDate,
+                            Issue = new Issue
+                            {
+                                Key = issue.Key.Value,
+                                Summary = issue.Summary,
+                                Link = Path.Combine(_jiraClient.Url, "browse", issue.Key.Value)
+                            }
                         });
                     }
                 }
             }
+            return rawEstimatedWorklogs;
+        }
 
-            var startDate = DateTime.Now.Date;
-            Dictionary<DateTime, List<TimeLog>> dictionary = new Dictionary<DateTime, List<TimeLog>>();
-            while (startDate > new DateTime(2022, 01, 01))
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rawEstimatedWorklogs"></param>
+        /// <param name="StartDate"></param>
+        /// <param name="EndDate"></param>
+        private IEnumerable<EstimatedWorklog> PrepareEstimatedWorklogs(
+            IEnumerable<EstimatedWorklog> rawEstimatedWorklogs,
+            DateTime StartDate,
+            DateTime EndDate)
+        {
+            List<EstimatedWorklog> estimatedWorklogs = new List<EstimatedWorklog>();
+            var startDate = EndDate.Date;
+            while (startDate >= StartDate.Date)
             {
-                var fromStartDate = startDate.AddHours(10);
-                var toStartDate = startDate.AddHours(19);
-                var dateTimeLogs = timeLogs
-                    .Where(item => (item.To > fromStartDate && item.From < toStartDate));
-                List<TimeLog> list = new List<TimeLog>();
-                foreach (var dateTimeLog in dateTimeLogs)
+                var fromStartDate = startDate.AddHours(StartWorkingTime);
+                var toStartDate = startDate.AddHours(EndWorkingTime);
+                var dateWorklogs = rawEstimatedWorklogs
+                    .Where(item => item.EndDate > fromStartDate 
+                                   && item.StartDate < toStartDate)
+                    .ToList();
+                foreach (var dateWorklog in dateWorklogs)
                 {
-                    var fDate = dateTimeLog.From > fromStartDate
-                        ? dateTimeLog.From
+                    var estimatedStartDate = dateWorklog.StartDate > fromStartDate
+                        ? dateWorklog.StartDate
                         : fromStartDate;
-                    var tDate = dateTimeLog.To < toStartDate
-                        ? dateTimeLog.To
+                    var estimatedEndDate = dateWorklog.EndDate < toStartDate
+                        ? dateWorklog.EndDate
                         : toStartDate;
-                    list.Add(new TimeLog
+                    estimatedWorklogs.Add(new EstimatedWorklog
                     {
-                        From = fDate,
-                        To = tDate,
-                        IssueName = dateTimeLog.IssueName,
-                        IssueSummary = dateTimeLog.IssueSummary,
-                        IssueLink = dateTimeLog.IssueLink
+                        StartDate = estimatedStartDate,
+                        EndDate = estimatedEndDate,
+                        Issue = dateWorklog.Issue
                     });
                 }
-
-                dictionary.Add(startDate, list);
-                Console.WriteLine(
-                    $@"{startDate.ToShortDateString()} - {new TimeSpan(list.Sum(item => item.Diff.Ticks))}");
                 startDate = startDate.AddDays(-1);
             }
 
-            return dictionary;
+            return estimatedWorklogs;
+        }
+
+        public async Task<IEnumerable<DayUserWorklog>> GetUserDayWorklogs(
+            DateTime fromDate,
+            DateTime toDate,
+            int issueCount)
+        {
+            var startDateJiraFormat = fromDate.ToString("yyyy/MM/dd");
+            var rawEstimatedWorklogs = await GetCurrentUserEstimatedWorklogsAsync(startDateJiraFormat, issueCount);
+            var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, fromDate, toDate);
+            var actualWorklogs = await GetCurrentUserActualWorklogsAsync(startDateJiraFormat, issueCount);
+            
+            var result = new List<DayUserWorklog>();
+            var cycleDate = toDate.Date;
+            while (cycleDate >= fromDate.Date)
+            {
+                result.Add(new DayUserWorklog
+                {
+                    Date = cycleDate,
+                    ActualWorklogs = actualWorklogs.Where(record => record.StartDate.Date == cycleDate).ToList(),
+                    EstimatedWorklogs = estimatedWorklogs.Where(record => record.StartDate.Date == cycleDate).ToList()
+                });
+                cycleDate = cycleDate.AddDays(-1);
+            }
+
+            return result;
         }
 
         public async Task AddTimeLog(string issueKey, TimeSpan timeSpan, DateTime startTime)
