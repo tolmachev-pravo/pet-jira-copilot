@@ -1,14 +1,13 @@
-﻿using System;
+﻿using MediatR;
+using Pet.Jira.Domain.Models.Worklogs;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Pet.Jira.Adapter;
 
-namespace Pet.Jira.Web.CQRS.Queries.Issue
+namespace Pet.Jira.Application.Worklogs.Queries
 {
-    public class List
+    public class GetDailyWorklogSummaries
     {
         public class Query : IRequest<Model>
         {
@@ -19,23 +18,23 @@ namespace Pet.Jira.Web.CQRS.Queries.Issue
 
         public class Model
         {
-            public IEnumerable<DayUserWorklog> Worklogs { get; set; }
+            public IEnumerable<DailyWorklogSummary> Worklogs { get; set; }
         }
 
         public class QueryHandler : IRequestHandler<Query, Model>
         {
-            private readonly JiraService _jiraService;
+            private readonly IWorklogDataSource _worklogDataSource;
 
-            public QueryHandler(JiraService jiraService)
+            public QueryHandler(IWorklogDataSource worklogDataSource)
             {
-                _jiraService = jiraService;
+                _worklogDataSource = worklogDataSource;
             }
 
             public async Task<Model> Handle(
-                Query request,
+                Query query,
                 CancellationToken cancellationToken)
             {
-                var worklogs = await _jiraService.GetUserDayWorklogs(request.StartDate, request.EndDate, request.Count);
+                var worklogs = await _worklogDataSource.GetUserDayWorklogs(query.StartDate, query.EndDate, query.Count);
                 return new Model { Worklogs = worklogs };
             }
         }
