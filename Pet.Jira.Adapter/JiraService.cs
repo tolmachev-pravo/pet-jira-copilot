@@ -79,20 +79,24 @@ namespace Pet.Jira.Adapter
                 jql: $"assignee = currentUser() AND updatedDate >= '{period}' ORDER BY updatedDate DESC",
                 count: count);
             var rawEstimatedWorklogs = new List<EstimatedWorklog> { };
+            var dtNow = await _jiraClient.ServerInfo.GetServerInfoAsync();
             foreach (var issue in issues)
             {
                 var changeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key.Value);
                 changeLogs = changeLogs.Where(record => record.Items.Any(item => item.FieldName == StatusFieldName)).ToList();
                 DateTime startDate = DateTime.MinValue;
+                var inProgress = false;
                 foreach (var changeLog in changeLogs)
                 {
                     if (changeLog.Items.Any(item => item.FieldName == StatusFieldName && item.ToId == InProgressStatusId))
                     {
                         startDate = changeLog.CreatedDate;
+                        inProgress = true;
                     }
 
                     if (changeLog.Items.Any(item => item.FieldName == StatusFieldName && item.FromId == InProgressStatusId))
                     {
+                        inProgress = false;
                         rawEstimatedWorklogs.Add(new EstimatedWorklog
                         {
                             StartDate = startDate,
@@ -105,6 +109,21 @@ namespace Pet.Jira.Adapter
                             }
                         });
                     }
+                }
+
+                if (inProgress)
+                {
+                    rawEstimatedWorklogs.Add(new EstimatedWorklog
+                    {
+                        StartDate = startDate,
+                        EndDate = dtNow.ServerTime.Value.DateTime,
+                        Issue = new Issue
+                        {
+                            Key = issue.Key.Value,
+                            Summary = issue.Summary,
+                            Link = Path.Combine(_jiraClient.Url, "browse", issue.Key.Value)
+                        }
+                    });
                 }
             }
             return rawEstimatedWorklogs;
@@ -175,15 +194,68 @@ namespace Pet.Jira.Adapter
                 cycleDate = cycleDate.AddDays(-1);
             }
 
+            Calculate(result);
             return result;
+        }
+
+        private void Calculate(IEnumerable<DayUserWorklog> worklogs)
+        {
+            foreach (var worklog in worklogs)
+            {
+                var workTime = new TimeSpan(8, 0, 0).Ticks;
+                // Время зафиксированное за день
+                var dayTimeSpent = new TimeSpan(worklog.ActualWorklogs.Sum(record => record.TimeSpent.Ticks));
+                // Привязка актуальных таймлогов к 
+                foreach (var estimatedWorklog in worklog.EstimatedWorklogs)
+                {
+                    estimatedWorklog.ActualWorklogs = worklog.ActualWorklogs
+                        .Where(record => record.Issue.Key == estimatedWorklog.Issue.Key
+                                         && record.StartDate == estimatedWorklog.EndDate)
+                        .ToList();
+                }
+
+                // Автоматические
+                var autoActualWorklogs = worklog.EstimatedWorklogs.SelectMany(record => record.ActualWorklogs);
+                // Вручную внесенные таймлоги
+                var manualActualWorklogs = worklog.ActualWorklogs.Except(autoActualWorklogs);
+                // Вручную списанное время
+                var manualTimeSpent = manualActualWorklogs.Sum(record => record.TimeSpent.Ticks);
+
+                // Время выполнения всех задач
+                var fullRawTimeSpent = worklog.EstimatedWorklogs.Sum(record => record.RawTimeSpent.Ticks);
+                // Предполагаемый остаток для автоматического списания времени
+                var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime - manualTimeSpent);
+                //if (fullRawTimeSpent + manualTimeSpent < workTime)
+                //{
+                //    var percent1 = Convert.ToDecimal(fullRawTimeSpent) / new TimeSpan(9, 0, 0).Ticks;
+                //    estimatedRestAutoTimeSpent =
+                //        fullRawTimeSpent - new TimeSpan(1, 0, 0).Ticks * percent1 - manualTimeSpent;
+                //}
+
+                // Заполняем предполагаемое время для каждой задачи в пропорциях
+                foreach (var estimatedWorklog in worklog.EstimatedWorklogs)
+                {
+                    if (estimatedWorklog.ActualTimeSpent.Ticks == 0)
+                    {
+                        var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
+                        var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
+                        estimatedWorklog.EstimatedTimeSpent = estimatedTimeSpent;
+                    }
+                    else
+                    {
+                        estimatedWorklog.EstimatedTimeSpent = estimatedWorklog.ActualTimeSpent;
+                    }
+                }
+            }
         }
 
         public async Task AddTimeLog(string issueKey, TimeSpan timeSpan, DateTime startTime)
         {
             try
             {
+                var minutesLag = timeSpan.Seconds >= 30 ? 1 : 0;
                 var worklog = new Worklog(
-                    $"{timeSpan.Hours}h {timeSpan.Minutes}m", 
+                    $"{timeSpan.Hours}h {timeSpan.Minutes + minutesLag}m", 
                     startTime,
                     "Dev");
                 await _jiraClient.Issues.AddWorklogAsync(issueKey, worklog);

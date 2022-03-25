@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
 using Pet.Jira.Adapter;
+using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Data;
 using Pet.Jira.Web.Services;
 
@@ -43,6 +44,7 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
+            services.AddInfrastructure(Configuration.GetSection("Jira"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
