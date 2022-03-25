@@ -9,8 +9,6 @@ namespace Pet.Jira.App
         private readonly ILogger _logger;
         private readonly JiraService _jiraService;
 
-        public bool IsStarted { get; set; }
-
         public Startup(
             ILogger<Startup> logger,
             JiraService jiraService)

@@ -1,4 +1,3 @@
-using System.Reflection;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,10 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
-using Pet.Jira.Adapter;
+using Pet.Jira.Application;
 using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Data;
-using Pet.Jira.Web.Services;
 
 namespace Pet.Jira.Web
 {
@@ -31,8 +29,6 @@ namespace Pet.Jira.Web
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
             services.AddMediatR(typeof(Startup));
-            services.AddSingleton<IJiraConfiguration, JiraConfiguration>();
-            services.AddTransient<JiraService>();
             services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
@@ -45,6 +41,7 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             services.AddInfrastructure(Configuration.GetSection("Jira"));
+            services.AddApplicationLayer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

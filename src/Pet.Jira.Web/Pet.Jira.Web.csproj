@@ -12,11 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CQRS\Handlers\" />
+    <Folder Include="Components\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pet.Jira.Adapter\Pet.Jira.Adapter.csproj" />
     <ProjectReference Include="..\Pet.Jira.Infrastructure\Pet.Jira.Infrastructure.csproj" />
   </ItemGroup>
 
