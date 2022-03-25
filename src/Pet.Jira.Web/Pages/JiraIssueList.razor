@@ -1,12 +1,5 @@
 ﻿@page "/issues"
 
-@using MediatR;
-@using Pet.Jira.Web.CQRS;
-@using Pet.Jira.Adapter;
-@using System.ComponentModel.DataAnnotations;
-@inject IMediator _mediator;
-@inject ISnackbar _snackbar;
-
 <MudGrid Spacing="2" Justify="Justify.Center">
     <MudItem xs="3" >
         <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
@@ -62,10 +55,10 @@
                         @foreach (var entity in item.EstimatedWorklogs)
                         {
                             <tr>
-                                <td>@entity.StartDate.ToString("HH:mm")</td>
-                                <td>@entity.EndDate.ToString("HH:mm")</td>
+                                <td>@entity.StartedAt.ToString("HH:mm")</td>
+                                <td>@entity.CompletedAt.ToString("HH:mm")</td>
                                 <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
-                                <td><MudTextField @bind-Value="@entity.RestTimeSpent" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
+                                <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                                 <td>
                                     <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
                                 </td>
@@ -74,10 +67,10 @@
                         @foreach (var entity in item.ActualWorklogs)
                         {
                             <tr>
-                                <td>@entity.StartDate.ToString("HH:mm")</td>
+                                <td>@entity.StartedAt.ToString("HH:mm")</td>
                                 <td></td>
                                 <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
-                                <td>@entity.TimeSpent</td>
+                                <td>@entity.ElapsedTime</td>
                                 <td><MudAvatar Color="Color.Tertiary">A</MudAvatar></td>
                             </tr>
                         }
@@ -89,69 +82,5 @@
 </MudGrid>
 
 @functions {
-    IssueQuery issueQuery = new IssueQuery();
-    CQRS.Queries.Issue.List.Model model;
-    PageModel pageModel = new PageModel();
-
-    protected override async Task OnInitializedAsync()
-    {
-    }
-
-    private async Task AddWorklog(EstimatedWorklog entity)
-    {
-        await _mediator.Send(new CQRS.Commands.Worklog.Insert.Command(new CQRS.Commands.Worklog.Insert.Model
-        {
-            At = entity.EndDate,
-            IssueKey = entity.Issue.Key,
-            TimeSpent = entity.RestTimeSpent
-        }));
-        _snackbar.Add(
-            $"Worklog {entity.Issue.Key} added successfully!",
-            Severity.Normal,
-            config => { config.ActionColor = Color.Info; });
-    }
-
-    private class PageModel
-    {
-        public IEnumerable<DayUserWorklog> DayUserWorklogs { get; set; }
-        public ListState State { get; set; }
-        public bool InProgress => State == ListState.IsProgress;
-    }
-
-    private enum ListState
-    {
-        Unknown,
-        IsProgress,
-        Success
-    }
-
-    public class IssueQuery
-    {
-        [Required]
-        public DateRange? DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
-
-        [Required]
-        public DateTime? StartDate => DateRange.Start;
-
-        [Required]
-        public DateTime? EndDate => DateRange.End;
-
-        [Required]
-        [Range(1, 300)]
-        public int? Count { get; set; } = 20;
-    }
-
-    private async Task OnValidSubmit(EditContext context)
-    {
-        pageModel.State = ListState.IsProgress;
-        model = await _mediator.Send(new CQRS.Queries.Issue.List.Query()
-        {
-            StartDate = issueQuery.StartDate.Value,
-            EndDate = issueQuery.EndDate.Value,
-            Count = issueQuery.Count.Value
-        });
-        pageModel.DayUserWorklogs = model.Worklogs;
-        pageModel.State = ListState.Success;
-        StateHasChanged();
-    }
+    
 }
