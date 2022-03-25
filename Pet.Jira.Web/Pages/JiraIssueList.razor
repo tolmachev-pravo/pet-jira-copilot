@@ -8,7 +8,7 @@
 @inject ISnackbar _snackbar;
 
 <MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="3">
+    <MudItem xs="3" >
         <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <MudGrid>
@@ -21,7 +21,7 @@
                         </MudCardHeader>
                         <MudCardContent>
                             <MudDateRangePicker Label="Date range" @bind-DateRange="issueQuery.DateRange"/>
-                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" />
+                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" InputType="InputType.Number"/>
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
@@ -56,7 +56,7 @@
                     {
                         <tr>
                             <td colspan="5">
-                                @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.EstimatedWorklogsSum.ToString(@"hh\:mm\:ss") of @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
+                                @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.CalculatedWorklogsSum (logged: @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss"))
                             </td>
                         </tr>
                         @foreach (var entity in item.EstimatedWorklogs)
@@ -65,7 +65,7 @@
                                 <td>@entity.StartDate.ToString("HH:mm")</td>
                                 <td>@entity.EndDate.ToString("HH:mm")</td>
                                 <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
-                                <td> <input @bind="@entity.TimeSpent" /></td>
+                                <td><MudTextField @bind-Value="@entity.RestTimeSpent" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                                 <td>
                                     <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
                                 </td>
@@ -103,7 +103,7 @@
         {
             At = entity.EndDate,
             IssueKey = entity.Issue.Key,
-            TimeSpent = entity.TimeSpent
+            TimeSpent = entity.RestTimeSpent
         }));
         _snackbar.Add(
             $"Worklog {entity.Issue.Key} added successfully!",

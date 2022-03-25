@@ -12,5 +12,6 @@ namespace Pet.Jira.Adapter
 
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualWorklogs.Sum(item => item.TimeSpent.Ticks));
         public TimeSpan EstimatedWorklogsSum => new TimeSpan(EstimatedWorklogs.Sum(item => item.TimeSpent.Ticks));
+        public TimeSpan CalculatedWorklogsSum => new TimeSpan(ActualWorklogs.Sum(item => item.TimeSpent.Ticks) + EstimatedWorklogs.Sum(item => item.RestTimeSpent.Ticks));
     }
 }
