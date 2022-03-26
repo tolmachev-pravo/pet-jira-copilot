@@ -7,8 +7,9 @@
 <MudLayout Style="height: 100vh">
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h5" Class="ml-3">Jira workflow</MudText>
     </MudAppBar>
-    <MudDrawer @bind-Open="@open" Elevation="1">
+    <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
@@ -19,10 +20,10 @@
 </MudLayout>
 
 @code{
-    bool open = true;
+    bool _drawerOpen = true;
 
     void ToggleDrawer()
     {
-        open = !open;
+        _drawerOpen = !_drawerOpen;
     }
 }
