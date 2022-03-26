@@ -1,12 +1,12 @@
 ﻿@page "/issues"
 
 <MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="3" >
+    <MudItem xs="2" >
         <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <MudGrid>
                 <MudItem xs="12">
-                    <MudCard>
+                    <MudCard Square="true">
                         <MudCardHeader>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.h6">Filter</MudText>
@@ -25,7 +25,7 @@
         </EditForm>
     </MudItem>
 
-    <MudItem xs="9">
+    <MudItem xs="10">
         @if (pageModel.InProgress)
         {
             <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
