@@ -32,7 +32,12 @@
                 <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
             </MudOverlay>
         }
-        else if (pageModel.State == ListState.Success)
+
+        @if (pageModel.DayUserWorklogs == null || !pageModel.DayUserWorklogs.Any())
+        {
+            <img src="images/data_not_found.png" class="pet-center"/>
+        }
+        else
         {
             <MudSimpleTable Dense=true Hover=true Style="overflow-x: auto;">
                 <thead>
