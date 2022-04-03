@@ -21,12 +21,14 @@ namespace Pet.Jira.Infrastructure.Jira
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
             JiraLinkGenerator linkGenerator,
-            WorklogFactory worklogFactory)
+            WorklogFactory worklogFactory,
+            IIdentityService identityService)
         {
             _linkGenerator = linkGenerator;
             _worklogFactory = worklogFactory;
             _config = jiraConfiguration.Value;
-            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _config.Username, _config.Password);
+            var user = identityService.CurrentUser;
+            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, user.Username, user.Password);
         }
 
         /// <summary>
