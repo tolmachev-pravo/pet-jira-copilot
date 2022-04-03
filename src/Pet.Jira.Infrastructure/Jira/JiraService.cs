@@ -1,5 +1,6 @@
 ﻿using Atlassian.Jira;
 using Microsoft.Extensions.Options;
+using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Worklogs;
@@ -16,7 +17,6 @@ namespace Pet.Jira.Infrastructure.Jira
         private readonly WorklogFactory _worklogFactory;
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
-        
 
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
@@ -261,6 +261,20 @@ namespace Pet.Jira.Infrastructure.Jira
             catch (Exception e)
             {
                 throw;
+            }
+        }
+
+        public async Task<LoginResponse> Login(LoginRequest request)
+        {
+            try
+            {
+                var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
+                await jiraClient.ServerInfo.GetServerInfoAsync();
+                return new LoginResponse(true);
+            }
+            catch (Exception e)
+            {
+                return new LoginResponse(false, e.Message);
             }
         }
     }

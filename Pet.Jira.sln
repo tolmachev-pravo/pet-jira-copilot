@@ -12,15 +12,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Web", "src\Pet.Jir
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Adapter", "src\Pet.Jira.Adapter\Pet.Jira.Adapter.csproj", "{D1DE250A-BEE9-4821-BB67-AF3C3CDA9807}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Domain", "src\Pet.Jira.Domain\Pet.Jira.Domain.csproj", "{7A428F9F-CDAE-475E-83CF-A126A7C2C848}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Domain", "src\Pet.Jira.Domain\Pet.Jira.Domain.csproj", "{7A428F9F-CDAE-475E-83CF-A126A7C2C848}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A3301072-9BBB-46FA-9C0E-FAAA46748F75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FF476EBA-37B4-4D40-AAF5-327FB3DECACC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Infrastructure", "src\Pet.Jira.Infrastructure\Pet.Jira.Infrastructure.csproj", "{D7192FE7-2546-42EC-AC1F-9C66C6227421}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Infrastructure", "src\Pet.Jira.Infrastructure\Pet.Jira.Infrastructure.csproj", "{D7192FE7-2546-42EC-AC1F-9C66C6227421}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Application", "src\Pet.Jira.Application\Pet.Jira.Application.csproj", "{926A2270-1683-46B5-9BCF-F9C99C3546F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Application", "src\Pet.Jira.Application\Pet.Jira.Application.csproj", "{926A2270-1683-46B5-9BCF-F9C99C3546F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
