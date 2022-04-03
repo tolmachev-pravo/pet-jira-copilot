@@ -1,6 +1,8 @@
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +10,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Infrastructure;
+using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
 
 namespace Pet.Jira.Web
@@ -42,6 +45,16 @@ namespace Pet.Jira.Web
             });
             services.AddInfrastructure(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
+
+            // Authentication
+            services.AddHttpContextAccessor();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +75,12 @@ namespace Pet.Jira.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCookiePolicy();
+
+            app.UseMiddleware<AuthenticationMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

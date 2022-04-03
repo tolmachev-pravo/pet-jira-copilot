@@ -1,0 +1,14 @@
+﻿@page "/login"
+@attribute [AllowAnonymous]
+
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudTextField @bind-Value="LoginRequest.Username" Label="Username" Variant="Variant.Text" />
+        <MudTextField @bind-Value="LoginRequest.Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton OnClick="LoginUser" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {}
