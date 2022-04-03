@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
 using Pet.Jira.Application;
+using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
@@ -43,6 +44,7 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
+            services.AddTransient<IIdentityService, IdentityService>();
             services.AddInfrastructure(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
 
