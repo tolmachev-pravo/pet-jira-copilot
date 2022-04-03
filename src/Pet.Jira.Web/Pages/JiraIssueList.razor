@@ -65,7 +65,7 @@
                                 <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                                 <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                                 <td>
-                                    <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))"></MudFab>
+                                    <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))" Disabled="@entity.Disabled"></MudFab>
                                 </td>
                             </tr>
                         }
