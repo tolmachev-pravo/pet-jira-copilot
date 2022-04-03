@@ -23,5 +23,7 @@ namespace Pet.Jira.Domain.Models.Worklogs
             get { return _restTimeSpent ?? TimeSpan.FromSeconds(Math.Round((EstimatedTimeSpent - ActualTimeSpent).TotalSeconds)); }
             set { _restTimeSpent = value; }
         }
+
+        public bool Disabled => RestTime.Ticks <= 0;
     }
 }
