@@ -32,7 +32,7 @@ namespace Pet.Jira.Web.Components.Authentication
             else
             {
                 _snackbar.Add(
-                    "Error",
+                    "Authentication error",
                     Severity.Error,
                     config => { config.ActionColor = Color.Error; });
             }
