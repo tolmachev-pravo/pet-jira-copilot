@@ -6,8 +6,10 @@ using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Worklogs;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
@@ -17,6 +19,7 @@ namespace Pet.Jira.Infrastructure.Jira
         private readonly WorklogFactory _worklogFactory;
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
+        private readonly User _user;
 
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
@@ -27,8 +30,8 @@ namespace Pet.Jira.Infrastructure.Jira
             _linkGenerator = linkGenerator;
             _worklogFactory = worklogFactory;
             _config = jiraConfiguration.Value;
-            var user = identityService.CurrentUser;
-            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, user.Username, user.Password);
+            _user = identityService.CurrentUser;
+            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user.Username, _user.Password);
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Pet.Jira.Infrastructure.Jira
             foreach (var issue in issues)
             {
                 var issueWorklogs = await _jiraClient.Issues.GetWorklogsAsync(issue.Key.Value);
-                var userIssueWorklogs = issueWorklogs.Where(record => record.Author == _config.Username).ToList();
+                var userIssueWorklogs = issueWorklogs.Where(record => record.Author == _user.Username).ToList();
                 actualWorklogs.AddRange(userIssueWorklogs.Select(worklog => new ActualWorklog
                 {
 
@@ -126,7 +129,7 @@ namespace Pet.Jira.Infrastructure.Jira
             DateTime toDate,
             int issueCount)
         {
-            var startDateJiraFormat = fromDate.ToString("yyyy/MM/dd");
+            var startDateJiraFormat = fromDate.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
             var rawEstimatedWorklogs = await GetEstimatedWorklogsAsync(startDateJiraFormat, issueCount);
             var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, fromDate, toDate);
             var actualWorklogs = await GetActualWorklogsAsync(startDateJiraFormat, issueCount);
