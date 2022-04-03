@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Worklogs;
+using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Worklogs;
 
@@ -16,6 +18,7 @@ namespace Pet.Jira.Infrastructure
             services.AddSingleton<JiraLinkGenerator>();
             services.AddSingleton<WorklogFactory>();
             services.AddTransient<IWorklogRepository, WorklogRepository>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
             return services;
         }
     }
