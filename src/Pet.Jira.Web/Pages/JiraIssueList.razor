@@ -1,20 +1,20 @@
 ﻿@page "/issues"
 
-<MudGrid Spacing="2" Justify="Justify.Center">
-    <MudItem xs="2" >
+<MudGrid Spacing="1" Justify="Justify.Center">
+    <MudItem xs="2">
         <EditForm Model="@issueQuery" OnValidSubmit="OnValidSubmit">
             <DataAnnotationsValidator />
             <MudGrid>
                 <MudItem xs="12">
-                    <MudCard Square="true">
+                    <MudCard Square="true" Elevation="0">
                         <MudCardHeader>
                             <CardHeaderContent>
-                                <MudText Typo="Typo.h6">Filter</MudText>
+                                @*<MudText Typo="Typo.h6">Filter</MudText>*@
                             </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudDateRangePicker Label="Date range" @bind-DateRange="issueQuery.DateRange"/>
-                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" InputType="InputType.Number"/>
+                            <MudDateRangePicker Label="Date range" @bind-DateRange="issueQuery.DateRange" />
+                            <MudTextField Label="Count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" InputType="InputType.Number" />
                         </MudCardContent>
                         <MudCardActions>
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-auto" EndIcon="@Icons.Material.Filled.Send">Search</MudButton>
@@ -35,7 +35,7 @@
 
         @if (pageModel.DayUserWorklogs == null || !pageModel.DayUserWorklogs.Any())
         {
-            <img src="images/data_not_found.png" class="pet-center"/>
+            <img src="images/data_not_found.png" class="pet-center" />
         }
         else
         {
@@ -87,5 +87,5 @@
 </MudGrid>
 
 @functions {
-    
+
 }

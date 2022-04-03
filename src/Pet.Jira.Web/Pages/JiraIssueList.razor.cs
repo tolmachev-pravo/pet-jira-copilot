@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Pet.Jira.Web.Pages
 {
@@ -21,19 +22,31 @@ namespace Pet.Jira.Web.Pages
         public IMediator _mediator { get; set; }
         [Inject]
         public ISnackbar _snackbar { get; set; }
+        [Inject]
+        AuthenticationStateProvider _authenticationStateProvider { get; set; }
 
         private async Task AddWorklog(EstimatedWorklog entity)
         {
-            await _mediator.Send(new AddWorklog.Command(new Application.Worklogs.Dto.AddedWorklogDto
+            try
             {
-                StartedAt = entity.CompletedAt,
-                IssueKey = entity.Issue.Key,
-                ElapsedTime = entity.RestTime
-            }));
-            _snackbar.Add(
-                $"Worklog {entity.Issue.Key} added successfully!",
-                Severity.Normal,
-                config => { config.ActionColor = Color.Info; });
+                await _mediator.Send(new AddWorklog.Command(new Application.Worklogs.Dto.AddedWorklogDto
+                {
+                    StartedAt = entity.CompletedAt,
+                    IssueKey = entity.Issue.Key,
+                    ElapsedTime = entity.RestTime
+                }));
+                _snackbar.Add(
+                    $"Worklog {entity.Issue.Key} added successfully!",
+                    Severity.Normal,
+                    config => { config.ActionColor = Color.Info; });
+            }
+            catch (Exception e)
+            {
+                _snackbar.Add(
+                    e.Message,
+                    Severity.Error,
+                    config => { config.ActionColor = Color.Error; });
+            }
         }
 
         private class PageModel
@@ -53,7 +66,7 @@ namespace Pet.Jira.Web.Pages
         public class IssueQuery
         {
             [Required]
-            public DateRange? DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
+            public DateRange DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
 
             [Required]
             public DateTime? StartDate => DateRange.Start;
@@ -68,16 +81,26 @@ namespace Pet.Jira.Web.Pages
 
         private async Task OnValidSubmit(EditContext context)
         {
-            pageModel.State = ListState.IsProgress;
-            var worklogs = await _mediator.Send(new GetDailyWorklogSummaries.Query()
+            try
             {
-                StartDate = issueQuery.StartDate.Value,
-                EndDate = issueQuery.EndDate.Value,
-                Count = issueQuery.Count.Value
-            });
-            pageModel.DayUserWorklogs = worklogs.Worklogs;
-            pageModel.State = ListState.Success;
-            StateHasChanged();
+                pageModel.State = ListState.IsProgress;
+                var worklogs = await _mediator.Send(new GetDailyWorklogSummaries.Query()
+                {
+                    StartDate = issueQuery.StartDate.Value,
+                    EndDate = issueQuery.EndDate.Value,
+                    Count = issueQuery.Count.Value
+                });
+                pageModel.DayUserWorklogs = worklogs.Worklogs;
+                pageModel.State = ListState.Success;
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                _snackbar.Add(
+                    e.Message,
+                    Severity.Error,
+                    config => { config.ActionColor = Color.Error; });
+            }
         }
     }
 }
