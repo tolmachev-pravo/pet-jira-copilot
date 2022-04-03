@@ -8,14 +8,33 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h5" Class="ml-3">Jira workflow</MudText>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
+        <MudAppBarSpacer></MudAppBarSpacer>
+        <AuthorizeView>
+            <Authorized>
+                <MudElement>@context.User.Identity.Name</MudElement> <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout" /></MudLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudLink Href="/login" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Login" /></MudLink>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer Class="mt-6" MaxWidth="MaxWidth.ExtraLarge">
-            @Body
-        </MudContainer>
+        <AuthorizeView>
+            <Authorized>
+                <MudContainer Class="mt-6" MaxWidth="MaxWidth.ExtraLarge">
+                    @Body
+                </MudContainer>
+            </Authorized>
+            <NotAuthorized>
+                <MudContainer Class="mt-6" MaxWidth="MaxWidth.Medium">
+                    <Login></Login>
+                </MudContainer>
+            </NotAuthorized>
+        </AuthorizeView>
     </MudMainContent>
 </MudLayout>
 
