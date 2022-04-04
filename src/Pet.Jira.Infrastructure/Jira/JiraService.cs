@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Pet.Jira.Domain.Models.Users;
 
@@ -280,6 +281,23 @@ namespace Pet.Jira.Infrastructure.Jira
             catch (Exception e)
             {
                 return new LoginResponse(false, e.Message);
+            }
+        }
+
+        public async Task<string> GetCurrentUserAvatar(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
+                var avatarUrl = myself.AvatarUrls.Small;
+                var avatar = _jiraClient.RestClient.DownloadData(avatarUrl);
+                string img64 = Convert.ToBase64String(avatar);
+                string urlData = string.Format("data:image/jpg;base64, {0}", img64);
+                return urlData;
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
     }
