@@ -1,7 +1,7 @@
 ﻿@page "/login"
 @attribute [AllowAnonymous]
 
-<MudCard Outlined="true">
+<MudCard Outlined="true" @onkeyup="@OnKeyUp">
     <MudCardContent>
         <MudTextField @bind-Value="LoginRequest.Username" Label="Username" Variant="Variant.Text" />
         <MudTextField @bind-Value="LoginRequest.Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password" />
@@ -9,6 +9,9 @@
     <MudCardActions>
         <MudButton OnClick="LoginUser" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
     </MudCardActions>
+    <MudOverlay Visible="@_componentModel.InProgress" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
 </MudCard>
 
 @code {}
