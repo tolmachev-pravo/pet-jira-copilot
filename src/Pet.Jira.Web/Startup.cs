@@ -56,7 +56,6 @@ namespace Pet.Jira.Web
                 .AddCookie(options =>
                 {
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
-                    options.Cookie.Expiration = TimeSpan.FromDays(30);
                 });
 
             // Hotkeys
