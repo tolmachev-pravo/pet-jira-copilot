@@ -14,6 +14,7 @@ using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
 {
@@ -56,6 +57,9 @@ namespace Pet.Jira.Web
                 {
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
+
+            // Hotkeys
+            services.AddHotKeys();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
