@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using Pet.Jira.Infrastructure.Jira
+@inject IJiraService _jiraService
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -12,8 +14,9 @@
         <MudAppBarSpacer></MudAppBarSpacer>
         <AuthorizeView>
             <Authorized>
-                <MudElement Class="mr-2">@context.User.Identity.Name</MudElement> 
-                <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout" /></MudLink>
+                <img src="@avatar"/>
+                <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
+                <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout"/></MudLink>
             </Authorized>
             <NotAuthorized>
                 <MudLink Href="/login" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Login" /></MudLink>
@@ -39,11 +42,21 @@
     </MudMainContent>
 </MudLayout>
 
+
 @code{
     bool _drawerOpen = true;
+    public string avatar = "images/default_user_icon_16.png";
 
     void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    var jiraAvatar = await _jiraService.GetCurrentUserAvatar();
+    //    avatar = string.IsNullOrEmpty(jiraAvatar)
+    //        ? "images/default_user_icon_16.png"
+    //        : jiraAvatar;
+    //}
 }
