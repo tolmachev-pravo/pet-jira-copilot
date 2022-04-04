@@ -79,7 +79,7 @@ namespace Pet.Jira.Web.Pages
             public int? Count { get; set; } = 20;
         }
 
-        private async Task OnValidSubmit(EditContext context)
+        private async Task Search()
         {
             try
             {
