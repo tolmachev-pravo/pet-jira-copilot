@@ -12,7 +12,8 @@
         <MudAppBarSpacer></MudAppBarSpacer>
         <AuthorizeView>
             <Authorized>
-                <MudElement>@context.User.Identity.Name</MudElement> <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout" /></MudLink>
+                <MudElement Class="mr-2">@context.User.Identity.Name</MudElement> 
+                <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout" /></MudLink>
             </Authorized>
             <NotAuthorized>
                 <MudLink Href="/login" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Login" /></MudLink>
@@ -22,7 +23,7 @@
     <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent>
+    <MudMainContent Style="height: 100vh">
         <AuthorizeView>
             <Authorized>
                 <MudContainer Class="mt-6" MaxWidth="MaxWidth.ExtraLarge">
