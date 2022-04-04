@@ -41,7 +41,13 @@ namespace Pet.Jira.Web.Authentication
                 
                 await context.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
+                    new ClaimsPrincipal(claimsIdentity),
+                    new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTime.UtcNow.AddDays(30),
+                        IsPersistent = true,
+                        AllowRefresh = true
+                    });
 
                 Logins.Remove(key);
                 context.Response.Redirect("/");
