@@ -38,13 +38,16 @@ namespace Pet.Jira.Web.Authentication
                 };
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                var authProperties = new AuthenticationProperties
-                    { IsPersistent = true, RedirectUri = "/" };
+                
                 await context.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
+                    new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTime.UtcNow.AddDays(30),
+                        IsPersistent = true,
+                        AllowRefresh = true
+                    });
 
                 Logins.Remove(key);
                 context.Response.Redirect("/");
