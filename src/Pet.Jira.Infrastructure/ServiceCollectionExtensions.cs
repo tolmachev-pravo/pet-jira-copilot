@@ -4,6 +4,7 @@ using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
+using Pet.Jira.Infrastructure.Jira.Query;
 using Pet.Jira.Infrastructure.Worklogs;
 
 namespace Pet.Jira.Infrastructure
@@ -19,6 +20,7 @@ namespace Pet.Jira.Infrastructure
             services.AddSingleton<WorklogFactory>();
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
             return services;
         }
     }
