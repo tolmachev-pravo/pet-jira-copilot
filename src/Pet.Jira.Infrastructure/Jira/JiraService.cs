@@ -2,15 +2,15 @@
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Domain.Models.Worklogs;
+using Pet.Jira.Infrastructure.Jira.Query;
 using Pet.Jira.Infrastructure.Worklogs;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
@@ -18,6 +18,7 @@ namespace Pet.Jira.Infrastructure.Jira
     {
         private readonly JiraLinkGenerator _linkGenerator;
         private readonly WorklogFactory _worklogFactory;
+        private readonly IJiraQueryFactory _queryFactory;
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
         private readonly User _user;
@@ -26,10 +27,12 @@ namespace Pet.Jira.Infrastructure.Jira
             IOptions<JiraConfiguration> jiraConfiguration,
             JiraLinkGenerator linkGenerator,
             WorklogFactory worklogFactory,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            IJiraQueryFactory queryFactory)
         {
             _linkGenerator = linkGenerator;
             _worklogFactory = worklogFactory;
+            _queryFactory = queryFactory;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
             _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user.Username, _user.Password);
@@ -43,11 +46,17 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <returns></returns>
         // ToDo: Добавить передачу фильтра для Issue (нужен генератор запросов) + фильтрация для Worklog
         public async Task<IEnumerable<ActualWorklog>> GetActualWorklogsAsync(
-            string period,
+            DateTime from,
             int count)
         {
+            var query = _queryFactory.Create()
+                .Where("worklogDate", JiraQueryComparisonType.GreaterOrEqual, from)
+                .Where("worklogAuthor", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
+                .OrderBy("updatedDate", JiraQueryOrderType.Desc)
+                .ToString();
+
             var issues = await GetIssuesAsync(
-                jql: $"worklogDate >= '{period}' AND worklogAuthor = currentUser() ORDER BY updatedDate DESC",
+                jql: query,
                 count: count);
 
             var actualWorklogs = new List<ActualWorklog> { };
@@ -78,11 +87,17 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <param name="count"></param>
         /// <returns></returns>
         public async Task<IEnumerable<EstimatedWorklog>> GetEstimatedWorklogsAsync(
-            string period,
+            DateTime from,
             int count)
         {
+            var query = _queryFactory.Create()
+                .Where("updatedDate", JiraQueryComparisonType.GreaterOrEqual, from)
+                .Where("assignee", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
+                .OrderBy("updatedDate", JiraQueryOrderType.Desc)
+                .ToString();
+
             var issues = await GetIssuesAsync(
-                jql: $"assignee = currentUser() AND updatedDate >= '{period}' ORDER BY updatedDate DESC",
+                jql: query,
                 count: count);
             var rawEstimatedWorklogs = new List<EstimatedWorklog> { };
             var serverInfo = await _jiraClient.ServerInfo.GetServerInfoAsync();
@@ -130,10 +145,9 @@ namespace Pet.Jira.Infrastructure.Jira
             DateTime toDate,
             int issueCount)
         {
-            var startDateJiraFormat = fromDate.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
-            var rawEstimatedWorklogs = await GetEstimatedWorklogsAsync(startDateJiraFormat, issueCount);
+            var rawEstimatedWorklogs = await GetEstimatedWorklogsAsync(fromDate, issueCount);
             var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, fromDate, toDate);
-            var actualWorklogs = await GetActualWorklogsAsync(startDateJiraFormat, issueCount);
+            var actualWorklogs = await GetActualWorklogsAsync(fromDate, issueCount);
 
             var result = new List<DailyWorklogSummary>();
             var cycleDate = toDate.Date;
