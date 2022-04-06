@@ -17,7 +17,6 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IWorklogDataSource, JiraWorklogDataSource>();
             services.Configure<JiraConfiguration>(jiraConfigurationSection);
             services.AddSingleton<IJiraLinkGenerator, JiraLinkGenerator>();
-            services.AddSingleton<WorklogFactory>();
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
