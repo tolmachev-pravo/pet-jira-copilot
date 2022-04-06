@@ -180,22 +180,38 @@ namespace Pet.Jira.Infrastructure.Jira
             };
         }
 
-        public async Task AddWorklogAsync(AddedWorklogDto worklogDto)
+        /// <summary>
+        /// Add worklog
+        /// </summary>
+        /// <param name="worklogDto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task AddWorklogAsync(
+            AddedWorklogDto worklogDto,
+            CancellationToken cancellationToken = default)
         {
             var minutesLag = worklogDto.ElapsedTime.Seconds >= 30 ? 1 : 0;
             var worklog = new Worklog(
                 $"{worklogDto.ElapsedTime.Hours}h {worklogDto.ElapsedTime.Minutes + minutesLag}m",
                 worklogDto.StartedAt,
                 "Dev");
-            await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog);
+            await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog, token: cancellationToken);
         }
 
-        public async Task<LoginResponse> Login(LoginRequest request)
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<LoginResponse> LoginAsync(
+            LoginRequest request, 
+            CancellationToken cancellationToken = default)
         {
             try
             {
                 var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
-                await jiraClient.ServerInfo.GetServerInfoAsync();
+                await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
                 return new LoginResponse(true);
             }
             catch (Exception e)
@@ -204,7 +220,7 @@ namespace Pet.Jira.Infrastructure.Jira
             }
         }
 
-        public async Task<string> GetCurrentUserAvatar(CancellationToken cancellationToken = default)
+        public async Task<string> GetCurrentUserAvatarAsync(CancellationToken cancellationToken = default)
         {
             try
             {
