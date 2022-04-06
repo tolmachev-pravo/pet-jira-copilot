@@ -11,10 +11,6 @@ namespace Pet.Jira.Infrastructure.Jira
 {
     public interface IJiraService
     {
-        Task AddWorklogAsync(AddedWorklogDto worklog);
-        Task<LoginResponse> Login(LoginRequest request);
-        Task<string> GetCurrentUserAvatar(CancellationToken cancellationToken = default);
-
         Task<IEnumerable<IssueDto>> GetIssuesAsync(
             IssueSearchOptions issueSearchOptions,
             CancellationToken cancellationToken = default);
@@ -41,6 +37,17 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default);
 
         Task<UserDto> GetCurrentUserAsync(
+            CancellationToken cancellationToken = default);
+
+        Task<LoginResponse> LoginAsync(
+            LoginRequest request,
+            CancellationToken cancellationToken = default);
+
+        Task AddWorklogAsync(
+            AddedWorklogDto worklog,
+            CancellationToken cancellationToken = default);
+
+        Task<string> GetCurrentUserAvatarAsync(
             CancellationToken cancellationToken = default);
     }
 }
