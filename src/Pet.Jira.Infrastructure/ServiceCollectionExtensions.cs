@@ -14,9 +14,9 @@ namespace Pet.Jira.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration jiraConfigurationSection)
         {
             services.AddTransient<IJiraService, JiraService>();
-            services.AddTransient<IWorklogDataSource, WorklogDataSource>();
+            services.AddTransient<IWorklogDataSource, JiraWorklogDataSource>();
             services.Configure<JiraConfiguration>(jiraConfigurationSection);
-            services.AddSingleton<JiraLinkGenerator>();
+            services.AddSingleton<IJiraLinkGenerator, JiraLinkGenerator>();
             services.AddSingleton<WorklogFactory>();
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();

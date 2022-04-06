@@ -7,10 +7,10 @@ namespace Pet.Jira.Infrastructure.Worklogs
 {
     public class WorklogFactory
     {
-        private readonly JiraLinkGenerator _linkGenerator;
+        private readonly IJiraLinkGenerator _linkGenerator;
 
         public WorklogFactory(
-            JiraLinkGenerator linkGenerator)
+            IJiraLinkGenerator linkGenerator)
         {
             _linkGenerator = linkGenerator;
         }
@@ -31,6 +31,17 @@ namespace Pet.Jira.Infrastructure.Worklogs
                     Summary = issue.Summary,
                     Link = _linkGenerator.Generate(issue.Key.Value)
                 }
+            };
+        }
+
+        public T Create<T>(DateTime startedAt, DateTime completedAt, Domain.Models.Issues.IIssue issue)
+            where T : EstimatedWorklog, new()
+        {
+            return new T
+            {
+                StartedAt = startedAt,
+                CompletedAt = completedAt,
+                Issue = issue
             };
         }
     }
