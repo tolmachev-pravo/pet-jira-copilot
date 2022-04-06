@@ -2,7 +2,6 @@
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Domain.Models.Worklogs;
-using Pet.Jira.Infrastructure.Jira.Dto;
 using Pet.Jira.Infrastructure.Jira.Query;
 using System;
 using System.Collections.Generic;
@@ -25,6 +24,12 @@ namespace Pet.Jira.Infrastructure.Jira
             _queryFactory = queryFactory;
         }
 
+        /// <summary>
+        /// Get issue worklogs
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<IssueWorklog>> GetIssueWorklogsAsync(
             GetIssueWorklogs.Query query, 
             CancellationToken cancellationToken = default)
@@ -48,6 +53,12 @@ namespace Pet.Jira.Infrastructure.Jira
             return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>());
         }
 
+        /// <summary>
+        /// Get raw issue worklogs
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<RawIssueWorklog>> GetRawIssueWorklogsAsync(
             GetRawIssueWorklogs.Query query, 
             CancellationToken cancellationToken = default)
@@ -73,56 +84,16 @@ namespace Pet.Jira.Infrastructure.Jira
             var result = new List<RawIssueWorklog> { };
             foreach (var issue in issues)
             {
-                var items = issueChangeLogItems.Where(record => record.ChangeLog.Issue.Key == issue.Key)
-                    .OrderBy(record => record.ChangeLog.CreatedDate)
-                    .ToList();
-                var rawIssueWorklogs = ConvertTo(items).Where(record => record.IsBetween(query.StartDate, query.EndDate));
+                var rawIssueWorklogs = issueChangeLogItems
+                    .Where(item => item.ChangeLog.Issue.Key == issue.Key)
+                    .OrderBy(item => item.ChangeLog.CreatedDate)
+                    .ToList()
+                    .ConvertTo<RawIssueWorklog>()
+                    .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
                 result.AddRange(rawIssueWorklogs);
             }
 
             return result;
-        }
-
-        private IEnumerable<RawIssueWorklog> ConvertTo(
-            IList<IssueChangeLogItemDto> issueChangeLogItems)
-        {
-            var i = 0;
-            while (i < issueChangeLogItems.Count())
-            {
-                var item = issueChangeLogItems[i];
-                // 1. Первый элемент сразу выходит из прогресса. Значит это завершающий
-                if (item.FromInProgress)
-                {
-                    yield return new RawIssueWorklog()
-                    {
-                        CompletedAt = item.ChangeLog.CreatedDate,
-                        StartedAt = DateTime.MinValue,
-                        Issue = item.ChangeLog.Issue.Adapt()
-                    };
-                }
-                // 2. Это последний элемент и он не завершается
-                else if (i == (issueChangeLogItems.Count() - 1))
-                {
-                    yield return new RawIssueWorklog()
-                    {
-                        CompletedAt = DateTime.MaxValue,
-                        StartedAt = item.ChangeLog.CreatedDate,
-                        Issue = item.ChangeLog.Issue.Adapt()
-                    };
-                }
-                // 3. Обычный случай когда после FromInProgress следует ToInProgress
-                else
-                {
-                    yield return new RawIssueWorklog()
-                    {
-                        CompletedAt = issueChangeLogItems[i + 1].ChangeLog.CreatedDate,
-                        StartedAt = item.ChangeLog.CreatedDate,
-                        Issue = item.ChangeLog.Issue.Adapt()
-                    };
-                }
-
-                i += 2;
-            }
         }
     }
 }
