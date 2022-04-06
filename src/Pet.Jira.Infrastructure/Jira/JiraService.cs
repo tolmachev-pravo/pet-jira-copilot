@@ -1,281 +1,217 @@
 ﻿using Atlassian.Jira;
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Extensions;
 using Pet.Jira.Application.Worklogs.Dto;
-using Pet.Jira.Domain.Models.Worklogs;
-using Pet.Jira.Infrastructure.Worklogs;
+using Pet.Jira.Domain.Models.Users;
+using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
     public class JiraService : IJiraService
     {
-        private readonly JiraLinkGenerator _linkGenerator;
-        private readonly WorklogFactory _worklogFactory;
+        private readonly IJiraLinkGenerator _linkGenerator;
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
         private readonly User _user;
 
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
-            JiraLinkGenerator linkGenerator,
-            WorklogFactory worklogFactory,
+            IJiraLinkGenerator linkGenerator,
             IIdentityService identityService)
         {
             _linkGenerator = linkGenerator;
-            _worklogFactory = worklogFactory;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
             _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user.Username, _user.Password);
         }
 
         /// <summary>
-        /// 
+        /// Get issues
         /// </summary>
-        /// <param name="period"></param>
-        /// <param name="count"></param>
+        /// <param name="issueSearchOptions"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        // ToDo: Добавить передачу фильтра для Issue (нужен генератор запросов) + фильтрация для Worklog
-        public async Task<IEnumerable<ActualWorklog>> GetActualWorklogsAsync(
-            string period,
-            int count)
+        public async Task<IEnumerable<IssueDto>> GetIssuesAsync(
+            IssueSearchOptions issueSearchOptions,
+            CancellationToken cancellationToken = default)
         {
-            var issues = await GetIssuesAsync(
-                jql: $"worklogDate >= '{period}' AND worklogAuthor = currentUser() ORDER BY updatedDate DESC",
-                count: count);
-
-            var actualWorklogs = new List<ActualWorklog> { };
-            foreach (var issue in issues)
-            {
-                var issueWorklogs = await _jiraClient.Issues.GetWorklogsAsync(issue.Key.Value);
-                var userIssueWorklogs = issueWorklogs.Where(record => record.Author == _user.Username).ToList();
-                actualWorklogs.AddRange(userIssueWorklogs.Select(worklog => new ActualWorklog
-                {
-
-                    StartedAt = worklog.StartDate.Value,
-                    ElapsedTime = TimeSpan.FromSeconds(worklog.TimeSpentInSeconds),
-                    Issue = new Domain.Models.Issues.Issue
-                    {
-                        Key = issue.Key.Value,
-                        Summary = issue.Summary,
-                        Link = _linkGenerator.Generate(issue.Key.Value)
-                    }
-                }));
-            }
-            return actualWorklogs;
+            var issues = await _jiraClient.Issues.GetIssuesFromJqlAsync(issueSearchOptions, cancellationToken);
+            return issues.Select(record => IssueDto.Create(record, _linkGenerator));
         }
 
         /// <summary>
-        /// 
+        /// Get issue change logs
         /// </summary>
-        /// <param name="period"></param>
-        /// <param name="count"></param>
+        /// <param name="issueSearchOptions"></param>
+        /// <param name="changeLogFilter"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<EstimatedWorklog>> GetEstimatedWorklogsAsync(
-            string period,
-            int count)
+        public async Task<IEnumerable<IssueChangeLogDto>> GetIssueChangeLogsAsync(
+            IssueSearchOptions issueSearchOptions,
+            Func<IssueChangeLog, bool> changeLogFilter = null,
+            CancellationToken cancellationToken = default)
         {
-            var issues = await GetIssuesAsync(
-                jql: $"assignee = currentUser() AND updatedDate >= '{period}' ORDER BY updatedDate DESC",
-                count: count);
-            var rawEstimatedWorklogs = new List<EstimatedWorklog> { };
-            var serverInfo = await _jiraClient.ServerInfo.GetServerInfoAsync();
-            foreach (var issue in issues)
-            {
-                var changeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key.Value);
-                changeLogs = changeLogs.Where(record => record.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName)).ToList();
-                DateTime startDate = DateTime.MinValue;
-                var inProgress = false;
-                foreach (var changeLog in changeLogs)
-                {
-                    if (changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName 
-                    && item.ToId == JiraConstants.Status.InProgress))
-                    {
-                        startDate = changeLog.CreatedDate;
-                        inProgress = true;
-                    }
-
-                    if (changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName
-                    && item.FromId == JiraConstants.Status.InProgress))
-                    {
-                        inProgress = false;
-                        var estimatedWorklog = _worklogFactory.Create<EstimatedWorklog>(
-                            startedAt: startDate,
-                            completedAt: changeLog.CreatedDate,
-                            issue: issue);
-                        rawEstimatedWorklogs.Add(estimatedWorklog);
-                    }
-                }
-
-                if (inProgress)
-                {
-                    var estimatedWorklog = _worklogFactory.Create<EstimatedWorklog>(
-                        startedAt: startDate,
-                        completedAt: serverInfo.ServerTime.Value.DateTime,
-                        issue: issue);
-                    rawEstimatedWorklogs.Add(estimatedWorklog);
-                }
-            }
-            return rawEstimatedWorklogs;
+            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken);
+            return await GetIssueChangeLogsAsync(issues, changeLogFilter, cancellationToken);
         }
 
-        public async Task<IEnumerable<DailyWorklogSummary>> GetUserDayWorklogs(
-            DateTime fromDate,
-            DateTime toDate,
-            int issueCount)
+        /// <summary>
+        /// Get issue change logs
+        /// </summary>
+        /// <param name="issues"></param>
+        /// <param name="changeLogFilter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<IssueChangeLogDto>> GetIssueChangeLogsAsync(
+            IEnumerable<IssueDto> issues,
+            Func<IssueChangeLog, bool> changeLogFilter = null,
+            CancellationToken cancellationToken = default)
         {
-            var startDateJiraFormat = fromDate.ToString("yyyy/MM/dd", CultureInfo.InvariantCulture);
-            var rawEstimatedWorklogs = await GetEstimatedWorklogsAsync(startDateJiraFormat, issueCount);
-            var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, fromDate, toDate);
-            var actualWorklogs = await GetActualWorklogsAsync(startDateJiraFormat, issueCount);
-
-            var result = new List<DailyWorklogSummary>();
-            var cycleDate = toDate.Date;
-            while (cycleDate >= fromDate.Date)
+            var result = new List<IssueChangeLogDto> { };
+            foreach (var issue in issues)
             {
-                result.Add(new DailyWorklogSummary
-                {
-                    Date = cycleDate,
-                    ActualWorklogs = actualWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList(),
-                    EstimatedWorklogs = estimatedWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList()
-                });
-                cycleDate = cycleDate.AddDays(-1);
+                var issueChangeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key, cancellationToken);
+                issueChangeLogs.WhereIfNotNull(changeLogFilter);
+
+                result.AddRange(issueChangeLogs.Select(issueChangeLog =>
+                    IssueChangeLogDto.Create(issueChangeLog, issue)));
             }
 
-            Calculate(result);
             return result;
         }
 
-        private void Calculate(IEnumerable<DailyWorklogSummary> worklogs)
+        /// <summary>
+        /// Get issue worklogs
+        /// </summary>
+        /// <param name="issueSearchOptions"></param>
+        /// <param name="worklogFilter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<IssueWorklogDto>> GetIssueWorklogsAsync(
+            IssueSearchOptions issueSearchOptions,
+            Func<Worklog, bool> worklogFilter = null,
+            CancellationToken cancellationToken = default)
         {
-            foreach (var worklog in worklogs)
-            {
-                var workTime = new TimeSpan(8, 0, 0).Ticks;
-                // Время зафиксированное за день
-                var dayTimeSpent = new TimeSpan(worklog.ActualWorklogs.Sum(record => record.ElapsedTime.Ticks));
-                // Привязка актуальных таймлогов к 
-                foreach (var estimatedWorklog in worklog.EstimatedWorklogs)
-                {
-                    estimatedWorklog.ActualWorklogs = worklog.ActualWorklogs
-                        .Where(record => record.Issue.Key == estimatedWorklog.Issue.Key
-                                         && record.StartedAt == estimatedWorklog.CompletedAt)
-                        .ToList();
-                }
-
-                // Автоматические
-                var autoActualWorklogs = worklog.EstimatedWorklogs.SelectMany(record => record.ActualWorklogs);
-                // Вручную внесенные таймлоги
-                var manualActualWorklogs = worklog.ActualWorklogs.Except(autoActualWorklogs);
-                // Вручную списанное время
-                var manualTimeSpent = manualActualWorklogs.Sum(record => record.ElapsedTime.Ticks);
-
-                // Время выполнения всех задач
-                var fullRawTimeSpent = worklog.EstimatedWorklogs.Sum(record => record.RawTimeSpent.Ticks);
-                // Предполагаемый остаток для автоматического списания времени
-                var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime - manualTimeSpent);
-                //if (fullRawTimeSpent + manualTimeSpent < workTime)
-                //{
-                //    var percent1 = Convert.ToDecimal(fullRawTimeSpent) / new TimeSpan(9, 0, 0).Ticks;
-                //    estimatedRestAutoTimeSpent =
-                //        fullRawTimeSpent - new TimeSpan(1, 0, 0).Ticks * percent1 - manualTimeSpent;
-                //}
-
-                // Заполняем предполагаемое время для каждой задачи в пропорциях
-                foreach (var estimatedWorklog in worklog.EstimatedWorklogs)
-                {
-                    if (estimatedWorklog.ActualTimeSpent.Ticks == 0)
-                    {
-                        var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
-                        var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
-                        estimatedWorklog.EstimatedTimeSpent = estimatedTimeSpent;
-                    }
-                    else
-                    {
-                        estimatedWorklog.EstimatedTimeSpent = estimatedWorklog.ActualTimeSpent;
-                    }
-                }
-            }
+            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken);
+            return await GetIssueWorklogsAsync(issues, worklogFilter, cancellationToken);
         }
 
         /// <summary>
-        /// 
+        /// Get issue worklogs
         /// </summary>
-        /// <param name="rawEstimatedWorklogs"></param>
-        /// <param name="StartDate"></param>
-        /// <param name="EndDate"></param>
-        private IEnumerable<EstimatedWorklog> PrepareEstimatedWorklogs(
-            IEnumerable<EstimatedWorklog> rawEstimatedWorklogs,
-            DateTime StartDate,
-            DateTime EndDate)
+        /// <param name="issues"></param>
+        /// <param name="worklogFilter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<IssueWorklogDto>> GetIssueWorklogsAsync(
+            IEnumerable<IssueDto> issues,
+            Func<Worklog, bool> worklogFilter = null,
+            CancellationToken cancellationToken = default)
         {
-            List<EstimatedWorklog> estimatedWorklogs = new List<EstimatedWorklog>();
-            var startDate = EndDate.Date;
-            while (startDate >= StartDate.Date)
+            var result = new List<IssueWorklogDto> { };
+            foreach (var issue in issues)
             {
-                var fromStartDate = startDate.AddHours(JiraConstants.Date.StartWorkingTime);
-                var toStartDate = startDate.AddHours(JiraConstants.Date.EndWorkingTime);
-                var dateWorklogs = rawEstimatedWorklogs
-                    .Where(item => item.CompletedAt > fromStartDate
-                                   && item.StartedAt < toStartDate)
-                    .ToList();
-                foreach (var dateWorklog in dateWorklogs)
+                var issueWorklogs = await _jiraClient.Issues.GetWorklogsAsync(issue.Key, cancellationToken);
+                issueWorklogs = issueWorklogs.WhereIfNotNull(worklogFilter);
+
+                result.AddRange(issueWorklogs.Select(issueWorklog => 
+                    IssueWorklogDto.Create(issueWorklog, issue)));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get issue change log items
+        /// </summary>
+        /// <param name="issues"></param>
+        /// <param name="changeLogFilter"></param>
+        /// <param name="changeLogItemFilter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<IssueChangeLogItemDto>> GetIssueChangeLogItemsAsync(
+            IEnumerable<IssueDto> issues,
+            Func<IssueChangeLog, bool> changeLogFilter = null,
+            Func<IssueChangeLogItem, bool> changeLogItemFilter = null,
+            CancellationToken cancellationToken = default)
+        {
+            var result = new List<IssueChangeLogItemDto> { };
+            foreach (var issue in issues)
+            {
+                var issueChangeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key, cancellationToken);
+                issueChangeLogs.WhereIfNotNull(changeLogFilter);
+
+                foreach (var issueChangeLog in issueChangeLogs)
                 {
-                    var estimatedStartDate = dateWorklog.StartedAt > fromStartDate
-                        ? dateWorklog.StartedAt
-                        : fromStartDate;
-                    var estimatedEndDate = dateWorklog.CompletedAt < toStartDate
-                        ? dateWorklog.CompletedAt
-                        : toStartDate;
-                    estimatedWorklogs.Add(new EstimatedWorklog
-                    {
-                        StartedAt = estimatedStartDate,
-                        CompletedAt = estimatedEndDate,
-                        Issue = dateWorklog.Issue
-                    });
+                    var issueChangeLogItems = issueChangeLog.Items;
+                    issueChangeLogItems = issueChangeLogItems.WhereIfNotNull(changeLogItemFilter);
+
+                    result.AddRange(issueChangeLogItems.Select(issueChangeLogItem =>
+                        new IssueChangeLogItemDto
+                        {
+                            FromId = issueChangeLogItem.FromId,
+                            ToId = issueChangeLogItem.ToId,
+                            ChangeLog = IssueChangeLogDto.Create(issueChangeLog, issue)
+                        }));
                 }
-                startDate = startDate.AddDays(-1);
             }
 
-            return estimatedWorklogs;
+            return result;
         }
 
-        private async Task<IPagedQueryResult<Atlassian.Jira.Issue>> GetIssuesAsync(string jql, int count) =>
-            await _jiraClient.Issues.GetIssuesFromJqlAsync(
-                new IssueSearchOptions(jql)
-                {
-                    MaxIssuesPerRequest = count,
-                    ValidateQuery = true
-                });
-
-        public async Task AddWorklogAsync(AddedWorklogDto worklogDto)
+        /// <summary>
+        /// Get current user
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<UserDto> GetCurrentUserAsync(
+            CancellationToken cancellationToken = default)
         {
-            try
+            var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
+            return new UserDto
             {
-                var minutesLag = worklogDto.ElapsedTime.Seconds >= 30 ? 1 : 0;
-                var worklog = new Worklog(
-                    $"{worklogDto.ElapsedTime.Hours}h {worklogDto.ElapsedTime.Minutes + minutesLag}m",
-                    worklogDto.StartedAt,
-                    "Dev");
-                await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog);
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
+                Username = myself.Username
+            };
         }
 
-        public async Task<LoginResponse> Login(LoginRequest request)
+        /// <summary>
+        /// Add worklog
+        /// </summary>
+        /// <param name="worklogDto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task AddWorklogAsync(
+            AddedWorklogDto worklogDto,
+            CancellationToken cancellationToken = default)
+        {
+            var minutesLag = worklogDto.ElapsedTime.Seconds >= 30 ? 1 : 0;
+            var worklog = new Worklog(
+                $"{worklogDto.ElapsedTime.Hours}h {worklogDto.ElapsedTime.Minutes + minutesLag}m",
+                worklogDto.StartedAt,
+                "Dev");
+            await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog, token: cancellationToken);
+        }
+
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<LoginResponse> LoginAsync(
+            LoginRequest request, 
+            CancellationToken cancellationToken = default)
         {
             try
             {
                 var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
-                await jiraClient.ServerInfo.GetServerInfoAsync();
+                await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
                 return new LoginResponse(true);
             }
             catch (Exception e)
@@ -284,7 +220,7 @@ namespace Pet.Jira.Infrastructure.Jira
             }
         }
 
-        public async Task<string> GetCurrentUserAvatar(CancellationToken cancellationToken = default)
+        public async Task<string> GetCurrentUserAvatarAsync(CancellationToken cancellationToken = default)
         {
             try
             {
