@@ -15,7 +15,7 @@ namespace Pet.Jira.Infrastructure.Authentication
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            return await _jiraService.Login(request);
+            return await _jiraService.LoginAsync(request);
         }
     }
 }

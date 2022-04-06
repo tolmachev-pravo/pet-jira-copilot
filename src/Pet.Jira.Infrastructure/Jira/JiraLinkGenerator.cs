@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
-using System.IO;
+using Pet.Jira.Application.Extensions;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
-    public class JiraLinkGenerator
+    public class JiraLinkGenerator : IJiraLinkGenerator
     {
         private readonly IJiraConfiguration _config;
 
@@ -12,6 +12,6 @@ namespace Pet.Jira.Infrastructure.Jira
             _config = jiraConfiguration.Value;
         }
 
-        public string Generate(string issueKey) => Path.Combine(_config.Url, "browse", issueKey);
+        public string Generate(string issueKey) => _config.Url.AppendUrl("browse", issueKey);
     }
 }
