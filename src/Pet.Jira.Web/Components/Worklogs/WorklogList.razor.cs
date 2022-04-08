@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
-using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Worklogs
@@ -16,28 +16,12 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [Inject] private IMediator Mediator { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
-        //[Parameter] public IEnumerable<DailyWorklogSummary> Items { get; set; }
+        [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
 
-        protected async Task SearchAsync(GetDailyWorklogSummaries.Query filter)
+        public void Refresh(IList<DailyWorklogSummary> items)
         {
-            try
-            {
-                Model.State = ComponentModelState.IsProgress;
-                var worklogs = await Mediator.Send(filter);
-                Model.DayUserWorklogs = worklogs.Worklogs;
-                StateHasChanged();
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add(
-                    e.Message,
-                    Severity.Error,
-                    config => { config.ActionColor = Color.Error; });
-            }
-            finally
-            {
-                Model.State = ComponentModelState.Success;
-            }
+            Items = items;
+            StateHasChanged();
         }
 
         private async Task AddWorklogAsync(EstimatedWorklog entity)
@@ -50,10 +34,19 @@ namespace Pet.Jira.Web.Components.Worklogs
                     IssueKey = entity.Issue.Key,
                     ElapsedTime = entity.RestTime
                 }));
+                var day = Items.Where(record => record.Date == entity.CompletedAt.Date).First();
+                day.ActualWorklogs.Add(new ActualWorklog
+                {
+                    StartedAt = entity.CompletedAt,
+                    ElapsedTime = entity.RestTime,
+                    Issue = entity.Issue
+                });
+                entity.RestTime = TimeSpan.Zero;
                 Snackbar.Add(
                     $"Worklog {entity.Issue.Key} added successfully!",
-                    Severity.Normal,
-                    config => { config.ActionColor = Color.Info; });
+                    Severity.Success,
+                    config => { config.ActionColor = Color.Success; });
+                StateHasChanged();
             }
             catch (Exception e)
             {
@@ -68,22 +61,8 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             public static ComponentModel Create()
             {
-                return new ComponentModel
-                {
-                    State = ComponentModelState.Unknown
-                };
+                return new ComponentModel();
             }
-
-            public IEnumerable<DailyWorklogSummary> DayUserWorklogs { get; set; }
-            public ComponentModelState State { get; set; }
-            public bool InProgress => State == ComponentModelState.IsProgress;
-        }
-
-        private enum ComponentModelState
-        {
-            Unknown,
-            IsProgress,
-            Success
         }
     }
 }
