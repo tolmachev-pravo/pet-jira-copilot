@@ -19,8 +19,11 @@ else
         <tbody>
             @foreach (var item in Items)
             {
-                <tr>
-                    <td colspan="5">
+                <tr style="background-color: aliceblue">
+                    <td colspan="2">
+                        <MudProgressLinear Color="Color.Primary" Size="Size.Small" Value="@item.Progress"></MudProgressLinear>
+                    </td>
+                    <td colspan="3">
                         @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.CalculatedWorklogsSum (logged: @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss"))
                     </td>
                 </tr>
