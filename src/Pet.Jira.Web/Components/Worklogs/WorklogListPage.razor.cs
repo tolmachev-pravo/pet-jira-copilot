@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Domain.Models.Worklogs;
+using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private readonly ComponentModel Model = ComponentModel.Create();
 
         [Inject] private IMediator Mediator { get; set; }
-        [Inject] private ISnackbar Snackbar { get; set; }
+        [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         protected async Task SearchAsync(GetDailyWorklogSummaries.Query filter)
         {
@@ -26,10 +26,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
             catch (Exception e)
             {
-                Snackbar.Add(
-                    e.Message,
-                    Severity.Error,
-                    config => { config.ActionColor = Color.Error; });
+                ErrorHandler.ProcessError(e);
             }
             finally
             {

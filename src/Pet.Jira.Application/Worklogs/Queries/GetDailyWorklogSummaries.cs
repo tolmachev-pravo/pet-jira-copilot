@@ -3,6 +3,7 @@ using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,46 +43,53 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
             public async Task<IList<DailyWorklogSummary>> GetUserDayWorklogs(Query query)
             {
-                var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(new GetRawIssueWorklogs.Query()
+                try
                 {
-                    StartDate = query.StartDate,
-                    EndDate = query.EndDate
-                });
-                var rawEstimatedWorklogs = rawIssueWorklogs.Select(item => new EstimatedWorklog
-                {
-                    CompletedAt = item.CompletedAt,
-                    StartedAt = item.StartedAt,
-                    Issue = item.Issue,
-                });
-                var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, query);
-                var issueWorklogs = await _worklogDataSource.GetIssueWorklogsAsync(new GetIssueWorklogs.Query()
-                {
-                    StartDate = query.StartDate,
-                    EndDate = query.EndDate
-                });
-                var actualWorklogs = issueWorklogs.Select(issueWorklog => new ActualWorklog
-                {
-                    CompletedAt = issueWorklog.CompletedAt,
-                    StartedAt = issueWorklog.StartedAt,
-                    Issue = issueWorklog.Issue,
-                    ElapsedTime = issueWorklog.ElapsedTime
-                });
-
-                var result = new List<DailyWorklogSummary>();
-                var cycleDate = query.EndDate.Date;
-                while (cycleDate >= query.StartDate.Date)
-                {
-                    result.Add(new DailyWorklogSummary
+                    var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(new GetRawIssueWorklogs.Query()
                     {
-                        Date = cycleDate,
-                        ActualWorklogs = actualWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList(),
-                        EstimatedWorklogs = estimatedWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList()
+                        StartDate = query.StartDate,
+                        EndDate = query.EndDate
                     });
-                    cycleDate = cycleDate.AddDays(-1);
-                }
+                    var rawEstimatedWorklogs = rawIssueWorklogs.Select(item => new EstimatedWorklog
+                    {
+                        CompletedAt = item.CompletedAt,
+                        StartedAt = item.StartedAt,
+                        Issue = item.Issue,
+                    });
+                    var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, query);
+                    var issueWorklogs = await _worklogDataSource.GetIssueWorklogsAsync(new GetIssueWorklogs.Query()
+                    {
+                        StartDate = query.StartDate,
+                        EndDate = query.EndDate
+                    });
+                    var actualWorklogs = issueWorklogs.Select(issueWorklog => new ActualWorklog
+                    {
+                        CompletedAt = issueWorklog.CompletedAt,
+                        StartedAt = issueWorklog.StartedAt,
+                        Issue = issueWorklog.Issue,
+                        ElapsedTime = issueWorklog.ElapsedTime
+                    });
 
-                Calculate(result, query);
-                return result;
+                    var result = new List<DailyWorklogSummary>();
+                    var cycleDate = query.EndDate.Date;
+                    while (cycleDate >= query.StartDate.Date)
+                    {
+                        result.Add(new DailyWorklogSummary
+                        {
+                            Date = cycleDate,
+                            ActualWorklogs = actualWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList(),
+                            EstimatedWorklogs = estimatedWorklogs.Where(record => record.StartedAt.Date == cycleDate).ToList()
+                        });
+                        cycleDate = cycleDate.AddDays(-1);
+                    }
+
+                    Calculate(result, query);
+                    return result;
+                }
+                catch (AuthenticationException e)
+                {
+                    throw new Exception($"Authentication exception") { Source = e.Source };
+                }
             }
 
             private void Calculate(IEnumerable<DailyWorklogSummary> worklogs, Query query)
