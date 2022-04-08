@@ -1,47 +1,47 @@
 ﻿using System;
 using System.Security.Authentication;
 using MediatR;
-using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Application.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Worklogs.Commands
 {
-    public class AddWorklog
+    public class Login
     {
         public class Command : IRequest<Model>
         {
-            public Command(AddedWorklogDto worklog)
+            public Command(LoginRequest request)
             {
-                _worklog = worklog;
+                _request = request;
             }
 
-            private readonly AddedWorklogDto _worklog;
-            public AddedWorklogDto Worklog => _worklog;
+            private readonly LoginRequest _request;
+            public LoginRequest Request => _request;
         }
 
         public class Model
         {
-            public AddedWorklogDto Worklog { get; set; }
+            public LoginResponse Response { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Model>
         {
-            private readonly IWorklogRepository _worklogRepository;
+            private readonly IAuthenticationService _authenticationService;
 
-            public Handler(IWorklogRepository worklogRepository)
+            public Handler(IAuthenticationService authenticationService)
             {
-                _worklogRepository = worklogRepository;
+                _authenticationService = authenticationService;
             }
 
             public async Task<Model> Handle(
-                Command request,
+                Command command,
                 CancellationToken cancellationToken)
             {
                 try
                 {
-                    await _worklogRepository.AddAsync(request.Worklog);
-                    return new Model { Worklog = request.Worklog };
+                    await _authenticationService.LoginAsync(command.Request);
+                    return new Model { Response = new LoginResponse(true) };
                 }
                 catch (AuthenticationException e)
                 {
