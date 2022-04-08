@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Queries;
@@ -8,8 +7,8 @@ using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Pet.Jira.Web.Pages
 {
@@ -23,7 +22,7 @@ namespace Pet.Jira.Web.Pages
         [Inject]
         public ISnackbar _snackbar { get; set; }
         [Inject]
-        AuthenticationStateProvider _authenticationStateProvider { get; set; }
+        Blazored.LocalStorage.ILocalStorageService _localStorage { get; set; }
 
         private async Task AddWorklog(EstimatedWorklog entity)
         {
@@ -66,6 +65,7 @@ namespace Pet.Jira.Web.Pages
         public class IssueQuery
         {
             [Required]
+            [JsonIgnore]
             public DateRange DateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-7).Date, DateTime.Now.Date);
 
             [Required]
@@ -77,18 +77,27 @@ namespace Pet.Jira.Web.Pages
             [Required]
             [Range(1, 300)]
             public int? Count { get; set; } = 20;
+
+            [Required]
+            public TimeSpan? DailyWorkingStartTime { get; set; } = TimeSpan.FromHours(10);
+
+            [Required]
+            public TimeSpan? DailyWorkingEndTime { get; set; } = TimeSpan.FromHours(19);
         }
 
         private async Task Search()
         {
             try
             {
+                await _localStorage.SetItemAsync("WorklogFilter", issueQuery);
                 pageModel.State = ListState.IsProgress;
                 var worklogs = await _mediator.Send(new GetDailyWorklogSummaries.Query()
                 {
                     StartDate = issueQuery.StartDate.Value,
-                    EndDate = issueQuery.EndDate.Value,
-                    Count = issueQuery.Count.Value
+                    EndDate = issueQuery.EndDate.Value.AddDays(1).AddMinutes(-1),
+                    Count = issueQuery.Count.Value,
+                    DailyWorkingStartTime = issueQuery.DailyWorkingStartTime.Value,
+                    DailyWorkingEndTime = issueQuery.DailyWorkingEndTime.Value
                 });
                 pageModel.DayUserWorklogs = worklogs.Worklogs;
                 pageModel.State = ListState.Success;
@@ -100,6 +109,37 @@ namespace Pet.Jira.Web.Pages
                     e.Message,
                     Severity.Error,
                     config => { config.ActionColor = Color.Error; });
+            }
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                var isUpdated = false;
+
+                var filter = await _localStorage.GetItemAsync<IssueQuery>("WorklogFilter");
+                if (filter != null)
+                {
+                    var dailyWorkingStartTime = filter.DailyWorkingStartTime;
+                    if (dailyWorkingStartTime != null && issueQuery.DailyWorkingStartTime != dailyWorkingStartTime)
+                    {
+                        issueQuery.DailyWorkingStartTime = dailyWorkingStartTime;
+                        isUpdated = true;
+                    }
+
+                    var dailyWorkingEndTime = filter.DailyWorkingEndTime;
+                    if (dailyWorkingEndTime != null && issueQuery.DailyWorkingEndTime != dailyWorkingEndTime)
+                    {
+                        issueQuery.DailyWorkingEndTime = dailyWorkingEndTime;
+                        isUpdated = true;
+                    }
+
+                    if (isUpdated)
+                    {
+                        StateHasChanged();
+                    }
+                }
             }
         }
     }
