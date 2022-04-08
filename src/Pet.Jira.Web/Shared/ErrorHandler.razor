@@ -1,0 +1,21 @@
+﻿<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Inject]
+    public ISnackbar Snackbar { get; set; }
+
+    public void ProcessError(Exception ex)
+    {
+        var message = $"<b>{ex.Source}</b><br>{ex.Message}";
+        Snackbar.Add(
+            message,
+            Severity.Error,
+            config => { config.ActionColor = Color.Error; });
+    }
+}
