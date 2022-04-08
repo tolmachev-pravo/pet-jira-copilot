@@ -16,7 +16,6 @@ namespace Pet.Jira.Application.Worklogs.Queries
             public DateTime EndDate { get; set; }
             public TimeSpan DailyWorkingStartTime { get; set; }
             public TimeSpan DailyWorkingEndTime { get; set; }
-            public int Count { get; set; }
         }
 
         public class Model
