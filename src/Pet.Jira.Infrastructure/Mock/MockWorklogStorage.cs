@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Pet.Jira.Domain.Models.Issues;
+﻿using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
+using System;
+using System.Collections.Generic;
 
 namespace Pet.Jira.Infrastructure.Mock
 {
@@ -50,6 +49,12 @@ namespace Pet.Jira.Infrastructure.Mock
                 StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
                 ElapsedTime = TimeSpan.FromHours(5),
                 Issue = Issues[1]
+            },
+            new IssueWorklog
+            {
+                StartedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                ElapsedTime = TimeSpan.FromHours(8),
+                Issue = Issues[4]
             }
         };
 
@@ -89,6 +94,13 @@ namespace Pet.Jira.Infrastructure.Mock
                 CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(20),
                 ElapsedTime = TimeSpan.FromHours(4),
                 Issue = Issues[3]
+            },
+            new RawIssueWorklog
+            {
+                StartedAt = DateTime.Now.Date.AddDays(-5).AddHours(19),
+                CompletedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                ElapsedTime = TimeSpan.FromHours(72),
+                Issue = Issues[4]
             }
         };
     }
