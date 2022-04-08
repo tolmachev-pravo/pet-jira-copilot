@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using MediatR;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Web.Authentication;
@@ -11,7 +12,7 @@ namespace Pet.Jira.Web.Components.Authentication
     public partial class Login : ComponentBase
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
-        [Inject] private IAuthenticationService AuthenticationService { get; set; }
+        [Inject] private IMediator Mediator { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private readonly ComponentModel Model = ComponentModel.Create();
@@ -32,8 +33,7 @@ namespace Pet.Jira.Web.Components.Authentication
             try
             {
                 Model.State = ComponentModelState.InProgress;
-                await AuthenticationService.LoginAsync(Model.LoginRequest);
-
+                await Mediator.Send(new Application.Worklogs.Commands.Login.Command(Model.LoginRequest));
                 Guid authenticationKey = Guid.NewGuid();
                 AuthenticationMiddleware.Logins[authenticationKey] = Model.LoginRequest;
                 NavigationManager.NavigateTo($"/login?key={authenticationKey}", true);
