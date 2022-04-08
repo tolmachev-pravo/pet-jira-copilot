@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using MudBlazor;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Web.Authentication;
+using Pet.Jira.Web.Shared;
 using System;
 using System.Threading.Tasks;
 
@@ -12,7 +12,7 @@ namespace Pet.Jira.Web.Components.Authentication
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IAuthenticationService AuthenticationService { get; set; }
-        [Inject] public ISnackbar Snackbar { get; set; }
+        [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private readonly ComponentModel Model = ComponentModel.Create();
 
@@ -29,24 +29,23 @@ namespace Pet.Jira.Web.Components.Authentication
 
         private async Task LoginUser()
         {
-            Model.State = ComponentModelState.InProgress;
-
-            var loginResponse = await AuthenticationService.LoginAsync(Model.LoginRequest);
-            if (loginResponse.IsSuccess)
+            try
             {
+                Model.State = ComponentModelState.InProgress;
+                await AuthenticationService.LoginAsync(Model.LoginRequest);
+
                 Guid authenticationKey = Guid.NewGuid();
                 AuthenticationMiddleware.Logins[authenticationKey] = Model.LoginRequest;
                 NavigationManager.NavigateTo($"/login?key={authenticationKey}", true);
             }
-            else
+            catch (Exception e)
             {
-                Snackbar.Add(
-                    "Authentication error",
-                    Severity.Error,
-                    config => { config.ActionColor = Color.Error; });
+                ErrorHandler.ProcessError(e);
             }
-
-            Model.State = ComponentModelState.Success;
+            finally
+            {
+                Model.State = ComponentModelState.Success;
+            }
         }
 
         private class ComponentModel
