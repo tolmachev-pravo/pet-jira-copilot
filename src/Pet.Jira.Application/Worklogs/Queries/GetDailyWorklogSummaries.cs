@@ -20,7 +20,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
         public class Model
         {
-            public IEnumerable<DailyWorklogSummary> Worklogs { get; set; }
+            public IList<DailyWorklogSummary> Worklogs { get; set; }
         }
 
         public class QueryHandler : IRequestHandler<Query, Model>
@@ -40,7 +40,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 return new Model { Worklogs = worklogs };
             }
 
-            public async Task<IEnumerable<DailyWorklogSummary>> GetUserDayWorklogs(Query query)
+            public async Task<IList<DailyWorklogSummary>> GetUserDayWorklogs(Query query)
             {
                 var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(new GetRawIssueWorklogs.Query()
                 {
