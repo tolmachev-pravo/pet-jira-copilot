@@ -8,7 +8,7 @@ namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockWorklogRepository : IWorklogRepository
     {
-        public async Task AddAsync(AddedWorklogDto worklog)
+        public Task AddAsync(AddedWorklogDto worklog)
         {
             MockWorklogStorage.IssueWorklogs.Add(new IssueWorklog
             {
@@ -17,6 +17,7 @@ namespace Pet.Jira.Infrastructure.Mock
                 ElapsedTime = worklog.ElapsedTime,
                 CompletedAt = worklog.StartedAt.Add(worklog.ElapsedTime)
             });
+            return Task.CompletedTask;
         }
     }
 }

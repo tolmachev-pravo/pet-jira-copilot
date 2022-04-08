@@ -5,9 +5,9 @@ namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockAuthenticationService : IAuthenticationService
     {
-        public async Task<LoginResponse> LoginAsync(LoginRequest request)
+        public Task<LoginResponse> LoginAsync(LoginRequest request)
         {
-            return new LoginResponse(true);
+            return Task.FromResult(new LoginResponse(true));
         }
     }
 }

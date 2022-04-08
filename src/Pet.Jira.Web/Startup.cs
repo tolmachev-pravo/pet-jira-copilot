@@ -48,8 +48,11 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             services.AddTransient<IIdentityService, IdentityService>();
+
+            // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
+            //services.AddMockInfrastructureLayer();
 
             // Authentication
             services.AddHttpContextAccessor();
