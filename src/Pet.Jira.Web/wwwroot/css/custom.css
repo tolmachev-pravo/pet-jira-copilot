@@ -10,3 +10,8 @@
 .pet-white {
     color: white !important
 }
+
+.pet-xs-9-10 {
+    flex-basis: 83% !important;
+    max-width: 83% !important
+}

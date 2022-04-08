@@ -1,23 +1,17 @@
-﻿@page "/issues"
+﻿@page "/worklogs2"
+@using Pet.Jira.Application.Extensions
+
+<MudOverlay Visible="@Model.InProgress" DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+</MudOverlay>
 
 <MudGrid Spacing="1" Justify="Justify.FlexStart">
     <MudItem xs="2">
-        <MudDateRangePicker Label="Issue date range" @bind-DateRange="issueQuery.DateRange" />
-        <MudTimePicker Label="Daily working start time" @bind-Time="issueQuery.DailyWorkingStartTime" />
-        <MudTimePicker Label="Daily working end time" @bind-Time="issueQuery.DailyWorkingEndTime" />
-        <MudTextField Label="Issue count" @bind-Value="issueQuery.Count" For="@(() => issueQuery.Count)" InputType="InputType.Number" />
-        <MudButton OnClick="Search" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Class="mt-2">Search</MudButton>
+        <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
     </MudItem>
     <MudDivider Vertical="true" FlexItem="true" />
-    <MudItem xs="9" Style="flex-basis: 83% !important; max-width: 83% !important">
-        @if (pageModel.InProgress)
-        {
-            <MudOverlay Visible="@pageModel.InProgress" DarkBackground="true" Absolute="true">
-                <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
-            </MudOverlay>
-        }
-
-        @if (pageModel.DayUserWorklogs == null || !pageModel.DayUserWorklogs.Any())
+    <MudItem xs="9" Class="pet-xs-9-10">
+        @if (Model.DayUserWorklogs.IsEmpty())
         {
             <img src="images/data_not_found.png" class="pet-center" />
         }
@@ -34,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in pageModel.DayUserWorklogs)
+                    @foreach (var item in Model.DayUserWorklogs)
                     {
                         <tr>
                             <td colspan="5">
@@ -49,7 +43,7 @@
                                 <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                                 <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                                 <td>
-                                    <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklog(entity))" Disabled="@entity.Disabled"></MudFab>
+                                    <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.Disabled"></MudFab>
                                 </td>
                             </tr>
                         }
@@ -70,6 +64,4 @@
     </MudItem>
 </MudGrid>
 
-@functions {
-
-}
+@code {}

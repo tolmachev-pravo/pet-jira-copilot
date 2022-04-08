@@ -16,5 +16,10 @@ namespace Pet.Jira.Application.Extensions
 
             return enumerable;
         }
+
+        public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
+        {
+            return enumerable == null || !enumerable.Any();
+        }
     }
 }
