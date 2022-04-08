@@ -1,0 +1,6 @@
+﻿<MudDateRangePicker Label="Date range" @bind-DateRange="Model.Filter.DateRange" />
+<MudTimePicker Label="Daily working start time" @bind-Time="Model.Filter.DailyWorkingStartTime"/>
+<MudTimePicker Label="Daily working end time" @bind-Time="Model.Filter.DailyWorkingEndTime"/>
+<MudButton OnClick="Search" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Class="mt-2">Search</MudButton>
+
+@code {}
