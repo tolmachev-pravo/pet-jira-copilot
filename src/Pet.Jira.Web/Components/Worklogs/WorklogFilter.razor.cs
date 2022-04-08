@@ -63,13 +63,10 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             public static ComponentModel Create()
             {
-                return new ComponentModel
-                {
-                    Filter = new FilterModel()
-                };
+                return new ComponentModel();
             }
 
-            public FilterModel Filter { get; set; }
+            public FilterModel Filter { get; set; } = new FilterModel();
         }
 
         public class FilterModel
