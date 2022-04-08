@@ -10,17 +10,11 @@ namespace Pet.Jira.Web.Components.Authentication
 {
     public partial class Login : ComponentBase
     {
-        [Inject] 
-        private NavigationManager _navigationManager { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] private IAuthenticationService AuthenticationService { get; set; }
+        [Inject] public ISnackbar Snackbar { get; set; }
 
-        [Inject] 
-        private IAuthenticationService _authenticationService { get; set; }
-
-        [Inject]
-        public ISnackbar _snackbar { get; set; }
-
-        public LoginRequest LoginRequest = new LoginRequest();
-        private ComponentModel _componentModel = new ComponentModel();
+        private readonly ComponentModel Model = ComponentModel.Create();
 
         public async Task OnKeyUp(KeyboardEventArgs keyboardEventArgs)
         {
@@ -35,37 +29,36 @@ namespace Pet.Jira.Web.Components.Authentication
 
         private async Task LoginUser()
         {
-            _componentModel.State = ComponentState.InProgress;
+            Model.State = ComponentModelState.InProgress;
 
-            var loginResponse = await _authenticationService.LoginAsync(LoginRequest);
+            var loginResponse = await AuthenticationService.LoginAsync(Model.LoginRequest);
             if (loginResponse.IsSuccess)
             {
                 Guid authenticationKey = Guid.NewGuid();
-                AuthenticationMiddleware.Logins[authenticationKey] = LoginRequest;
-                _navigationManager.NavigateTo($"/login?key={authenticationKey}", true);
+                AuthenticationMiddleware.Logins[authenticationKey] = Model.LoginRequest;
+                NavigationManager.NavigateTo($"/login?key={authenticationKey}", true);
             }
             else
             {
-                _snackbar.Add(
+                Snackbar.Add(
                     "Authentication error",
                     Severity.Error,
                     config => { config.ActionColor = Color.Error; });
             }
 
-            _componentModel.State = ComponentState.Success;
+            Model.State = ComponentModelState.Success;
         }
 
         private class ComponentModel
         {
-            public ComponentState State { get; set; }
-            public bool InProgress => State == ComponentState.InProgress;
-        }
+            public static ComponentModel Create()
+            {
+                return new ComponentModel();
+            }
 
-        private enum ComponentState
-        {
-            Unknown,
-            InProgress,
-            Success
+            public ComponentModelState State { get; set; } = ComponentModelState.Unknown;
+            public bool InProgress => State == ComponentModelState.InProgress;
+            public LoginRequest LoginRequest { get; set; } = new LoginRequest();
         }
     }
 }

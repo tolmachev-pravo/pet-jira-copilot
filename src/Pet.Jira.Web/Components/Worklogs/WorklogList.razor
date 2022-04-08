@@ -1,0 +1,54 @@
+﻿@using Pet.Jira.Application.Extensions
+
+@if (Items.IsEmpty())
+{
+    <img src="images/data_not_found.png" class="pet-center" />
+}
+else
+{
+    <MudSimpleTable Dense=true Hover=true>
+        <thead>
+            <tr>
+                <th style="min-width: 40px">From</th>
+                <th style="min-width: 40px">To</th>
+                <th>Issue</th>
+                <th>Diff</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Items)
+            {
+                <tr>
+                    <td colspan="5">
+                        @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.CalculatedWorklogsSum (logged: @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss"))
+                    </td>
+                </tr>
+                @foreach (var entity in item.EstimatedWorklogs)
+                {
+                    <tr>
+                        <td>@entity.StartedAt.ToString("HH:mm")</td>
+                        <td>@entity.CompletedAt.ToString("HH:mm")</td>
+                        <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
+                        <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
+                        <td>
+                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.Disabled"></MudFab>
+                        </td>
+                    </tr>
+                }
+                @foreach (var entity in item.ActualWorklogs)
+                {
+                    <tr>
+                        <td>@entity.StartedAt.ToString("HH:mm")</td>
+                        <td></td>
+                        <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
+                        <td>@entity.ElapsedTime</td>
+                        <td><MudFab Color="Color.Tertiary" Icon="@Icons.Filled.Check" Size="Size.Small"></MudFab></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </MudSimpleTable>
+}
+
+@code {}

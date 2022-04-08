@@ -1,0 +1,17 @@
+﻿@page "/worklogs"
+
+<MudOverlay Visible="@Model.InProgress" DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+</MudOverlay>
+
+<MudGrid Spacing="1" Justify="Justify.FlexStart">
+    <MudItem xs="2">
+        <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
+    </MudItem>
+    <MudDivider Vertical="true" FlexItem="true" />
+    <MudItem xs="9" Class="pet-xs-9-10">
+        <WorklogList Items="@Model.ListItems"></WorklogList>
+    </MudItem>
+</MudGrid>
+
+@code {}

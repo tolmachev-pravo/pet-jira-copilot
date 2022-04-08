@@ -1,0 +1,68 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Components;
+using MudBlazor;
+using Pet.Jira.Application.Worklogs.Commands;
+using Pet.Jira.Domain.Models.Worklogs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Pet.Jira.Web.Components.Worklogs
+{
+    public partial class WorklogList : ComponentBase
+    {
+        private readonly ComponentModel Model = ComponentModel.Create();
+
+        [Inject] private IMediator Mediator { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
+        [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
+
+        public void Refresh(IList<DailyWorklogSummary> items)
+        {
+            Items = items;
+            StateHasChanged();
+        }
+
+        private async Task AddWorklogAsync(EstimatedWorklog entity)
+        {
+            try
+            {
+                await Mediator.Send(new AddWorklog.Command(new Application.Worklogs.Dto.AddedWorklogDto
+                {
+                    StartedAt = entity.CompletedAt,
+                    IssueKey = entity.Issue.Key,
+                    ElapsedTime = entity.RestTime
+                }));
+                var day = Items.Where(record => record.Date == entity.CompletedAt.Date).First();
+                day.ActualWorklogs.Add(new ActualWorklog
+                {
+                    StartedAt = entity.CompletedAt,
+                    ElapsedTime = entity.RestTime,
+                    Issue = entity.Issue
+                });
+                entity.RestTime = TimeSpan.Zero;
+                Snackbar.Add(
+                    $"Worklog {entity.Issue.Key} added successfully!",
+                    Severity.Success,
+                    config => { config.ActionColor = Color.Success; });
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add(
+                    e.Message,
+                    Severity.Error,
+                    config => { config.ActionColor = Color.Error; });
+            }
+        }
+
+        private class ComponentModel
+        {
+            public static ComponentModel Create()
+            {
+                return new ComponentModel();
+            }
+        }
+    }
+}
