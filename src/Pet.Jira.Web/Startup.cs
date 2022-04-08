@@ -1,9 +1,8 @@
-using System;
+using Blazored.LocalStorage;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +13,7 @@ using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
+using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
@@ -60,6 +60,9 @@ namespace Pet.Jira.Web
 
             // Hotkeys
             services.AddHotKeys();
+
+            // Local storage
+            services.AddBlazoredLocalStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
