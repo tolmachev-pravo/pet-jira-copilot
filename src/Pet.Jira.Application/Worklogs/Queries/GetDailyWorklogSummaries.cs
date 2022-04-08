@@ -14,6 +14,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
         {
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+            public TimeSpan DailyWorkingStartTime { get; set; }
+            public TimeSpan DailyWorkingEndTime { get; set; }
             public int Count { get; set; }
         }
 
@@ -35,19 +37,16 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 Query query,
                 CancellationToken cancellationToken)
             {
-                var worklogs = await GetUserDayWorklogs(query.StartDate, query.EndDate, query.Count);
+                var worklogs = await GetUserDayWorklogs(query);
                 return new Model { Worklogs = worklogs };
             }
 
-            public async Task<IEnumerable<DailyWorklogSummary>> GetUserDayWorklogs(
-     DateTime fromDate,
-     DateTime toDate,
-     int issueCount)
+            public async Task<IEnumerable<DailyWorklogSummary>> GetUserDayWorklogs(Query query)
             {
                 var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(new GetRawIssueWorklogs.Query()
                 {
-                    StartDate = fromDate,
-                    EndDate = toDate
+                    StartDate = query.StartDate,
+                    EndDate = query.EndDate
                 });
                 var rawEstimatedWorklogs = rawIssueWorklogs.Select(item => new EstimatedWorklog
                 {
@@ -55,11 +54,11 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     StartedAt = item.StartedAt,
                     Issue = item.Issue,
                 });
-                var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, fromDate, toDate);
+                var estimatedWorklogs = PrepareEstimatedWorklogs(rawEstimatedWorklogs, query);
                 var issueWorklogs = await _worklogDataSource.GetIssueWorklogsAsync(new GetIssueWorklogs.Query()
                 {
-                    StartDate = fromDate,
-                    EndDate = toDate
+                    StartDate = query.StartDate,
+                    EndDate = query.EndDate
                 });
                 var actualWorklogs = issueWorklogs.Select(issueWorklog => new ActualWorklog
                 {
@@ -70,8 +69,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 });
 
                 var result = new List<DailyWorklogSummary>();
-                var cycleDate = toDate.Date;
-                while (cycleDate >= fromDate.Date)
+                var cycleDate = query.EndDate.Date;
+                while (cycleDate >= query.StartDate.Date)
                 {
                     result.Add(new DailyWorklogSummary
                     {
@@ -82,15 +81,15 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     cycleDate = cycleDate.AddDays(-1);
                 }
 
-                Calculate(result);
+                Calculate(result, query);
                 return result;
             }
 
-            private void Calculate(IEnumerable<DailyWorklogSummary> worklogs)
+            private void Calculate(IEnumerable<DailyWorklogSummary> worklogs, Query query)
             {
                 foreach (var worklog in worklogs)
                 {
-                    var workTime = new TimeSpan(8, 0, 0).Ticks;
+                    var workTime = query.DailyWorkingEndTime - query.DailyWorkingStartTime - TimeSpan.FromHours(1);
                     // Время зафиксированное за день
                     var dayTimeSpent = new TimeSpan(worklog.ActualWorklogs.Sum(record => record.ElapsedTime.Ticks));
                     // Привязка актуальных таймлогов к 
@@ -112,7 +111,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     // Время выполнения всех задач
                     var fullRawTimeSpent = worklog.EstimatedWorklogs.Sum(record => record.RawTimeSpent.Ticks);
                     // Предполагаемый остаток для автоматического списания времени
-                    var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime - manualTimeSpent);
+                    var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime.Ticks - manualTimeSpent);
                     //if (fullRawTimeSpent + manualTimeSpent < workTime)
                     //{
                     //    var percent1 = Convert.ToDecimal(fullRawTimeSpent) / new TimeSpan(9, 0, 0).Ticks;
@@ -145,15 +144,16 @@ namespace Pet.Jira.Application.Worklogs.Queries
             /// <param name="EndDate"></param>
             private IEnumerable<EstimatedWorklog> PrepareEstimatedWorklogs(
                 IEnumerable<EstimatedWorklog> rawEstimatedWorklogs,
-                DateTime StartDate,
-                DateTime EndDate)
+                Query query)
             {
                 List<EstimatedWorklog> estimatedWorklogs = new List<EstimatedWorklog>();
-                var startDate = EndDate.Date;
-                while (startDate >= StartDate.Date)
+                var startDate = query.EndDate.Date;
+                while (startDate >= query.StartDate.Date)
                 {
-                    var fromStartDate = startDate.AddHours(10);
-                    var toStartDate = startDate.AddHours(19);
+                    //var fromStartDate = startDate.AddHours(10);
+                    //var toStartDate = startDate.AddHours(19);
+                    var fromStartDate = startDate.Add(query.DailyWorkingStartTime);
+                    var toStartDate = startDate.Add(query.DailyWorkingEndTime);
                     var dateWorklogs = rawEstimatedWorklogs
                         .Where(item => item.CompletedAt > fromStartDate
                                        && item.StartedAt < toStartDate)

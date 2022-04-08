@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Queries;
@@ -9,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Pet.Jira.Web.Pages
 {
@@ -22,8 +20,6 @@ namespace Pet.Jira.Web.Pages
         public IMediator _mediator { get; set; }
         [Inject]
         public ISnackbar _snackbar { get; set; }
-        [Inject]
-        AuthenticationStateProvider _authenticationStateProvider { get; set; }
 
         private async Task AddWorklog(EstimatedWorklog entity)
         {
@@ -77,6 +73,12 @@ namespace Pet.Jira.Web.Pages
             [Required]
             [Range(1, 300)]
             public int? Count { get; set; } = 20;
+
+            [Required]
+            public TimeSpan? DailyWorkingStartTime { get; set; } = TimeSpan.FromHours(10);
+
+            [Required]
+            public TimeSpan? DailyWorkingEndTime { get; set; } = TimeSpan.FromHours(19);
         }
 
         private async Task Search()
@@ -87,8 +89,10 @@ namespace Pet.Jira.Web.Pages
                 var worklogs = await _mediator.Send(new GetDailyWorklogSummaries.Query()
                 {
                     StartDate = issueQuery.StartDate.Value,
-                    EndDate = issueQuery.EndDate.Value,
-                    Count = issueQuery.Count.Value
+                    EndDate = issueQuery.EndDate.Value.AddDays(1).AddMinutes(-1),
+                    Count = issueQuery.Count.Value,
+                    DailyWorkingStartTime = issueQuery.DailyWorkingStartTime.Value,
+                    DailyWorkingEndTime = issueQuery.DailyWorkingEndTime.Value
                 });
                 pageModel.DayUserWorklogs = worklogs.Worklogs;
                 pageModel.State = ListState.Success;
