@@ -208,16 +208,9 @@ namespace Pet.Jira.Infrastructure.Jira
             LoginRequest request, 
             CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
-                await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
-                return new LoginResponse(true);
-            }
-            catch (Exception e)
-            {
-                return new LoginResponse(false, e.Message);
-            }
+            var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
+            await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
+            return new LoginResponse(true);
         }
 
         public async Task<string> GetCurrentUserAvatarAsync(CancellationToken cancellationToken = default)

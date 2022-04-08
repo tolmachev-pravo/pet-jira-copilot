@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pet.Jira.Web.Shared;
 
 namespace Pet.Jira.Web.Components.Worklogs
 {
@@ -17,6 +18,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private IMediator Mediator { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
         [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
+        [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         public void Refresh(IList<DailyWorklogSummary> items)
         {
@@ -50,10 +52,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
             catch (Exception e)
             {
-                Snackbar.Add(
-                    e.Message,
-                    Severity.Error,
-                    config => { config.ActionColor = Color.Error; });
+                ErrorHandler.ProcessError(e);
             }
         }
 
