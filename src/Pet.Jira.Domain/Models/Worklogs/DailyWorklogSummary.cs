@@ -12,6 +12,12 @@ namespace Pet.Jira.Domain.Models.Worklogs
 
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualWorklogs.Sum(item => item.ElapsedTime.Ticks));
         public TimeSpan EstimatedWorklogsSum => new TimeSpan(EstimatedWorklogs.Sum(item => item.ElapsedTime.Ticks));
-        public TimeSpan CalculatedWorklogsSum => ActualWorklogsSum + new TimeSpan(EstimatedWorklogs.Sum(item => item.RestTime.Ticks));
-    }
+
+        public TimeSpan CalculatedWorklogsSum =>
+            ActualWorklogsSum + new TimeSpan(EstimatedWorklogs.Sum(item => item.RestTime.Ticks));
+
+        public int Progress => CalculatedWorklogsSum > TimeSpan.Zero 
+            ? Convert.ToInt32(ActualWorklogsSum * 100 / CalculatedWorklogsSum)
+            : 0;
+    };
 }
