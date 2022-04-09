@@ -2,38 +2,67 @@
 using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Pet.Jira.Infrastructure.Mock
 {
     internal static class MockWorklogStorage
     {
+        private static class IssueGenerator
+        {
+            public static Issue Create()
+            {
+                var key = $"CASEM-{new Random().Next(1000, 10000)}";
+                var summary = TextGenerator.Create();
+                return new Issue
+                {
+                    Key = key,
+                    Summary = summary
+                };
+            }
+
+            public static string Text = "";
+        }
+
+        private static class TextGenerator
+        {
+            public static string Create()
+            {
+                Random random = new Random();
+                var builder = new StringBuilder();
+                var wordsCount = random.Next(5, 15);
+                char[] lowers = Enumerable.Range(0, 32).Select((x, i) => (char)('а' + i)).ToArray();
+                char[] uppers = Enumerable.Range(0, 32).Select((x, i) => (char)('А' + i)).ToArray();
+                for (int i = 0; i < wordsCount; i++)
+                {
+                    string word = string.Empty;
+                    var lettersCount = random.Next(5, 15);
+                    for (int j = 0; j < lettersCount; j++)
+                    {
+                        int letterPosition = random.Next(0, lowers.Length - 1);
+                        word += lowers[letterPosition];
+                    }
+
+                    builder.Append(word);
+                    builder.Append(" ");
+                }
+
+                return builder.ToString();
+            }
+
+            public static string Text = "";
+        }
         public static IList<Issue> Issues = new List<Issue>
         {
-            new Issue
-            {
-                Key = "Task-0",
-                Summary = Guid.NewGuid().ToString()
-            },
-            new Issue
-            {
-                Key = "Task-1",
-                Summary = Guid.NewGuid().ToString()
-            },
-            new Issue
-            {
-                Key = "Task-2",
-                Summary = Guid.NewGuid().ToString()
-            },
-            new Issue
-            {
-                Key = "Task-3",
-                Summary = Guid.NewGuid().ToString()
-            },
-            new Issue
-            {
-                Key = "Task-4",
-                Summary = Guid.NewGuid().ToString()
-            }
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create(),
+            IssueGenerator.Create()
         };
 
         public static IList<IssueWorklog> IssueWorklogs = new List<IssueWorklog>

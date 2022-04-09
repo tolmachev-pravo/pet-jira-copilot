@@ -19,8 +19,11 @@ else
         <tbody>
             @foreach (var item in Items)
             {
-                <tr>
-                    <td colspan="5">
+                <tr style="background-color: #e8ecef">
+                    <td colspan="1">
+                        <MudPaper Width="30px" Class="pet-center"><MudProgressLinear Color="Color.Primary" Size="Size.Small" Value="@item.Progress"></MudProgressLinear></MudPaper>
+                    </td>
+                    <td colspan="4">
                         @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.CalculatedWorklogsSum (logged: @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss"))
                     </td>
                 </tr>
@@ -32,7 +35,8 @@ else
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                         <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                         <td>
-                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.Disabled"></MudFab>
+                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.Disabled"
+                                    Style="padding: 4px !important"></MudFab>
                         </td>
                     </tr>
                 }
