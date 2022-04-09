@@ -15,3 +15,7 @@
     flex-basis: 83% !important;
     max-width: 83% !important
 }
+
+.mud-simple-table.mud-table-dense * tr td {
+    padding: 4px 14px 4px 14px !important;
+}
