@@ -14,6 +14,7 @@ using Pet.Jira.Infrastructure;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
 using System;
+using Pet.Jira.Infrastructure.Mock;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
@@ -47,8 +48,11 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             services.AddTransient<IIdentityService, IdentityService>();
-            services.AddInfrastructure(Configuration.GetSection("Jira"));
+
+            // Layers
+            services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
+            //services.AddMockInfrastructureLayer();
 
             // Authentication
             services.AddHttpContextAccessor();
