@@ -11,7 +11,7 @@ namespace Pet.Jira.Infrastructure
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration jiraConfigurationSection)
+        public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration jiraConfigurationSection)
         {
             services.AddTransient<IJiraService, JiraService>();
             services.AddTransient<IWorklogDataSource, JiraWorklogDataSource>();
