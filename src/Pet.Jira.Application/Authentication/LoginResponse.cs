@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Pet.Jira.Application.Authentication
+﻿namespace Pet.Jira.Application.Authentication
 {
     public class LoginResponse
     {

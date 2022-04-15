@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Pet.Jira.Application.Authentication;
-using Pet.Jira.Web.Authentication;
+using Pet.Jira.Application.Authentication.Dto;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Threading.Tasks;
+using Pet.Jira.Web.Components.Common;
 
 namespace Pet.Jira.Web.Components.Authentication
 {
@@ -13,6 +14,7 @@ namespace Pet.Jira.Web.Components.Authentication
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IMediator Mediator { get; set; }
+        [Inject] private ILoginStorage LoginStorage { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private readonly ComponentModel Model = ComponentModel.Create();
@@ -32,11 +34,11 @@ namespace Pet.Jira.Web.Components.Authentication
         {
             try
             {
-                Model.State = ComponentModelState.InProgress;
+                Model.StateTo(ComponentModelState.InProgress);
                 await Mediator.Send(new Application.Worklogs.Commands.Login.Command(Model.LoginRequest));
-                Guid authenticationKey = Guid.NewGuid();
-                AuthenticationMiddleware.Logins[authenticationKey] = Model.LoginRequest;
-                NavigationManager.NavigateTo($"/login?key={authenticationKey}", true);
+                var loginDto = LoginDto.Create(Model.LoginRequest);
+                LoginStorage.TryAdd(loginDto);
+                NavigationManager.NavigateTo($"/login?key={loginDto.Id}", true);
             }
             catch (Exception e)
             {
@@ -44,19 +46,17 @@ namespace Pet.Jira.Web.Components.Authentication
             }
             finally
             {
-                Model.State = ComponentModelState.Success;
+                Model.StateTo(ComponentModelState.Success);
             }
         }
 
-        private class ComponentModel
+        private class ComponentModel : BaseStateComponentModel
         {
             public static ComponentModel Create()
             {
                 return new ComponentModel();
             }
 
-            public ComponentModelState State { get; set; } = ComponentModelState.Unknown;
-            public bool InProgress => State == ComponentModelState.InProgress;
             public LoginRequest LoginRequest { get; set; } = new LoginRequest();
         }
     }
