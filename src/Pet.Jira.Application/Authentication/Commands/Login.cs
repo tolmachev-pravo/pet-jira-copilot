@@ -40,8 +40,8 @@ namespace Pet.Jira.Application.Worklogs.Commands
             {
                 try
                 {
-                    await _authenticationService.LoginAsync(command.Request);
-                    return new Model { Response = new LoginResponse(true) };
+                    var loginResult = await _authenticationService.LoginAsync(command.Request);
+                    return new Model { Response = loginResult };
                 }
                 catch (AuthenticationException e)
                 {
