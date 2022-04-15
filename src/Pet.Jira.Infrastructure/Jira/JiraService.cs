@@ -194,7 +194,7 @@ namespace Pet.Jira.Infrastructure.Jira
             var worklog = new Worklog(
                 $"{worklogDto.ElapsedTime.Hours}h {worklogDto.ElapsedTime.Minutes + minutesLag}m",
                 worklogDto.StartedAt,
-                "Dev");
+                worklogDto.Comment);
             await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog, token: cancellationToken);
         }
 
