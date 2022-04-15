@@ -6,6 +6,7 @@ using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,6 +20,9 @@ namespace Pet.Jira.Infrastructure.Jira
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
         private readonly User _user;
+
+        private static ParallelOptions DefaultParallelOptions =>
+            new() { MaxDegreeOfParallelism = (int)Math.Round(Environment.ProcessorCount * 0.8) };
 
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
@@ -114,15 +118,16 @@ namespace Pet.Jira.Infrastructure.Jira
             Func<Worklog, bool> worklogFilter = null,
             CancellationToken cancellationToken = default)
         {
-            var result = new List<IssueWorklogDto> { };
-            foreach (var issue in issues)
+            var result = new ConcurrentBag<IssueWorklogDto> { };
+            await Parallel.ForEachAsync(issues, DefaultParallelOptions, async (issue, cancellationToken) =>
             {
                 var issueWorklogs = await _jiraClient.Issues.GetWorklogsAsync(issue.Key, cancellationToken);
                 issueWorklogs = issueWorklogs.WhereIfNotNull(worklogFilter);
-
-                result.AddRange(issueWorklogs.Select(issueWorklog => 
-                    IssueWorklogDto.Create(issueWorklog, issue)));
-            }
+                foreach (var issueWorklog in issueWorklogs)
+                {
+                    result.Add(IssueWorklogDto.Create(issueWorklog, issue));
+                }
+            });
 
             return result;
         }
@@ -141,8 +146,8 @@ namespace Pet.Jira.Infrastructure.Jira
             Func<IssueChangeLogItem, bool> changeLogItemFilter = null,
             CancellationToken cancellationToken = default)
         {
-            var result = new List<IssueChangeLogItemDto> { };
-            foreach (var issue in issues)
+            var result = new ConcurrentBag<IssueChangeLogItemDto> { };
+            await Parallel.ForEachAsync(issues, DefaultParallelOptions, async (issue, cancellationToken) =>
             {
                 var issueChangeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key, cancellationToken);
                 issueChangeLogs.WhereIfNotNull(changeLogFilter);
@@ -151,16 +156,17 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     var issueChangeLogItems = issueChangeLog.Items;
                     issueChangeLogItems = issueChangeLogItems.WhereIfNotNull(changeLogItemFilter);
-
-                    result.AddRange(issueChangeLogItems.Select(issueChangeLogItem =>
-                        new IssueChangeLogItemDto
+                    foreach (var issueChangeLogItem in issueChangeLogItems)
+                    {
+                        result.Add(new IssueChangeLogItemDto
                         {
                             FromId = issueChangeLogItem.FromId,
                             ToId = issueChangeLogItem.ToId,
                             ChangeLog = IssueChangeLogDto.Create(issueChangeLog, issue)
-                        }));
+                        });
+                    }
                 }
-            }
+            });
 
             return result;
         }
@@ -205,7 +211,7 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<LoginResponse> LoginAsync(
-            LoginRequest request, 
+            LoginRequest request,
             CancellationToken cancellationToken = default)
         {
             var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
