@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Domain.Models.Worklogs;
+using Pet.Jira.Web.Components.Common;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             try
             {
-                Model.State = ComponentModelState.InProgress;
+                Model.StateTo(ComponentModelState.InProgress);
                 var filterResult = await Mediator.Send(filter);
                 Model.ListItems = filterResult.Worklogs;
             }
@@ -30,11 +31,11 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
             finally
             {
-                Model.State = ComponentModelState.Success;
+                Model.StateTo(ComponentModelState.Success);
             }
         }
 
-        private class ComponentModel
+        private class ComponentModel : BaseStateComponentModel
         {
             public static ComponentModel Create()
             {
@@ -42,8 +43,6 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
 
             public IList<DailyWorklogSummary> ListItems { get; set; }
-            public ComponentModelState State { get; set; } = ComponentModelState.Unknown;
-            public bool InProgress => State == ComponentModelState.InProgress;
         }
     }
 }
