@@ -20,6 +20,7 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
+            services.AddSingleton<ILoginStorage, LoginStorage>();
             return services;
         }
     }
