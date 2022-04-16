@@ -9,5 +9,16 @@ namespace Pet.Jira.Domain.Models.Worklogs
         public DateTime CompletedAt { get; set; }
         public TimeSpan ElapsedTime { get; set; }
         public IIssue Issue { get; set; }
+
+        public static ActualWorklog Create(IWorklog worklog)
+        {
+            return new ActualWorklog
+            {
+                CompletedAt = worklog.CompletedAt,
+                StartedAt = worklog.StartedAt,
+                Issue = worklog.Issue,
+                ElapsedTime = worklog.ElapsedTime
+            };
+        }
     }
 }

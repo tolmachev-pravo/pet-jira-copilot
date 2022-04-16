@@ -62,13 +62,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                         StartDate = query.StartDate,
                         EndDate = query.EndDate
                     });
-                    var actualWorklogs = issueWorklogs.Select(issueWorklog => new ActualWorklog
-                    {
-                        CompletedAt = issueWorklog.CompletedAt,
-                        StartedAt = issueWorklog.StartedAt,
-                        Issue = issueWorklog.Issue,
-                        ElapsedTime = issueWorklog.ElapsedTime
-                    });
+                    var actualWorklogs = issueWorklogs.Select(issueWorklog => ActualWorklog.Create(issueWorklog));
 
                     var result = new List<DailyWorklogSummary>();
                     var cycleDate = query.EndDate.Date;

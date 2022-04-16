@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Domain.Models.Worklogs;
+using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Pet.Jira.Web.Shared;
 
 namespace Pet.Jira.Web.Components.Worklogs
 {
@@ -30,19 +30,9 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             try
             {
-                await Mediator.Send(new AddWorklog.Command(new Application.Worklogs.Dto.AddedWorklogDto
-                {
-                    StartedAt = entity.CompletedAt,
-                    IssueKey = entity.Issue.Key,
-                    ElapsedTime = entity.RestTime
-                }));
+                await Mediator.Send(new AddWorklog.Command(Application.Worklogs.Dto.AddedWorklogDto.Create(entity)));
                 var day = Items.Where(record => record.Date == entity.CompletedAt.Date).First();
-                day.ActualWorklogs.Add(new ActualWorklog
-                {
-                    StartedAt = entity.CompletedAt,
-                    ElapsedTime = entity.RestTime,
-                    Issue = entity.Issue
-                });
+                day.ActualWorklogs.Add(ActualWorklog.Create(entity));
                 entity.RestTime = TimeSpan.Zero;
                 Snackbar.Add(
                     $"Worklog {entity.Issue.Key} added successfully!",
