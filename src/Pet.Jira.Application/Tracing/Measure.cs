@@ -51,5 +51,7 @@ namespace Pet.Jira.Application.Tracing
         public override string ToString() => String.Format(Format, Category, Sum, Max, Min, Count, Average);
 
         public static readonly string Headers = String.Format(Format, nameof(Category), nameof(Sum), nameof(Max), nameof(Min), nameof(Count), nameof(Average));
+
+        public static readonly string HeaderDelimeter = String.Format(Format, "-", "-", "-", "-", "-", "-");
     }
 }

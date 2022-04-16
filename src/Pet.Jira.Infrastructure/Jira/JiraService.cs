@@ -36,6 +36,38 @@ namespace Pet.Jira.Infrastructure.Jira
         }
 
         /// <summary>
+        /// Get issues with pagination
+        /// </summary>
+        /// <param name="issueSearchOptions"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<IssueDto>> GetPaginationIssuesAsync(
+            IssueSearchOptions issueSearchOptions,
+            CancellationToken cancellationToken = default)
+        {
+            int itemsPerPage = 10;
+            int startAt = 0;
+
+            var issues = new ConcurrentBag<IssueDto>();
+            while (true)
+            {
+                var result = await _jiraClient.Issues.GetIssuesFromJqlAsync(issueSearchOptions.Jql, itemsPerPage, startAt, cancellationToken);
+                if (!result.Any())
+                {
+                    break;
+                }
+
+                foreach (var issue in result)
+                {
+                    issues.Add(IssueDto.Create(issue, _linkGenerator));
+                }
+
+                startAt += itemsPerPage;
+            }
+            return issues;
+        }
+
+        /// <summary>
         /// Get issues
         /// </summary>
         /// <param name="issueSearchOptions"></param>
@@ -46,7 +78,7 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default)
         {
             var issues = await _jiraClient.Issues.GetIssuesFromJqlAsync(issueSearchOptions, cancellationToken);
-            return issues.Select(record => IssueDto.Create(record, _linkGenerator));
+            return issues.Select(issue => IssueDto.Create(issue, _linkGenerator));
         }
 
         /// <summary>
@@ -61,7 +93,7 @@ namespace Pet.Jira.Infrastructure.Jira
             Func<IssueChangeLog, bool> changeLogFilter = null,
             CancellationToken cancellationToken = default)
         {
-            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken);
+            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken: cancellationToken);
             return await GetIssueChangeLogsAsync(issues, changeLogFilter, cancellationToken);
         }
 
@@ -102,7 +134,7 @@ namespace Pet.Jira.Infrastructure.Jira
             Func<Worklog, bool> worklogFilter = null,
             CancellationToken cancellationToken = default)
         {
-            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken);
+            var issues = await GetIssuesAsync(issueSearchOptions, cancellationToken: cancellationToken);
             return await GetIssueWorklogsAsync(issues, worklogFilter, cancellationToken);
         }
 
