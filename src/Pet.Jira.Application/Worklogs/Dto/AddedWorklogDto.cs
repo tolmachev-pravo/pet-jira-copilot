@@ -1,4 +1,5 @@
 ﻿using System;
+using Pet.Jira.Domain.Models.Worklogs;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
@@ -8,5 +9,15 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public TimeSpan ElapsedTime { get; set; }
         public string IssueKey { get; set; }
         public string Comment { get; set; } = "Dev";
+
+        public static AddedWorklogDto Create(EstimatedWorklog worklog)
+        {
+            return new AddedWorklogDto
+            {
+                StartedAt = worklog.CompletedAt,
+                IssueKey = worklog.Issue.Key,
+                ElapsedTime = worklog.RestTime
+            };
+        }
     }
 }
