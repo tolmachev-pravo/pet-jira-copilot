@@ -17,7 +17,7 @@ namespace Pet.Jira.Web.Components.Debugging
             var stringBuilder = new StringBuilder();
             IEnumerable<Measure> measures = _performanceTracer.Measures;
             stringBuilder.AppendLine(Measure.Headers);
-
+            stringBuilder.AppendLine(Measure.HeaderDelimeter);
             foreach (var measure in measures)
             {
                 stringBuilder.AppendLine(measure.ToString());
