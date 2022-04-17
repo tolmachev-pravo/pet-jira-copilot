@@ -1,5 +1,33 @@
 ﻿@using Pet.Jira.Application.Extensions
 
+<style>
+    .pet-xs-9-10 {
+        flex-basis: 83% !important;
+        max-width: 83% !important;
+        padding-left: 22px !important;
+    }
+
+    .pet-time-tr {
+        min-width: 50px;
+    }
+
+    .pet-table-day-header-tr {
+        background-color: #f5f5f5ff
+    }
+
+    .pet-table-day-summary-td {
+        font-size: 12px !important;
+    }
+
+    .mud-simple-table.mud-table-dense * tr td {
+        padding: 4px 14px 4px 14px;
+    }
+
+    .mud-chip {
+        margin: 0px;
+    }
+</style>
+
 @if (Items.IsEmpty())
 {
     <img src="images/data_not_found.png" class="pet-center" />
@@ -9,41 +37,57 @@ else
     <MudSimpleTable Dense=true Hover=true>
         <thead>
             <tr>
-                <th style="min-width: 40px">From</th>
-                <th style="min-width: 40px">To</th>
+                <th class="pet-time-tr">Started</th>
+                <th class="pet-time-tr">Completed</th>
                 <th>Issue</th>
-                <th>Diff</th>
+                <th>Time Spent</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Items)
             {
-                <tr style="background-color: #e8ecef">
+                <tr class="pet-table-day-header-tr">
                     <td colspan="1">
-                        <MudPaper Width="30px" Class="pet-center"><MudProgressLinear Color="Color.Primary" Size="Size.Small" Value="@item.Progress"></MudProgressLinear></MudPaper>
+                        <MudPaper Class="pet-center">
+                            <MudProgressLinear Color="Color.Default" Size="Size.Small" Value="@item.Progress" />
+                        </MudPaper>
                     </td>
                     <td colspan="4">
-                        @item.Date.ToShortDateString() (@item.Date.DayOfWeek) - @item.CalculatedWorklogsSum (logged: @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss"))
+                        <b>@item.Date.ToShortDateString()</b> (@item.Date.DayOfWeek)
+                        @if (item.HasRawEstimatedWorklogs)
+                        {
+                            <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true">
+                                <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default" />
+                            </MudBadge>
+                        }
+                    </td>
+                </tr>
+                <tr align="right">
+                    <td colspan="5" align="right" class="pet-table-day-summary-td">
+                        <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
+                        <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
+                        <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
                     </td>
                 </tr>
                 @foreach (var entity in item.EstimatedWorklogs)
                 {
                     <tr>
-                        <td>@entity.StartedAt.ToString("HH:mm")</td>
-                        <td>@entity.CompletedAt.ToString("HH:mm")</td>
+                        <td>@entity.StartedAt.ToString(DefaultTimeFormat)</td>
+                        <td>@entity.CompletedAt.ToString(DefaultTimeFormat)</td>
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                         <td><MudTextField @bind-Value="@entity.RestTime" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                         <td>
                             <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.Disabled"
-                                    Style="padding: 4px !important"></MudFab>
+                                    Style="padding: 4px !important">
+                            </MudFab>
                         </td>
                     </tr>
                 }
                 @foreach (var entity in item.ActualWorklogs)
                 {
                     <tr>
-                        <td>@entity.StartedAt.ToString("HH:mm")</td>
+                        <td>@entity.StartedAt.ToString(DefaultTimeFormat)</td>
                         <td></td>
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                         <td>@entity.ElapsedTime</td>
