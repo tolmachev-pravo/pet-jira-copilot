@@ -20,5 +20,16 @@ namespace Pet.Jira.Domain.Models.Worklogs
                 ElapsedTime = worklog.ElapsedTime
             };
         }
+
+        public static ActualWorklog Create(EstimatedWorklog worklog)
+        {
+            return new ActualWorklog
+            {
+                CompletedAt = worklog.CompletedAt,
+                StartedAt = worklog.StartedAt,
+                Issue = worklog.Issue,
+                ElapsedTime = worklog.RestTime
+            };
+        }
     }
 }

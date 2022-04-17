@@ -19,5 +19,15 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 ElapsedTime = worklog.RestTime
             };
         }
+
+        public static AddedWorklogDto Create(ListWorklog worklog)
+        {
+            return new AddedWorklogDto
+            {
+                StartedAt = worklog.StartDate,
+                IssueKey = worklog.Issue.Key,
+                ElapsedTime = worklog.TimeSpent
+            };
+        }
     }
 }
