@@ -11,11 +11,6 @@
     color: white !important
 }
 
-.pet-xs-9-10 {
-    flex-basis: 83% !important;
-    max-width: 83% !important
-}
-
-.mud-simple-table.mud-table-dense * tr td {
-    padding: 4px 14px 4px 14px !important;
+:root {
+    --mud-drawer-width-left: 190px !important;
 }
