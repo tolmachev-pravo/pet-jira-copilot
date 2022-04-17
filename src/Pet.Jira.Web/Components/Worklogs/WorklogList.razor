@@ -26,6 +26,15 @@
     .mud-chip {
         margin: 0px;
     }
+
+    .pet-table-mud-badge-counter {
+        margin-left: 10px
+    }
+
+    .pet-table-summary-container {
+        display: inline-block !important;
+        width: auto !important;
+    }
 </style>
 
 @if (Items.IsEmpty())
@@ -54,20 +63,18 @@ else
                         </MudPaper>
                     </td>
                     <td colspan="4">
-                        <b>@item.Date.ToShortDateString()</b> (@item.Date.DayOfWeek)
-                        @if (item.HasRawEstimatedWorklogs)
-                        {
-                            <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true">
-                                <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default" />
-                            </MudBadge>
-                        }
-                    </td>
-                </tr>
-                <tr align="right">
-                    <td colspan="5" align="right" class="pet-table-day-summary-td">
+                        <b>@item.Date.ToShortDateString()</b>
+                        <MudContainer Class="pet-table-summary-container">
                         <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
                         <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
-                        <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
+                            <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
+                            @if (item.HasRawEstimatedWorklogs)
+                            {
+                                <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
+                                    <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default" />
+                                </MudBadge>
+                            }
+                        </MudContainer>
                     </td>
                 </tr>
                 @foreach (var entity in item.EstimatedWorklogs)
