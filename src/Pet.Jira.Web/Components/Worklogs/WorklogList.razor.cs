@@ -20,6 +20,8 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
+        private string DefaultTimeFormat = "HH:mm";
+
         public void Refresh(IList<DailyWorklogSummary> items)
         {
             Items = items;
