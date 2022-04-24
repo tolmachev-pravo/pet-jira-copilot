@@ -256,7 +256,7 @@ namespace Pet.Jira.Infrastructure.Jira
             try
             {
                 var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
-                var avatarUrl = myself.AvatarUrls.Small;
+                var avatarUrl = myself.AvatarUrls.Large;
                 var avatar = _jiraClient.RestClient.DownloadData(avatarUrl);
                 string img64 = Convert.ToBase64String(avatar);
                 string urlData = string.Format("data:image/jpg;base64, {0}", img64);
@@ -266,6 +266,13 @@ namespace Pet.Jira.Infrastructure.Jira
             {
                 return string.Empty;
             }
+        }
+
+        public async Task<IEnumerable<IssueStatusDto>> GetIssueStatusesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var issueStatuses = await _jiraClient.Statuses.GetStatusesAsync(cancellationToken);
+            return issueStatuses.Select(issueStatus => IssueStatusDto.Create(issueStatus));
         }
     }
 }

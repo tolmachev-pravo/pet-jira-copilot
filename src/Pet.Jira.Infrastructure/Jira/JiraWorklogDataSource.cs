@@ -76,8 +76,8 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var changeLogItemFilter = new Func<IssueChangeLogItem, bool>(changeLogItem =>
                 changeLogItem.FieldName == JiraConstants.Status.FieldName
-                && (changeLogItem.ToId == JiraConstants.Status.InProgress
-                    || changeLogItem.FromId == JiraConstants.Status.InProgress));
+                && (changeLogItem.ToId == query.IssueStatusId
+                    || changeLogItem.FromId == query.IssueStatusId));
 
             var issueChangeLogItems = await _jiraService.GetIssueChangeLogItemsAsync(issues, changeLogFilter, changeLogItemFilter, cancellationToken);
 
@@ -88,7 +88,7 @@ namespace Pet.Jira.Infrastructure.Jira
                     .Where(item => item.ChangeLog.Issue.Key == issue.Key)
                     .OrderBy(item => item.ChangeLog.CreatedDate)
                     .ToList()
-                    .ConvertTo<RawIssueWorklog>()
+                    .ConvertTo<RawIssueWorklog>(query.IssueStatusId)
                     .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
                 result.AddRange(rawIssueWorklogs);
             }

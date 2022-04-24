@@ -17,6 +17,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
             public DateTime EndDate { get; set; }
             public TimeSpan DailyWorkingStartTime { get; set; }
             public TimeSpan DailyWorkingEndTime { get; set; }
+            public string IssueStatusId { get; set; }
         }
 
         public class Model
@@ -48,7 +49,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(new GetRawIssueWorklogs.Query()
                     {
                         StartDate = query.StartDate,
-                        EndDate = query.EndDate
+                        EndDate = query.EndDate,
+                        IssueStatusId = query.IssueStatusId
                     });
                     var rawEstimatedWorklogs = rawIssueWorklogs.Select(item => new EstimatedWorklog
                     {

@@ -53,6 +53,7 @@ namespace Pet.Jira.Infrastructure.Mock
 
             public static string Text = "";
         }
+
         public static IList<Issue> Issues = new List<Issue>
         {
             IssueGenerator.Create(),
