@@ -267,5 +267,12 @@ namespace Pet.Jira.Infrastructure.Jira
                 return string.Empty;
             }
         }
+
+        public async Task<IEnumerable<IssueStatusDto>> GetIssueStatusesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var issueStatuses = await _jiraClient.Statuses.GetStatusesAsync(cancellationToken);
+            return issueStatuses.Select(issueStatus => IssueStatusDto.Create(issueStatus));
+        }
     }
 }

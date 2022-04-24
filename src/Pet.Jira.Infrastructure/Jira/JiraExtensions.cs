@@ -8,7 +8,7 @@ namespace Pet.Jira.Infrastructure.Jira
 {
     public static class JiraExtensions
     {
-        public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems)
+        public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems, string issueStatusId)
             where T: IWorklog, new()
         {
             var i = 0;
@@ -16,7 +16,7 @@ namespace Pet.Jira.Infrastructure.Jira
             {
                 var item = issueChangeLogItems[i];
                 // 1. Первый элемент сразу выходит из прогресса. Значит это завершающий
-                if (item.FromInProgress)
+                if (item.FromId == issueStatusId)
                 {
                     yield return new T()
                     {
