@@ -1,9 +1,12 @@
-﻿using Pet.Jira.Domain.Models.Issues;
+﻿using System;
+using Pet.Jira.Domain.Models.Issues;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
     public static class JiraConstants
     {
+        public const int DefaultMaxIssuesPerRequest = int.MaxValue;
+
         public static class Status
         {
             public const string FieldName = "status";
