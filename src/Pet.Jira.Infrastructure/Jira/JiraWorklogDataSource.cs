@@ -40,9 +40,12 @@ namespace Pet.Jira.Infrastructure.Jira
                 .Where("worklogAuthor", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
                 .OrderBy("updatedDate", JiraQueryOrderType.Desc)
                 .ToString();
-            var issueSearchOptions = new IssueSearchOptions(issueQuery);
+            var issueSearchOptions = new IssueSearchOptions(issueQuery)
+            {
+                MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
+            };
 
-            var currentUser = await _jiraService.GetCurrentUserAsync();
+            var currentUser = await _jiraService.GetCurrentUserAsync(cancellationToken);
             var worklogFilter = new Func<Worklog, bool>(worklog =>
                 worklog.Author == currentUser.Username
                 && worklog.StartDate >= query.StartDate
@@ -68,7 +71,11 @@ namespace Pet.Jira.Infrastructure.Jira
                 .Where("assignee", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
                 .OrderBy("updatedDate", JiraQueryOrderType.Desc)
                 .ToString();
-            var issueSearchOptions = new IssueSearchOptions(issueQuery);
+            var issueSearchOptions = new IssueSearchOptions(issueQuery)
+            {
+                MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
+            };
+
             var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
