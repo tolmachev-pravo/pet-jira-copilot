@@ -5,12 +5,12 @@ namespace Pet.Jira.Domain.Models.Worklogs
 {
     public class RawIssueWorklog : IWorklog
     {
-        public DateTime StartedAt { get; set; }
-        public DateTime CompletedAt { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime CompleteDate { get; set; }
 
-        public TimeSpan ElapsedTime
+        public TimeSpan TimeSpent
         {
-            get => CompletedAt - StartedAt;
+            get => CompleteDate - StartDate;
             set { }
         }
 
@@ -18,7 +18,7 @@ namespace Pet.Jira.Domain.Models.Worklogs
 
         public bool IsBetween(DateTime from, DateTime to)
         {
-            return StartedAt < to && CompletedAt > from;
+            return StartDate < to && CompleteDate > from;
         }
     }
 }

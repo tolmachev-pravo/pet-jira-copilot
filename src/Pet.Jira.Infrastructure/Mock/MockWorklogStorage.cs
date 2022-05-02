@@ -70,20 +70,20 @@ namespace Pet.Jira.Infrastructure.Mock
         {
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(11),
-                ElapsedTime = TimeSpan.FromHours(1),
+                StartDate = DateTime.Now.Date.AddHours(11),
+                TimeSpent = TimeSpan.FromHours(1),
                 Issue = Issues[0]
             },
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                ElapsedTime = TimeSpan.FromHours(5),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
+                TimeSpent = TimeSpan.FromHours(5),
                 Issue = Issues[1]
             },
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(8),
+                StartDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                TimeSpent = TimeSpan.FromHours(8),
                 Issue = Issues[4]
             }
         };
@@ -92,39 +92,39 @@ namespace Pet.Jira.Infrastructure.Mock
         {
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(10),
-                CompletedAt = DateTime.Now.Date.AddHours(11),
+                StartDate = DateTime.Now.Date.AddHours(10),
+                CompleteDate = DateTime.Now.Date.AddHours(11),
                 Issue = Issues[0]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(11),
-                CompletedAt = DateTime.Now.Date.AddHours(17),
+                StartDate = DateTime.Now.Date.AddHours(11),
+                CompleteDate = DateTime.Now.Date.AddHours(17),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(17),
-                CompletedAt = DateTime.Now.Date.AddHours(19),
+                StartDate = DateTime.Now.Date.AddHours(17),
+                CompleteDate = DateTime.Now.Date.AddHours(19),
                 Issue = Issues[2]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(11),
-                CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(11),
+                CompleteDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(20),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
+                CompleteDate = DateTime.Now.Date.AddDays(-1).AddHours(20),
                 Issue = Issues[3]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-5).AddHours(19),
-                CompletedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(72),
+                StartDate = DateTime.Now.Date.AddDays(-5).AddHours(19),
+                CompleteDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                TimeSpent = TimeSpan.FromHours(72),
                 Issue = Issues[4]
             }
         };

@@ -58,15 +58,15 @@ else
             {
                 <tr class="pet-table-day-header-tr">
                     <td colspan="1">
-@*                        <MudPaper Class="pet-center">
+                        <MudPaper Class="pet-center">
                             <MudProgressLinear Color="Color.Default" Size="Size.Small" Value="@item.Progress" />
-                        </MudPaper>*@
+                        </MudPaper>
                     </td>
                     <td colspan="4">
                         <b>@item.Date.ToShortDateString()</b>
-@*                        <MudContainer Class="pet-table-summary-container">
-                        <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
-                        <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
+                        <MudContainer Class="pet-table-summary-container">
+                            <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
+                            <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
                             @if (item.HasRawEstimatedWorklogs)
                             {
@@ -74,7 +74,7 @@ else
                                     <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default" />
                                 </MudBadge>
                             }
-                        </MudContainer>*@
+                        </MudContainer>
                     </td>
                 </tr>
                 @foreach (var entity in item.EstimatedItems)
@@ -85,8 +85,8 @@ else
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
                         <td><MudTextField @bind-Value="@entity.TimeSpent" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                         <td>
-                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(() => AddWorklogAsync(entity))" Disabled="@entity.IsEmpty"
-                                    Style="padding: 4px !important">
+                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async() => await AddWorklogAsync(entity))" Disabled="@entity.IsEmpty"
+                        Style="padding: 4px !important">
                             </MudFab>
                         </td>
                     </tr>

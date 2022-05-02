@@ -10,16 +10,6 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public string IssueKey { get; set; }
         public string Comment { get; set; } = "Dev";
 
-        public static AddedWorklogDto Create(EstimatedWorklog worklog)
-        {
-            return new AddedWorklogDto
-            {
-                StartedAt = worklog.CompletedAt,
-                IssueKey = worklog.Issue.Key,
-                ElapsedTime = worklog.RestTime
-            };
-        }
-
         public static AddedWorklogDto Create(WorklogCollectionItem worklog)
         {
             return new AddedWorklogDto
