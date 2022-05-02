@@ -52,7 +52,7 @@ namespace Pet.Jira.Web
             // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
-            services.AddMockInfrastructureLayer();
+            //services.AddMockInfrastructureLayer();
 
             // Authentication
             services.AddHttpContextAccessor();
