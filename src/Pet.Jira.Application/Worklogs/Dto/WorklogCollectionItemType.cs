@@ -1,6 +1,6 @@
 ﻿namespace Pet.Jira.Application.Worklogs.Dto
 {
-    public enum ListWorklogType
+    public enum WorklogCollectionItemType
     {
         Actual,
         Estimated

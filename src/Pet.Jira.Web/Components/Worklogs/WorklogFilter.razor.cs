@@ -21,7 +21,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private readonly ComponentModel Model = ComponentModel.Create();
         private const string FilterCacheItemName = "WorklogFilter";
 
-        [Parameter] public EventCallback<GetDailyWorklogSummaries.Query> OnSearchPressed { get; set; }
+        [Parameter] public EventCallback<GetWorklogCollection.Query> OnSearchPressed { get; set; }
         [Inject] private ILocalStorageService LocalStorage { get; set; }
         [Inject] private IMediator Mediator { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
@@ -29,7 +29,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         protected async Task Search()
         {
             await SaveFilterCache();
-            await OnSearchPressed.InvokeAsync(new GetDailyWorklogSummaries.Query()
+            await OnSearchPressed.InvokeAsync(new GetWorklogCollection.Query()
             {
                 StartDate = Model.Filter.StartDate.Value,
                 EndDate = Model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),

@@ -1,9 +1,10 @@
 ﻿using Pet.Jira.Domain.Models.Issues;
+using Pet.Jira.Domain.Models.Worklogs;
 using System;
 
-namespace Pet.Jira.Domain.Models.Worklogs
+namespace Pet.Jira.Application.Worklogs.Dto
 {
-    public class IssueWorklog : IWorklog
+    internal class WorklogDto : IWorklog
     {
         public DateTime StartDate { get; set; }
         public DateTime CompleteDate { get; set; }

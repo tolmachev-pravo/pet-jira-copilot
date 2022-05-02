@@ -12,10 +12,10 @@ namespace Pet.Jira.Infrastructure.Mock
         {
             MockWorklogStorage.IssueWorklogs.Add(new IssueWorklog
             {
-                StartedAt = worklog.StartedAt,
+                StartDate = worklog.StartedAt,
                 Issue = new Issue(){Key = worklog.IssueKey},
-                ElapsedTime = worklog.ElapsedTime,
-                CompletedAt = worklog.StartedAt.Add(worklog.ElapsedTime)
+                TimeSpent = worklog.ElapsedTime,
+                CompleteDate = worklog.StartedAt.Add(worklog.ElapsedTime)
             });
             return Task.CompletedTask;
         }

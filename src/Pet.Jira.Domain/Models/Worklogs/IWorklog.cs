@@ -5,9 +5,9 @@ namespace Pet.Jira.Domain.Models.Worklogs
 {
     public interface IWorklog
     {
-        DateTime StartedAt { get; set; }
-        DateTime CompletedAt { get; set; }
-        TimeSpan ElapsedTime { get; set; }
+        DateTime StartDate { get; set; }
+        DateTime CompleteDate { get; set; }
+        TimeSpan TimeSpent { get; set; }
         IIssue Issue { get; set; }
     }
 }

@@ -66,70 +66,65 @@ namespace Pet.Jira.Infrastructure.Mock
             IssueGenerator.Create()
         };
 
-        public static IList<IssueWorklog> IssueWorklogs = new List<IssueWorklog>
+        public static IList<IWorklog> IssueWorklogs = new List<IWorklog>
         {
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(11),
-                ElapsedTime = TimeSpan.FromHours(1),
+                StartDate = DateTime.Now.Date.AddHours(11),
+                TimeSpent = TimeSpan.FromHours(1),
                 Issue = Issues[0]
             },
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                ElapsedTime = TimeSpan.FromHours(5),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
+                TimeSpent = TimeSpan.FromHours(5),
                 Issue = Issues[1]
             },
             new IssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(8),
+                StartDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                TimeSpent = TimeSpan.FromHours(8),
                 Issue = Issues[4]
             }
         };
 
-        public static IList<RawIssueWorklog> RawIssueWorklogs = new List<RawIssueWorklog>
+        public static IList<IWorklog> RawIssueWorklogs = new List<IWorklog>
         {
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(10),
-                CompletedAt = DateTime.Now.Date.AddHours(11),
-                ElapsedTime = TimeSpan.FromHours(1),
+                StartDate = DateTime.Now.Date.AddHours(10),
+                CompleteDate = DateTime.Now.Date.AddHours(11),
                 Issue = Issues[0]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(11),
-                CompletedAt = DateTime.Now.Date.AddHours(17),
-                ElapsedTime = TimeSpan.FromHours(6),
+                StartDate = DateTime.Now.Date.AddHours(11),
+                CompleteDate = DateTime.Now.Date.AddHours(17),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddHours(17),
-                CompletedAt = DateTime.Now.Date.AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(2),
+                StartDate = DateTime.Now.Date.AddHours(17),
+                CompleteDate = DateTime.Now.Date.AddHours(19),
                 Issue = Issues[2]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(11),
-                CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                ElapsedTime = TimeSpan.FromHours(5),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(11),
+                CompleteDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(20),
-                ElapsedTime = TimeSpan.FromHours(4),
+                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
+                CompleteDate = DateTime.Now.Date.AddDays(-1).AddHours(20),
                 Issue = Issues[3]
             },
             new RawIssueWorklog
             {
-                StartedAt = DateTime.Now.Date.AddDays(-5).AddHours(19),
-                CompletedAt = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(72),
+                StartDate = DateTime.Now.Date.AddDays(-5).AddHours(19),
+                CompleteDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
+                TimeSpent = TimeSpan.FromHours(72),
                 Issue = Issues[4]
             }
         };

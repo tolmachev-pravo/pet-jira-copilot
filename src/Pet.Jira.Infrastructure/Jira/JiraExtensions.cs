@@ -20,8 +20,8 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     yield return new T()
                     {
-                        CompletedAt = item.ChangeLog.CreatedDate,
-                        StartedAt = DateTime.MinValue,
+                        CompleteDate = item.ChangeLog.CreatedDate,
+                        StartDate = DateTime.MinValue,
                         Issue = item.ChangeLog.Issue.Adapt()
                     };
                 }
@@ -30,8 +30,8 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     yield return new T()
                     {
-                        CompletedAt = DateTime.MaxValue,
-                        StartedAt = item.ChangeLog.CreatedDate,
+                        CompleteDate = DateTime.MaxValue,
+                        StartDate = item.ChangeLog.CreatedDate,
                         Issue = item.ChangeLog.Issue.Adapt()
                     };
                 }
@@ -40,8 +40,8 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     yield return new T()
                     {
-                        CompletedAt = issueChangeLogItems[i + 1].ChangeLog.CreatedDate,
-                        StartedAt = item.ChangeLog.CreatedDate,
+                        CompleteDate = issueChangeLogItems[i + 1].ChangeLog.CreatedDate,
+                        StartDate = item.ChangeLog.CreatedDate,
                         Issue = item.ChangeLog.Issue.Adapt()
                     };
                 }

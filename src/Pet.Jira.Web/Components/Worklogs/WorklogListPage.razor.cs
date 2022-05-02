@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
+using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Application.Worklogs.Queries;
-using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Web.Components.Common;
 using Pet.Jira.Web.Shared;
 using System;
@@ -17,13 +17,13 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private IMediator Mediator { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
-        protected async Task SearchAsync(GetDailyWorklogSummaries.Query filter)
+        protected async Task SearchAsync(GetWorklogCollection.Query filter)
         {
             try
             {
                 Model.StateTo(ComponentModelState.InProgress);
                 var filterResult = await Mediator.Send(filter);
-                Model.ListItems = filterResult.Worklogs;
+                Model.Items = filterResult.WorklogCollection.Days;
             }
             catch (Exception e)
             {
@@ -42,7 +42,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 return new ComponentModel();
             }
 
-            public IList<DailyWorklogSummary> ListItems { get; set; }
+            public IEnumerable<WorklogCollectionDay> Items { get; set; }
         }
     }
 }

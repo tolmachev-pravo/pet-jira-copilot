@@ -30,7 +30,7 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<IssueWorklog>> GetIssueWorklogsAsync(
+        public async Task<IEnumerable<IWorklog>> GetIssueWorklogsAsync(
             GetIssueWorklogs.Query query, 
             CancellationToken cancellationToken = default)
         {
@@ -62,7 +62,7 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<RawIssueWorklog>> GetRawIssueWorklogsAsync(
+        public async Task<IEnumerable<IWorklog>> GetRawIssueWorklogsAsync(
             GetRawIssueWorklogs.Query query, 
             CancellationToken cancellationToken = default)
         {

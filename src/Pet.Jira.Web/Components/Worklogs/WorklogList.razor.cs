@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
-using Pet.Jira.Domain.Models.Worklogs;
+using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
@@ -17,25 +17,25 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [Inject] private IMediator Mediator { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
-        [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
+        [Parameter] public IEnumerable<WorklogCollectionDay> Items { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private string DefaultTimeFormat = "HH:mm";
 
-        public void Refresh(IList<DailyWorklogSummary> items)
+        public void Refresh(IEnumerable<WorklogCollectionDay> items)
         {
-            Items = items;
+            Items = Items;
             StateHasChanged();
         }
 
-        private async Task AddWorklogAsync(EstimatedWorklog entity)
+        private async Task AddWorklogAsync(WorklogCollectionItem entity)
         {
             try
             {
-                await Mediator.Send(new AddWorklog.Command(Application.Worklogs.Dto.AddedWorklogDto.Create(entity)));
-                var day = Items.Where(record => record.Date == entity.CompletedAt.Date).First();
-                day.ActualWorklogs.Add(ActualWorklog.Create(entity));
-                entity.RestTime = TimeSpan.Zero;
+                var actualEntityClone = entity.Clone(WorklogCollectionItemType.Actual);
+                await Mediator.Send(new AddWorklog.Command(AddedWorklogDto.Create(actualEntityClone)));
+                var day = Items.Where(record => record.Date == entity.CompleteDate.Date).First();
+                day.AddActualItem(actualEntityClone);
                 Snackbar.Add(
                     $"Worklog {entity.Issue.Key} added successfully!",
                     Severity.Success,

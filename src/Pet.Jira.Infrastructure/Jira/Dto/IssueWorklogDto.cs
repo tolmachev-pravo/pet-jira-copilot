@@ -17,9 +17,9 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         {
             return new T
             {
-                StartedAt = StartDate.Value,
-                ElapsedTime = TimeSpent,
-                CompletedAt = EndDate.Value,
+                StartDate = StartDate.Value,
+                TimeSpent = TimeSpent,
+                CompleteDate = EndDate.Value,
                 Issue = Issue.Adapt()
             };
         }

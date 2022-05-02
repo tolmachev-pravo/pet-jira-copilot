@@ -10,12 +10,12 @@ namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockWorklogDataSource : IWorklogDataSource
     {
-        public Task<IEnumerable<IssueWorklog>> GetIssueWorklogsAsync(GetIssueWorklogs.Query query, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<IWorklog>> GetIssueWorklogsAsync(GetIssueWorklogs.Query query, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(MockWorklogStorage.IssueWorklogs.AsEnumerable());
         }
 
-        public Task<IEnumerable<RawIssueWorklog>> GetRawIssueWorklogsAsync(GetRawIssueWorklogs.Query query, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<IWorklog>> GetRawIssueWorklogsAsync(GetRawIssueWorklogs.Query query, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(MockWorklogStorage.RawIssueWorklogs.AsEnumerable());
         }
