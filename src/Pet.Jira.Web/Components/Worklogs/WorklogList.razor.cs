@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pet.Jira.Application.Worklogs.Dto;
 
 namespace Pet.Jira.Web.Components.Worklogs
 {
@@ -17,25 +18,25 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [Inject] private IMediator Mediator { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
-        [Parameter] public IList<DailyWorklogSummary> Items { get; set; }
+        [Parameter] public IEnumerable<WorklogCollectionDay> Items { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private string DefaultTimeFormat = "HH:mm";
 
-        public void Refresh(IList<DailyWorklogSummary> items)
+        public void Refresh(IEnumerable<WorklogCollectionDay> Items)
         {
-            Items = items;
+            Items = Items;
             StateHasChanged();
         }
 
-        private async Task AddWorklogAsync(EstimatedWorklog entity)
+        private async Task AddWorklogAsync(WorklogCollectionItem entity)
         {
             try
             {
                 await Mediator.Send(new AddWorklog.Command(Application.Worklogs.Dto.AddedWorklogDto.Create(entity)));
-                var day = Items.Where(record => record.Date == entity.CompletedAt.Date).First();
-                day.ActualWorklogs.Add(ActualWorklog.Create(entity));
-                entity.RestTime = TimeSpan.Zero;
+                //var day = WorklogCollection.Days.Where(record => record.Date == entity.CompletedAt.Date).First();
+                //day.Items.Add(WorklogCollectionItem.Create(entity));
+                //entity.RestTime = TimeSpan.Zero;
                 Snackbar.Add(
                     $"Worklog {entity.Issue.Key} added successfully!",
                     Severity.Success,

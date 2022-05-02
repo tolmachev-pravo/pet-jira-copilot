@@ -7,6 +7,7 @@ using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Pet.Jira.Application.Worklogs.Dto;
 
 namespace Pet.Jira.Web.Components.Worklogs
 {
@@ -23,7 +24,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             {
                 Model.StateTo(ComponentModelState.InProgress);
                 var filterResult = await Mediator.Send(filter);
-                Model.ListItems = filterResult.Worklogs;
+                Model.Items = filterResult.WorklogCollection.Days;
             }
             catch (Exception e)
             {
@@ -42,7 +43,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 return new ComponentModel();
             }
 
-            public IList<DailyWorklogSummary> ListItems { get; set; }
+            public IEnumerable<WorklogCollectionDay> Items { get; set; }
         }
     }
 }

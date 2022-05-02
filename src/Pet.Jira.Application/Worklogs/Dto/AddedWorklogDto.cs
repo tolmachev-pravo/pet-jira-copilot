@@ -20,7 +20,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             };
         }
 
-        public static AddedWorklogDto Create(ListWorklog worklog)
+        public static AddedWorklogDto Create(WorklogCollectionItem worklog)
         {
             return new AddedWorklogDto
             {

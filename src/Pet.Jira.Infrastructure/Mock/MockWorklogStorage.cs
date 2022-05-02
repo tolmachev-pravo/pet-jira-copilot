@@ -66,7 +66,7 @@ namespace Pet.Jira.Infrastructure.Mock
             IssueGenerator.Create()
         };
 
-        public static IList<IssueWorklog> IssueWorklogs = new List<IssueWorklog>
+        public static IList<IWorklog> IssueWorklogs = new List<IWorklog>
         {
             new IssueWorklog
             {
@@ -88,41 +88,36 @@ namespace Pet.Jira.Infrastructure.Mock
             }
         };
 
-        public static IList<RawIssueWorklog> RawIssueWorklogs = new List<RawIssueWorklog>
+        public static IList<IWorklog> RawIssueWorklogs = new List<IWorklog>
         {
             new RawIssueWorklog
             {
                 StartedAt = DateTime.Now.Date.AddHours(10),
                 CompletedAt = DateTime.Now.Date.AddHours(11),
-                ElapsedTime = TimeSpan.FromHours(1),
                 Issue = Issues[0]
             },
             new RawIssueWorklog
             {
                 StartedAt = DateTime.Now.Date.AddHours(11),
                 CompletedAt = DateTime.Now.Date.AddHours(17),
-                ElapsedTime = TimeSpan.FromHours(6),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
                 StartedAt = DateTime.Now.Date.AddHours(17),
                 CompletedAt = DateTime.Now.Date.AddHours(19),
-                ElapsedTime = TimeSpan.FromHours(2),
                 Issue = Issues[2]
             },
             new RawIssueWorklog
             {
                 StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(11),
                 CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                ElapsedTime = TimeSpan.FromHours(5),
                 Issue = Issues[1]
             },
             new RawIssueWorklog
             {
                 StartedAt = DateTime.Now.Date.AddDays(-1).AddHours(16),
                 CompletedAt = DateTime.Now.Date.AddDays(-1).AddHours(20),
-                ElapsedTime = TimeSpan.FromHours(4),
                 Issue = Issues[3]
             },
             new RawIssueWorklog
