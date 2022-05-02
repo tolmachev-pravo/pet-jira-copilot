@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Worklogs.Queries
 {
-    public class GetDailyWorklogSummaries
+    public class GetWorklogCollection
     {
         public class Query : IRequest<Model>
         {
@@ -37,13 +37,14 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
             public async Task<Model> Handle(
                 Query query,
-                CancellationToken cancellationToken)
+                CancellationToken cancellationToken = default(CancellationToken))
             {
-                var worklogCollection = await CalculateWorklogCollection(query);
+                var worklogCollection = await CalculateWorklogCollection(query, cancellationToken);
                 return new Model { WorklogCollection = worklogCollection };
             }
 
-            private async Task<WorklogCollection> CalculateWorklogCollection(Query query)
+            private async Task<WorklogCollection> CalculateWorklogCollection(Query query,
+                CancellationToken cancellationToken)
             {
                 var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(
                     new GetRawIssueWorklogs.Query()
@@ -51,14 +52,14 @@ namespace Pet.Jira.Application.Worklogs.Queries
                         StartDate = query.StartDate,
                         EndDate = query.EndDate,
                         IssueStatusId = query.IssueStatusId
-                    });
+                    }, cancellationToken);
 
                 var issueWorklogs = await _worklogDataSource.GetIssueWorklogsAsync(
                     new GetIssueWorklogs.Query()
                     {
                         StartDate = query.StartDate,
                         EndDate = query.EndDate
-                    });
+                    }, cancellationToken);
 
                 var days = CalculateDays(issueWorklogs, rawIssueWorklogs, query).ToList();
                 foreach (var day in days)
@@ -96,7 +97,10 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     yield return new WorklogCollectionDay
                     {
                         Date = day,
-                        Items = dailyIssueWorklogs.Union(dailyRawIssueWorklogs).ToList(),
+                        Items = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)
+                            .OrderBy(record => record.StartDate)
+                            .ThenBy(record => record.CompleteDate)
+                            .ToList(),
                         DailyWorkingStartTime = query.DailyWorkingStartTime,
                         DailyWorkingEndTime = query.DailyWorkingEndTime
                     };

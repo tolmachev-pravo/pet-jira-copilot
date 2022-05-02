@@ -6,20 +6,31 @@ namespace Pet.Jira.Application.Worklogs.Dto
 {
     public class WorklogCollectionDay
     {
+        /// <summary>
+        /// Date of day without time
+        /// </summary>
         public DateTime Date { get; set; }
-        public IList<WorklogCollectionItem> Items { get; set; } = new List<WorklogCollectionItem>();
 
+        /// <summary>
+        /// Working start time
+        /// </summary>
         public TimeSpan DailyWorkingStartTime { get; set; }
+
+        /// <summary>
+        /// Working end time
+        /// </summary>
         public TimeSpan DailyWorkingEndTime { get; set; }
 
+        /// <summary>
+        /// Worklog items
+        /// </summary>
+        public IList<WorklogCollectionItem> Items { get; set; } = new List<WorklogCollectionItem>();
+        
         public IEnumerable<WorklogCollectionItem> ActualItems => Items.Where(item => item.Type == WorklogCollectionItemType.Actual);
         public IEnumerable<WorklogCollectionItem> EstimatedItems => Items.Where(item => item.Type == WorklogCollectionItemType.Estimated);
-
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
         public TimeSpan EstimatedWorklogsSum => new TimeSpan(EstimatedItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
-
-        public TimeSpan CalculatedWorklogsSum =>
-            ActualWorklogsSum + new TimeSpan(EstimatedItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
+        public TimeSpan CalculatedWorklogsSum => ActualWorklogsSum + EstimatedWorklogsSum;
 
         public int Progress => CalculatedWorklogsSum > TimeSpan.Zero
             ? Convert.ToInt32(ActualWorklogsSum * 100 / CalculatedWorklogsSum)

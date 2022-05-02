@@ -1,5 +1,4 @@
 ﻿using System;
-using Pet.Jira.Domain.Models.Worklogs;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {

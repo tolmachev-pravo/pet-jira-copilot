@@ -64,6 +64,10 @@ namespace Pet.Jira.Application.Worklogs.Dto
                     .Where(item => item.Issue.Key == Issue.Key
                                    && item.StartDate == CompleteDate)
                     .ToList();
+                foreach (var item in ChildItems)
+                {
+                    item.ParentItem = this;
+                }
             }
         }
     }

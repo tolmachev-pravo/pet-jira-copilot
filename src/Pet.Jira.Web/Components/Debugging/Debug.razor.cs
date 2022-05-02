@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Pet.Jira.Application.Tracing;
 using Pet.Jira.Application.Worklogs.Queries;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Pet.Jira.Web.Components.Debugging
 {
     public partial class Debug : ComponentBase
     {
-        private readonly PerformanceTracer _performanceTracer = PerformanceTraceManager.GetTracer<PerformanceTracer>(nameof(GetDailyWorklogSummaries));
+        private readonly PerformanceTracer _performanceTracer = PerformanceTraceManager.GetTracer<PerformanceTracer>(nameof(GetWorklogCollection));
 
         public string Body => GetBody();
 

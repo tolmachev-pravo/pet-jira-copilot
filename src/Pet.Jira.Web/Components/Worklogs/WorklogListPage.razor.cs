@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
+using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Application.Worklogs.Queries;
-using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Web.Components.Common;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Pet.Jira.Application.Worklogs.Dto;
 
 namespace Pet.Jira.Web.Components.Worklogs
 {
@@ -18,7 +17,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private IMediator Mediator { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
-        protected async Task SearchAsync(GetDailyWorklogSummaries.Query filter)
+        protected async Task SearchAsync(GetWorklogCollection.Query filter)
         {
             try
             {
