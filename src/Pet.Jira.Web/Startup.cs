@@ -15,6 +15,7 @@ using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Data;
 using System;
 using Pet.Jira.Infrastructure.Mock;
+using Pet.Jira.Web.Common;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
@@ -52,7 +53,11 @@ namespace Pet.Jira.Web
             // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
-            //services.AddMockInfrastructureLayer();
+            // Mock
+            if (EnvironmentExtensions.IsMock())
+            {
+                services.AddMockInfrastructureLayer();
+            }
 
             // Authentication
             services.AddHttpContextAccessor();
