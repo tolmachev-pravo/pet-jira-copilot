@@ -61,21 +61,27 @@ else
                     <td colspan="1"></td>
                     <td colspan="1">
                         <MudPaper Class="pet-center">
-                            <MudProgressLinear Color="Color.Default" Size="Size.Small" Value="@item.Progress"/>
+                            <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress"/>
                         </MudPaper>
                     </td>
                     <td colspan="4">
                         <b>@item.Date.ToString("dd-MM-yyyy")</b>
+
+                            @if (item.HasRawEstimatedWorklogs)
+                            {
+                                <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
+                                    <MudIcon Icon="@Icons.Filled.AddBox" Color="Color.Primary"/>
+                                </MudBadge>
+                            }
+                    </td>
+                </tr>
+                <tr>
+        
+                    <td colspan="6">
                         <MudContainer Class="pet-table-summary-container">
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
-                            @if (item.HasRawEstimatedWorklogs)
-                            {
-                                <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
-                                    <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default"/>
-                                </MudBadge>
-                            }
                         </MudContainer>
                     </td>
                 </tr>
@@ -96,8 +102,8 @@ else
                     @foreach (var child in entity.ChildItems)
                     {
                         <tr>
-                            <td><MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Primary"></MudIcon></td>
                             <td></td>
+                            <td><MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Primary"></MudIcon></td>
                             <td>@child.StartDate.ToString(DefaultTimeFormat)</td>
                             <td><MudLink Href="@child.Issue.Link" Typo="Typo.body2">@child.Issue.Key</MudLink> @child.Issue.Summary</td>
                             <td>@child.TimeSpent</td>
