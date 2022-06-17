@@ -113,7 +113,7 @@ namespace Pet.Jira.Infrastructure.Jira
             foreach (var issue in issues)
             {
                 var issueChangeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key, cancellationToken);
-                issueChangeLogs.WhereIfNotNull(changeLogFilter);
+                issueChangeLogs = issueChangeLogs.WhereIfNotNull(changeLogFilter);
 
                 result.AddRange(issueChangeLogs.Select(issueChangeLog =>
                     IssueChangeLogDto.Create(issueChangeLog, issue)));
@@ -182,7 +182,7 @@ namespace Pet.Jira.Infrastructure.Jira
             await Parallel.ForEachAsync(issues, DefaultParallelOptions, async (issue, cancellationToken) =>
             {
                 var issueChangeLogs = await _jiraClient.Issues.GetChangeLogsAsync(issue.Key, cancellationToken);
-                issueChangeLogs.WhereIfNotNull(changeLogFilter);
+                issueChangeLogs = issueChangeLogs.WhereIfNotNull(changeLogFilter);
 
                 foreach (var issueChangeLog in issueChangeLogs)
                 {

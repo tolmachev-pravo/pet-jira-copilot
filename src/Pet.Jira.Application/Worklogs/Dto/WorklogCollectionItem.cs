@@ -19,6 +19,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public TimeSpan ChildTimeSpent => new TimeSpan(ChildItems.Sum(item => item.TimeSpent.Ticks));
         public WorklogCollectionItem ParentItem { get; set; }
         public bool IsEmpty => TimeSpent == TimeSpan.Zero;
+        public TimeSpan RawTimeSpent => CompleteDate - StartDate;
 
         public static WorklogCollectionItem Create(
             IWorklog worklog,

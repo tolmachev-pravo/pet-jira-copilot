@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Pet.Jira.Application.Authentication;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
@@ -15,13 +16,16 @@ namespace Pet.Jira.Infrastructure.Jira
     {
         private readonly IJiraService _jiraService;
         private readonly IJiraQueryFactory _queryFactory;
+        private readonly IIdentityService _identityService;
 
         public JiraWorklogDataSource(
             IJiraService jiraService,
-            IJiraQueryFactory queryFactory)
+            IJiraQueryFactory queryFactory,
+            IIdentityService identityService)
         {
             _jiraService = jiraService;
             _queryFactory = queryFactory;
+            _identityService = identityService;
         }
 
         /// <summary>
@@ -78,8 +82,11 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
+            var user = _identityService.CurrentUser;
+
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
-                changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
+                changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName)
+                && changeLog.Author?.Username == user.Username);
 
             var changeLogItemFilter = new Func<IssueChangeLogItem, bool>(changeLogItem =>
                 changeLogItem.FieldName == JiraConstants.Status.FieldName
