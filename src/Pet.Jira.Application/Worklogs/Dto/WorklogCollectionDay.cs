@@ -57,7 +57,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             var manualTimeSpent = manualActualWorklogs.Sum(record => record.TimeSpent.Ticks);
 
             // Время выполнения всех задач
-            var fullRawTimeSpent = EstimatedItems.Sum(record => record.TimeSpent.Ticks);
+            var fullRawTimeSpent = EstimatedItems.Sum(record => record.RawTimeSpent.Ticks);
             // Предполагаемый остаток для автоматического списания времени
             var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime.Ticks - manualTimeSpent);
 
@@ -66,7 +66,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             {
                 if (estimatedWorklog.ChildTimeSpent == TimeSpan.Zero)
                 {
-                    var percent = Convert.ToDecimal(estimatedWorklog.TimeSpent.Ticks) / fullRawTimeSpent;
+                    var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
                     var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
                     estimatedWorklog.TimeSpent = TimeSpan.FromSeconds(Math.Round((estimatedTimeSpent - estimatedWorklog.ChildTimeSpent).TotalSeconds));
                 }
