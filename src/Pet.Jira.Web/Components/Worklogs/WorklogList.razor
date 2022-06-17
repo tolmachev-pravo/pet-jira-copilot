@@ -28,12 +28,25 @@
     }
 
     .pet-table-mud-badge-counter {
-        margin-left: 10px
+        margin-left: 0px
     }
 
     .pet-table-summary-container {
         display: inline-block !important;
         width: auto !important;
+        padding-right: 8px !important;
+    }
+
+    .mud-chip-filled {
+        background-color: #e7e5e5;
+    }
+
+    .mud-progress-linear-bar {
+        background-color: #1fc8a5 !important;
+    }
+
+    .mud-chip-filled.mud-chip-color-error {
+        background-color: #e39e99 !important;
     }
 </style>
 
@@ -61,7 +74,7 @@ else
                     <td colspan="1"></td>
                     <td colspan="1">
                         <MudPaper Class="pet-center">
-                            <MudProgressLinear Color="Color.Default" Size="Size.Small" Value="@item.Progress"/>
+                            <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress"/>
                         </MudPaper>
                     </td>
                     <td colspan="4">
@@ -69,20 +82,28 @@ else
                         <MudContainer Class="pet-table-summary-container">
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
                             <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
-                            <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
+                            @if (@item.Date.DayOfWeek == DayOfWeek.Saturday || @item.Date.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                <MudChip Color="Color.Error" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
+                            }
+
+                        </MudContainer>
                             @if (item.HasRawEstimatedWorklogs)
                             {
                                 <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
-                                    <MudIcon Icon="@Icons.Material.TwoTone.Email" Color="Color.Default"/>
+                                    <MudIcon Icon="@Icons.Sharp.AddCircle" Color="Color.Primary"/>
                                 </MudBadge>
                             }
-                        </MudContainer>
                     </td>
                 </tr>
                 @foreach (var entity in item.EstimatedItems)
                 {
                     <tr>
-                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Primary"></MudIcon></td>
+                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"></MudIcon></td>
                         <td>@entity.StartDate.ToString(DefaultTimeFormat)</td>
                         <td>@entity.CompleteDate.ToString(DefaultTimeFormat)</td>
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
@@ -96,8 +117,8 @@ else
                     @foreach (var child in entity.ChildItems)
                     {
                         <tr>
-                            <td><MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Primary"></MudIcon></td>
                             <td></td>
+                            <td><MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Default"></MudIcon></td>
                             <td>@child.StartDate.ToString(DefaultTimeFormat)</td>
                             <td><MudLink Href="@child.Issue.Link" Typo="Typo.body2">@child.Issue.Key</MudLink> @child.Issue.Summary</td>
                             <td>@child.TimeSpent</td>
@@ -108,7 +129,7 @@ else
                 @foreach (var entity in item.ActualItems.Where(item => item.ParentItem == null))
                 {
                     <tr>
-                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Primary"></MudIcon></td>
+                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"></MudIcon></td>
                         <td></td>
                         <td>@entity.StartDate.ToString(DefaultTimeFormat)</td>
                         <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
