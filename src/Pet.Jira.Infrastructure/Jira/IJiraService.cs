@@ -52,5 +52,8 @@ namespace Pet.Jira.Infrastructure.Jira
 
         Task<IEnumerable<IssueStatusDto>> GetIssueStatusesAsync(
             CancellationToken cancellationToken = default);
+
+        Task<bool> PingAsync(
+            CancellationToken cancellationToken = default);
     }
 }
