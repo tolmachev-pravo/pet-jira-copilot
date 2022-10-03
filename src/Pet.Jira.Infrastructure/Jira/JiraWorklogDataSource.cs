@@ -85,8 +85,7 @@ namespace Pet.Jira.Infrastructure.Jira
             var user = _identityService.CurrentUser;
 
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
-                changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName)
-                && changeLog.Author?.Username == user.Username);
+                changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
 
             var changeLogItemFilter = new Func<IssueChangeLogItem, bool>(changeLogItem =>
                 changeLogItem.FieldName == JiraConstants.Status.FieldName
@@ -107,7 +106,7 @@ namespace Pet.Jira.Infrastructure.Jira
                 result.AddRange(rawIssueWorklogs);
             }
 
-            return result;
+            return result.Where(item => item.Author == user.Username);
         }
     }
 }
