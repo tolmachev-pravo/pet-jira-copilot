@@ -1,16 +1,17 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 
 namespace Pet.Jira.Infrastructure.Jira.Health
 {
     public class JiraHealthCheck : IHealthCheck
     {
         private readonly IJiraConfiguration _jiraConfiguration;
+        public static string Name = "jira_health_check";
 
         public JiraHealthCheck(
             IOptions<JiraConfiguration> jiraConfiguration)

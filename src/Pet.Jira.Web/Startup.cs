@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
@@ -18,7 +17,6 @@ using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
-using Pet.Jira.Web.HealthChecks;
 using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -78,14 +76,7 @@ namespace Pet.Jira.Web
 
             // Health checks
             services.AddHealthChecks()
-                .AddCheck<ExampleHealthCheck>(
-                    "example_health_check",
-                    failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { "example" })
-                .AddCheck<JiraHealthCheck>(
-                    "jira_health_check",
-                    failureStatus: HealthStatus.Unhealthy,
-                    tags: new[] { "jira", "network" });
+                .AddJiraHealthCheck();
             services.AddHealthChecksUI().AddInMemoryStorage();
         }
 
