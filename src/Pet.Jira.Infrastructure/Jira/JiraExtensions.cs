@@ -22,7 +22,8 @@ namespace Pet.Jira.Infrastructure.Jira
                     {
                         CompleteDate = item.ChangeLog.CreatedDate,
                         StartDate = DateTime.MinValue,
-                        Issue = item.ChangeLog.Issue.Adapt()
+                        Issue = item.ChangeLog.Issue.Adapt(),
+                        Author = item.Author
                     };
                 }
                 // 2. Это последний элемент и он не завершается
@@ -32,7 +33,8 @@ namespace Pet.Jira.Infrastructure.Jira
                     {
                         CompleteDate = DateTime.MaxValue,
                         StartDate = item.ChangeLog.CreatedDate,
-                        Issue = item.ChangeLog.Issue.Adapt()
+                        Issue = item.ChangeLog.Issue.Adapt(),
+                        Author = item.Author
                     };
                 }
                 // 3. Обычный случай когда после FromInProgress следует ToInProgress
@@ -42,7 +44,8 @@ namespace Pet.Jira.Infrastructure.Jira
                     {
                         CompleteDate = issueChangeLogItems[i + 1].ChangeLog.CreatedDate,
                         StartDate = item.ChangeLog.CreatedDate,
-                        Issue = item.ChangeLog.Issue.Adapt()
+                        Issue = item.ChangeLog.Issue.Adapt(),
+                        Author = item.Author
                     };
                 }
 
