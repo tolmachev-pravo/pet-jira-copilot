@@ -11,11 +11,10 @@ using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
-using Pet.Jira.Web.Authentication;
-using Pet.Jira.Web.Data;
-using System;
 using Pet.Jira.Infrastructure.Mock;
+using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
+using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
@@ -35,7 +34,6 @@ namespace Pet.Jira.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddMediatR(typeof(Startup));
             services.AddMudServices(config =>
             {
