@@ -35,7 +35,6 @@ namespace Pet.Jira.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddMediatR(typeof(Startup));
             services.AddMudServices(config =>
             {
