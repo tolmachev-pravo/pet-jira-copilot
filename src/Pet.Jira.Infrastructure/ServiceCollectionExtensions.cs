@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Issues;
+using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
@@ -23,6 +24,8 @@ namespace Pet.Jira.Infrastructure
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
             services.AddSingleton<ILoginStorage, LoginStorage>();
             services.AddTransient<IIssueDataSource, JiraIssueDataSource>();
+            services.AddTransient<IUserDataSource, JiraUserDataSource>();
+            services.AddSingleton<IUserStorage, JiraUserStorage>();
             return services;
         }
     }

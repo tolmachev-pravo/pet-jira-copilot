@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Time;
+using Pet.Jira.Application.Users;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
@@ -17,15 +19,21 @@ namespace Pet.Jira.Infrastructure.Jira
         private readonly IJiraService _jiraService;
         private readonly IJiraQueryFactory _queryFactory;
         private readonly IIdentityService _identityService;
+        private readonly ITimeProvider _timeProvider;
+        private readonly IUserDataSource _userDataSource;
 
         public JiraWorklogDataSource(
             IJiraService jiraService,
             IJiraQueryFactory queryFactory,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            ITimeProvider timeProvider,
+            IUserDataSource userDataSource)
         {
             _jiraService = jiraService;
             _queryFactory = queryFactory;
             _identityService = identityService;
+            _timeProvider = timeProvider;
+            _userDataSource = userDataSource;
         }
 
         /// <summary>
@@ -49,7 +57,7 @@ namespace Pet.Jira.Infrastructure.Jira
                 MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
             };
 
-            var currentUser = await _jiraService.GetCurrentUserAsync(cancellationToken);
+            var currentUser = await _userDataSource.GetCurrentUserAsync(cancellationToken);
             var worklogFilter = new Func<Worklog, bool>(worklog =>
                 worklog.Author == currentUser.Username
                 && worklog.StartDate >= query.StartDate
@@ -57,7 +65,7 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var issueWorklogs = await _jiraService.GetIssueWorklogsAsync(issueSearchOptions, worklogFilter, cancellationToken);
 
-            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>());
+            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>(_timeProvider, currentUser.TimeZoneInfo));
         }
 
         /// <summary>
@@ -82,7 +90,7 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
-            var user = _identityService.CurrentUser;
+            var currentUser = await _userDataSource.GetCurrentUserAsync(cancellationToken);
 
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
                 changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
@@ -101,12 +109,12 @@ namespace Pet.Jira.Infrastructure.Jira
                     .Where(item => item.ChangeLog.Issue.Key == issue.Key)
                     .OrderBy(item => item.ChangeLog.CreatedDate)
                     .ToList()
-                    .ConvertTo<RawIssueWorklog>(query.IssueStatusId)
+                    .ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, currentUser.TimeZoneInfo)
                     .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
                 result.AddRange(rawIssueWorklogs);
             }
 
-            return result.Where(item => item.Author == user.Username);
+            return result.Where(item => item.Author == currentUser.Username);
         }
     }
 }

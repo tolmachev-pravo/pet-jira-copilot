@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -213,9 +215,12 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default)
         {
             var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
+            var userData = _jiraClient.RestClient.DownloadData(myself.Self);
+            var timeZoneId = GetJsonParameterValue(userData, "timeZone");
             return new UserDto
             {
-                Username = myself.Username
+                Username = myself.Username,
+                TimeZoneId = timeZoneId
             };
         }
 
@@ -274,6 +279,13 @@ namespace Pet.Jira.Infrastructure.Jira
         {
             var issueStatuses = await _jiraClient.Statuses.GetStatusesAsync(cancellationToken);
             return issueStatuses.Select(issueStatus => IssueStatusDto.Create(issueStatus));
+        }
+
+        private static string GetJsonParameterValue(byte[] jsonObject, string parameter)
+        {
+            var json = System.Text.Encoding.UTF8.GetString(jsonObject);
+            var jsonNode = JsonNode.Parse(json);
+            return (string)jsonNode[parameter];
         }
     }
 }

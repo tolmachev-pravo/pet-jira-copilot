@@ -1,12 +1,10 @@
 ﻿using Pet.Jira.Application.Authentication.Dto;
+using Pet.Jira.Application.Storage;
 using System;
 
 namespace Pet.Jira.Application.Authentication
 {
-    public interface ILoginStorage
+    public interface ILoginStorage : IStorage<Guid, LoginDto>
     {
-        bool TryAdd(LoginDto dto);
-        bool TryGetValue(Guid id, out LoginDto dto);
-        bool TryRemove(Guid id, out LoginDto dto);
     }
 }
