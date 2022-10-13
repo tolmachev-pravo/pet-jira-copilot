@@ -11,8 +11,9 @@ using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
+using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
-using Pet.Jira.Web.Data;
+using Pet.Jira.Web.Common;
 using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -33,7 +34,6 @@ namespace Pet.Jira.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddMediatR(typeof(Startup));
             services.AddMudServices(config =>
             {
@@ -47,8 +47,15 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             services.AddTransient<IIdentityService, IdentityService>();
-            services.AddInfrastructure(Configuration.GetSection("Jira"));
+
+            // Layers
+            services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
+            // Mock
+            if (EnvironmentExtensions.IsMock())
+            {
+                services.AddMockInfrastructureLayer();
+            }
 
             // Authentication
             services.AddHttpContextAccessor();

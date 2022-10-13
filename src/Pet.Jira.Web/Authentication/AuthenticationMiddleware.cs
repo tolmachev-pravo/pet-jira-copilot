@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Pet.Jira.Application.Authentication;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -12,14 +10,13 @@ namespace Pet.Jira.Web.Authentication
 {
     public class AuthenticationMiddleware
     {
-        public static IDictionary<Guid, LoginRequest> Logins { get; private set; }
-            = new ConcurrentDictionary<Guid, LoginRequest>();
-
         private readonly RequestDelegate _next;
+        private readonly ILoginStorage _loginStorage;
 
-        public AuthenticationMiddleware(RequestDelegate next)
+        public AuthenticationMiddleware(RequestDelegate next, ILoginStorage loginStorage)
         {
             _next = next;
+            _loginStorage = loginStorage;
         }
 
         public async Task Invoke(HttpContext context)
@@ -27,12 +24,16 @@ namespace Pet.Jira.Web.Authentication
             if (context.Request.Path == "/login" && context.Request.Query.ContainsKey("key"))
             {
                 var key = Guid.Parse(context.Request.Query["key"]);
-                var info = Logins[key];
+                if (!_loginStorage.TryGetValue(key, out var loginDto))
+                {
+                    context.Response.Redirect("/error");
+                    return;
+                }
 
                 var claims = new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, info.Username),
-                    new Claim(ClaimTypes.UserData, info.Password)
+                    new Claim(ClaimTypes.Name, loginDto.Username),
+                    new Claim(ClaimTypes.UserData, loginDto.Password)
                 };
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -47,7 +48,7 @@ namespace Pet.Jira.Web.Authentication
                         AllowRefresh = true
                     });
 
-                Logins.Remove(key);
+                _loginStorage.TryRemove(key, out _);
                 context.Response.Redirect("/");
                 return;
 

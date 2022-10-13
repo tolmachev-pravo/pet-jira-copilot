@@ -8,11 +8,11 @@ namespace Pet.Jira.Application.Worklogs
 {
     public interface IWorklogDataSource
     {
-        Task<IEnumerable<IssueWorklog>> GetIssueWorklogsAsync(
+        Task<IEnumerable<IWorklog>> GetIssueWorklogsAsync(
             GetIssueWorklogs.Query query,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<RawIssueWorklog>> GetRawIssueWorklogsAsync(
+        Task<IEnumerable<IWorklog>> GetRawIssueWorklogsAsync(
             GetRawIssueWorklogs.Query query,
             CancellationToken cancellationToken = default);
     }

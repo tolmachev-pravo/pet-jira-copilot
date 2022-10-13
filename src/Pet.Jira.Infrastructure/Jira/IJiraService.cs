@@ -49,5 +49,8 @@ namespace Pet.Jira.Infrastructure.Jira
 
         Task<string> GetCurrentUserAvatarAsync(
             CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<IssueStatusDto>> GetIssueStatusesAsync(
+            CancellationToken cancellationToken = default);
     }
 }

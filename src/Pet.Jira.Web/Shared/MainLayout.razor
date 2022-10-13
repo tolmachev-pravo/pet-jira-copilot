@@ -11,10 +11,12 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h5" Class="ml-3">Jira workflow</MudText>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
-        <MudAppBarSpacer></MudAppBarSpacer>
+        <MudSpacer></MudSpacer>
         <AuthorizeView>
             <Authorized>
-                <img src="@avatar"/>
+                <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@avatar">
+                    <MudIcon Icon="@Icons.Rounded.AccountCircle" />
+                </MudAvatar>
                 <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
                 <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit"><MudIcon Icon="@Icons.Filled.Logout"/></MudLink>
             </Authorized>
@@ -45,18 +47,18 @@
 
 @code{
     bool _drawerOpen = true;
-    public string avatar = "images/default_user_icon_16.png";
+    public string avatar;
 
     void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
     }
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    var jiraAvatar = await _jiraService.GetCurrentUserAvatar();
-    //    avatar = string.IsNullOrEmpty(jiraAvatar)
-    //        ? "images/default_user_icon_16.png"
-    //        : jiraAvatar;
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        var jiraAvatar = await _jiraService.GetCurrentUserAvatarAsync();
+        avatar = string.IsNullOrEmpty(jiraAvatar)
+            ? string.Empty
+            : jiraAvatar;
+    }
 }

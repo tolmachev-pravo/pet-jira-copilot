@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Issues;
+using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
@@ -11,7 +13,7 @@ namespace Pet.Jira.Infrastructure
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration jiraConfigurationSection)
+        public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration jiraConfigurationSection)
         {
             services.AddTransient<IJiraService, JiraService>();
             services.AddTransient<IWorklogDataSource, JiraWorklogDataSource>();
@@ -20,6 +22,10 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
+            services.AddSingleton<ILoginStorage, LoginStorage>();
+            services.AddTransient<IIssueDataSource, JiraIssueDataSource>();
+            services.AddTransient<IUserDataSource, JiraUserDataSource>();
+            services.AddSingleton<IUserStorage, JiraUserStorage>();
             return services;
         }
     }
