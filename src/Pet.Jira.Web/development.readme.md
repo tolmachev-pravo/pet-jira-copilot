@@ -1,7 +1,7 @@
 ﻿- Шрифт
 -- Тест на картинках: Perpetia Titling MT 26
 - Цвета:
--- Фиолетовый: 6936E0 8260E5
+-- Фиолетовый: 8260E5
 -- Тень: EFF4F0
 -- Фон: F9FFFB. Opacity: 185
 - Иконки для Markdown: https://gist.github.com/rxaviers/7360908
