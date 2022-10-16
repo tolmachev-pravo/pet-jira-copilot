@@ -7,15 +7,22 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-    <PackageReference Include="MediatR" Version="10.0.1" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.9" />
-    <PackageReference Include="Toolbelt.Blazor.HotKeys" Version="12.1.1" />
+    <PackageReference Include="MudBlazor" Version="6.0.17" />
+    <PackageReference Include="MudBlazor.Markdown" Version="0.0.12" />
+    <PackageReference Include="Toolbelt.Blazor.HotKeys" Version="13.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Pet.Jira.Infrastructure\Pet.Jira.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="faq.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,11 @@
-﻿@page "/worklogs"
+﻿@page "/"
+@page "/worklogs"
 
 <MudOverlay Visible="@Model.InProgress" DarkBackground="true" Absolute="true">
     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 </MudOverlay>
 
-<MudGrid Spacing="1" Justify="Justify.FlexStart">
+<MudGrid Spacing="1" Justify="Justify.FlexStart" Style="pet-grid-container">
     <MudItem xs="2">
         <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
     </MudItem>
