@@ -8,11 +8,8 @@ namespace Pet.Jira.Web.Components.Markdown
 {
     public partial class MarkdownViewer : ComponentBase
     {
-        [Parameter]
-        public string MarkdownPath { get; set; }
-
-        [Inject]
-        private IMarkdownService MarkdownService { get; init; } = default!;
+        [Parameter] public string MarkdownPath { get; set; }
+        [Inject] private IMarkdownService MarkdownService { get; init; } = default!;
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private string Value { get; set; } = string.Empty;

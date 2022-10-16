@@ -2,7 +2,6 @@
 @using Pet.Jira.Infrastructure.Jira
 @inject IJiraService _jiraService
 
-<MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -11,6 +10,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h5" Class="ml-3">Jira workflow</MudText>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/tolmachev-pravo/Pet.Jira" Target="_blank" />
+        <!--<MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />-->
         <MudSpacer></MudSpacer>
         <AuthorizeView>
             <Authorized>
@@ -28,10 +28,10 @@
     <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Style="height: 100vh">
+    <MudMainContent Style="height: 100vh;" Class="pet-grid-container">
         <AuthorizeView>
             <Authorized>
-                <MudContainer Class="mt-6" MaxWidth="MaxWidth.ExtraLarge">
+                <MudContainer Class="mt-6 pet-grid-container" MaxWidth="MaxWidth.ExtraLarge">
                     @Body
                 </MudContainer>
             </Authorized>
@@ -44,8 +44,13 @@
     </MudMainContent>
 </MudLayout>
 
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+
+
 
 @code{
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
     bool _drawerOpen = true;
     public string avatar;
 

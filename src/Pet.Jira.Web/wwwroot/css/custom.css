@@ -1,14 +1,24 @@
 ﻿.mud-input {
     font-size: 0.9rem !important;
 }
-.pet-center {
+.pet-horizontal-center {
     display: block;
     margin-left: auto;
     margin-right: auto;
 }
 
+.pet-vertical-center {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pet-grid-container {
+    display: grid !important;
+}
+
 .pet-white {
-    color: white !important
+    color: white !important;
 }
 
 :root {

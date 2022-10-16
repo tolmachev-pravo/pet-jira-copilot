@@ -48,11 +48,15 @@
     .mud-chip-filled.mud-chip-color-error {
         background-color: #e39e99 !important;
     }
+
+    .mud-grid-spacing-xs-1 {
+        margin: 0px;
+    }
 </style>
 
 @if (Items.IsEmpty())
 {
-    <img src="images/search_preview.png" class="pet-center" />
+    <img src="images/search_preview.png" class="pet-horizontal-center pet-vertical-center" />
 }
 else
 {
@@ -73,7 +77,7 @@ else
                 <tr class="pet-table-day-header-tr">
                     <td colspan="1"></td>
                     <td colspan="1">
-                        <MudPaper Class="pet-center">
+                        <MudPaper Class="pet-horizontal-center">
                             <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress"/>
                         </MudPaper>
                     </td>
