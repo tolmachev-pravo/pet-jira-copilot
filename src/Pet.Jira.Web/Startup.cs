@@ -14,6 +14,7 @@ using Pet.Jira.Infrastructure;
 using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
+using Pet.Jira.Web.Components.Clipboard;
 using Pet.Jira.Web.Components.Markdown;
 using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
@@ -50,6 +51,7 @@ namespace Pet.Jira.Web
             services.AddMudMarkdownServices();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<IMarkdownService, MarkdownService>();
+            services.AddTransient<IClipboard, Clipboard>();
 
             // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));

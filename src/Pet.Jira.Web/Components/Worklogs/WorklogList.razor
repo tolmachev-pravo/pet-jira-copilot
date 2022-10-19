@@ -110,7 +110,13 @@ else
                         <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"></MudIcon></td>
                         <td>@entity.StartDate.ToString(DefaultTimeFormat)</td>
                         <td>@entity.CompleteDate.ToString(DefaultTimeFormat)</td>
-                        <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
+                        <td>
+                            <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" Size="Size.Small" Dense="true">
+                                <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync(entity))">Markdown (In review)</MudMenuItem>
+                                <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync(entity))">Markdown (In progress)</MudMenuItem>
+                            </MudMenu>
+                            <MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary 
+                        </td>
                         <td><MudTextField @bind-Value="@entity.TimeSpent" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
                         <td>
                             <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async () => await AddWorklogAsync(entity))" Disabled="@entity.IsEmpty"
