@@ -24,7 +24,9 @@ namespace Pet.Jira.Application.Time
         public DateTime ConvertToServerTimezone(DateTime dateTime, TimeZoneInfo userTimeZone)
         {
             var unspecifiedDateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
-            return TimeZoneInfo.ConvertTime(unspecifiedDateTime, userTimeZone, ServerTimezone);
+            var userTimeZoneOffset = userTimeZone.BaseUtcOffset;
+            var dateTimeOffset = new DateTimeOffset(unspecifiedDateTime, userTimeZoneOffset);
+            return TimeZoneInfo.ConvertTime(dateTimeOffset, ServerTimezone).DateTime;
         }
     }
 }
