@@ -27,7 +27,7 @@ namespace Pet.Jira.Infrastructure.Worklogs
         public async Task AddAsync(AddedWorklogDto worklog, CancellationToken cancellationToken = default)
         {
             var user = await _userDataSource.GetCurrentUserAsync(cancellationToken);
-            worklog.StartedAt = _timeProvider.ConvertToServerTimezone(worklog.StartedAt.ToLocalTime(), user.TimeZoneInfo);
+            worklog.StartedAt = _timeProvider.ConvertToServerTimezone(worklog.StartedAt, user.TimeZoneInfo);
             await _jiraService.AddWorklogAsync(worklog);
         }
     }
