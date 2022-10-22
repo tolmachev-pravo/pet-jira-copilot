@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Web.Common;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,9 +12,11 @@ namespace Pet.Jira.Web.Authentication
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILoginStorage _loginStorage;
+        private readonly ILoginMemoryCache _loginStorage;
 
-        public AuthenticationMiddleware(RequestDelegate next, ILoginStorage loginStorage)
+        public AuthenticationMiddleware(
+            RequestDelegate next, 
+            ILoginMemoryCache loginStorage)
         {
             _next = next;
             _loginStorage = loginStorage;
@@ -24,7 +27,7 @@ namespace Pet.Jira.Web.Authentication
             if (context.Request.Path == "/login" && context.Request.Query.ContainsKey("key"))
             {
                 var key = Guid.Parse(context.Request.Query["key"]);
-                if (!_loginStorage.TryGetValue(key, out var loginDto))
+                if (!_loginStorage.TryGetValue(key, out var login))
                 {
                     context.Response.Redirect("/error");
                     return;
@@ -32,8 +35,8 @@ namespace Pet.Jira.Web.Authentication
 
                 var claims = new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, loginDto.Username),
-                    new Claim(ClaimTypes.UserData, loginDto.Password)
+                    new Claim(ClaimTypes.Name, login.Username),
+                    new Claim(ClaimTypes.UserData, login.Password)
                 };
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -49,7 +52,7 @@ namespace Pet.Jira.Web.Authentication
                     });
 
                 _loginStorage.TryRemove(key, out _);
-                context.Response.Redirect("/");
+                context.Response.Redirect(WebConstants.Pages.Verification);
                 return;
 
             }

@@ -1,20 +1,20 @@
 ﻿@inherits LayoutComponentBase
-@using Pet.Jira.Infrastructure.Jira
-@inject IJiraService _jiraService
 
 <MudDialogProvider />
 <MudSnackbarProvider />
+
+<MudThemeProvider @bind-IsDarkMode="@_model.Theme.IsDarkMode" />
 
 <MudLayout Style="height: 100vh">
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h5" Class="ml-3">Jira workflow</MudText>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/tolmachev-pravo/Pet.Jira" Target="_blank" />
-        <!--<MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />-->
+        <MudSwitch CheckedChanged="@ToggleThemeAsync" Checked="@_model.Theme.IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode" />
         <MudSpacer></MudSpacer>
         <AuthorizeView>
             <Authorized>
-                <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@avatar">
+                <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@_model.Avatar">
                     <MudIcon Icon="@Icons.Rounded.AccountCircle" />
                 </MudAvatar>
                 <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
@@ -44,26 +44,8 @@
     </MudMainContent>
 </MudLayout>
 
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
-
 
 
 @code{
-    private MudTheme _theme = new();
-    private bool _isDarkMode;
-    bool _drawerOpen = true;
-    public string avatar;
 
-    void ToggleDrawer()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var jiraAvatar = await _jiraService.GetCurrentUserAvatarAsync();
-        avatar = string.IsNullOrEmpty(jiraAvatar)
-            ? string.Empty
-            : jiraAvatar;
-    }
 }
