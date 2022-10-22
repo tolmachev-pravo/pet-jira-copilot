@@ -1,4 +1,5 @@
 ﻿@using Pet.Jira.Application.Extensions
+@using Pet.Jira.Web.Components.Common
 
 <style>
     .pet-xs-9-10 {
@@ -48,7 +49,7 @@
 
 @if (Items.IsEmpty())
 {
-    <img src="images/search_preview.png" class="pet-horizontal-center pet-vertical-center" />
+    <Stub Message="DON'T BE EVIL" Icon="@Icons.Custom.Brands.Google" />
 }
 else
 {
