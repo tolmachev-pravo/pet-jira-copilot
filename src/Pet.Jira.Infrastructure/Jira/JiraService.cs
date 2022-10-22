@@ -34,7 +34,7 @@ namespace Pet.Jira.Infrastructure.Jira
             _linkGenerator = linkGenerator;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
-            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user.Username, _user.Password);
+            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user?.Username, _user?.Password);
         }
 
         /// <summary>
@@ -217,10 +217,16 @@ namespace Pet.Jira.Infrastructure.Jira
             var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
             var userData = _jiraClient.RestClient.DownloadData(myself.Self);
             var timeZoneId = GetJsonParameterValue(userData, "timeZone");
+            var avatarUrl = myself.AvatarUrls.Large;
+            var avatar = _jiraClient.RestClient.DownloadData(avatarUrl);
+            string img64 = Convert.ToBase64String(avatar);
+            string urlData = string.Format("data:image/jpg;base64, {0}", img64);
+
             return new UserDto
             {
                 Username = myself.Username,
-                TimeZoneId = timeZoneId
+                TimeZoneId = timeZoneId,
+                Avatar = urlData
             };
         }
 

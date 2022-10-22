@@ -14,7 +14,7 @@ namespace Pet.Jira.Web.Components.Authentication
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IMediator Mediator { get; set; }
-        [Inject] private ILoginStorage LoginStorage { get; set; }
+        [Inject] private ILoginMemoryCache LoginStorage { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private readonly ComponentModel Model = ComponentModel.Create();

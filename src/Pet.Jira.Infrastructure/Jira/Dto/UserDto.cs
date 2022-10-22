@@ -7,6 +7,7 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
     {
         public string Username { get; set; }
         public string TimeZoneId { get; set; }
+        public string Avatar { get; set; }
 
         public User ConvertToUser()
         {
@@ -14,6 +15,16 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
             {
                 Username = Username,
                 TimeZoneInfo = TZConvert.GetTimeZoneInfo(TimeZoneId)
+            };
+        }
+
+        public UserProfile ConvertToUserProfile()
+        {
+            return new UserProfile
+            {
+                Username = Username,
+                TimeZoneId = TimeZoneId,
+                Avatar = Avatar
             };
         }
     }

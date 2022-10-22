@@ -4,7 +4,7 @@ using System;
 
 namespace Pet.Jira.Application.Authentication
 {
-    public interface ILoginStorage : IStorage<Guid, LoginDto>
+    public interface ILoginMemoryCache : IMemoryCache<Guid, LoginDto>
     {
     }
 }
