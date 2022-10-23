@@ -1,5 +1,4 @@
 ﻿using Pet.Jira.Domain.Models.Users;
-using TimeZoneConverter;
 
 namespace Pet.Jira.Infrastructure.Jira.Dto
 {
@@ -8,15 +7,6 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         public string Username { get; set; }
         public string TimeZoneId { get; set; }
         public string Avatar { get; set; }
-
-        public User ConvertToUser()
-        {
-            return new User
-            {
-                Username = Username,
-                TimeZoneInfo = TZConvert.GetTimeZoneInfo(TimeZoneId)
-            };
-        }
 
         public UserProfile ConvertToUserProfile()
         {

@@ -9,5 +9,8 @@ namespace Pet.Jira.Application.Storage
         Task<TEntity> GetValueAsync(TKey key, CancellationToken cancellationToken = default);
         Task<bool> RemoveAsync(TKey key, CancellationToken cancellationToken = default);
         Task<bool> UpdateAsync(TKey key, TEntity newEntity, CancellationToken cancellationToken = default);
+
+        Task InitAsync(TKey key, CancellationToken cancellationToken = default);
+        Task ForceInitAsync(TKey key, CancellationToken cancellationToken = default);
     }
 }

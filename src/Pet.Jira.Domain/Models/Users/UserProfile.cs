@@ -1,5 +1,6 @@
 ﻿using Pet.Jira.Domain.Models.Abstract;
 using System;
+using TimeZoneConverter;
 
 namespace Pet.Jira.Domain.Models.Users
 {
@@ -9,6 +10,10 @@ namespace Pet.Jira.Domain.Models.Users
         public string TimeZoneId { get; set; }
         public string Avatar { get; set; }
         public bool UseDarkMode { get; set; }
+        public TimeZoneInfo TimeZoneInfo => TimeZoneId != null 
+            ? TZConvert.GetTimeZoneInfo(TimeZoneId)
+            : TimeZoneInfo.Local;
+
         public string Key => Username;
 
         public static UserProfile Create()
@@ -21,6 +26,11 @@ namespace Pet.Jira.Domain.Models.Users
             Username = userProfile.Username;
             TimeZoneId = userProfile.TimeZoneId;
             Avatar = userProfile.Avatar;
+        }
+
+        public void UpdateUseDarkMode(bool useDarkMode)
+        {
+            UseDarkMode = useDarkMode;
         }
     }
 }

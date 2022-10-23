@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace Pet.Jira.Infrastructure.Storage
 {
     public abstract class BaseLocalStorage<TEntity> : ILocalStorage<TEntity>
+        where TEntity : class
     {
         private readonly string _cacheItemName = typeof(TEntity).Name;
         private readonly ILocalStorageService _localStorage;
@@ -35,7 +36,7 @@ namespace Pet.Jira.Infrastructure.Storage
             }
             catch
             {
-                return default;
+                return null;
             }
         }
 

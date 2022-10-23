@@ -8,7 +8,8 @@ namespace Pet.Jira.Infrastructure.Users
     {
         public UserProfileStorage(
             ILocalStorage<UserProfile> localStorage, 
-            IMemoryCache<string, UserProfile> memoryCache) : base(localStorage, memoryCache)
+            IMemoryCache<string, UserProfile> memoryCache,
+            IDataSource<string, UserProfile> dataSource) : base(localStorage, memoryCache, dataSource)
         {
         }
     }
