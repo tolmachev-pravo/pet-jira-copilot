@@ -6,30 +6,84 @@ using System.Threading.Tasks;
 namespace Pet.Jira.Infrastructure.Storage
 {
     public abstract class BaseStorage<TKey, TEntity> : IStorage<TKey, TEntity>
-        where TEntity : IEntity<TKey>
+        where TEntity : class, IEntity<TKey> 
     {
         private readonly ILocalStorage<TEntity> _localStorage;
         private readonly IMemoryCache<TKey, TEntity> _memoryCache;
+        private readonly IDataSource<TKey, TEntity> _dataSource;
 
         public BaseStorage(
-            ILocalStorage<TEntity> localStorage,
-            IMemoryCache<TKey, TEntity> memoryCache)
+            ILocalStorage<TEntity> localStorage = null,
+            IMemoryCache<TKey, TEntity> memoryCache = null,
+            IDataSource<TKey, TEntity> dataSource = null)
         {
             _localStorage = localStorage;
             _memoryCache = memoryCache;
+            _dataSource = dataSource;
         }
 
         public virtual async Task<bool> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             if (!Equals(entity.Key, default(TKey)))
             {
-                return await _localStorage.AddAsync(entity, cancellationToken)
-                    && _memoryCache.TryAdd(entity);
+                await _localStorage.AddAsync(entity, cancellationToken);
+                _memoryCache.TryAdd(entity);
+                return true;
             }
             else
             {
                 return await _localStorage.AddAsync(entity, cancellationToken);
             }
+        }
+
+        /// <summary>
+        /// Принудительная синхронизация конкретной записи
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task ForceInitAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            TEntity entity = null;
+            if (_dataSource != null)
+            {
+                entity = await _dataSource.GetAsync(key, cancellationToken);
+            }
+            else if (_localStorage != null)
+            {
+                entity = await _localStorage.GetValueAsync(cancellationToken);
+            }
+            if (entity != null)
+            {
+                await UpdateAsync(key, entity);
+            }
+        }
+
+        /// <summary>
+        /// Инициализация конкретной записи
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task InitAsync(TKey key, CancellationToken cancellationToken = default)
+        {
+            if (_memoryCache.TryGetValue(key, out _))
+            {
+                return;
+            }
+            TEntity entity = await _localStorage?.GetValueAsync(cancellationToken);
+            if (entity != null)
+            {
+                await UpdateAsync(key, entity, cancellationToken);
+                return;
+            }
+
+            entity = await _dataSource?.GetAsync(key, cancellationToken);
+            if (entity != null)
+            {
+                await UpdateAsync(key, entity, cancellationToken);
+                return;
+            };
         }
 
         public virtual async Task<TEntity> GetValueAsync(TKey key, CancellationToken cancellationToken = default) 
@@ -44,7 +98,7 @@ namespace Pet.Jira.Infrastructure.Storage
                 entity = await _localStorage.GetValueAsync(cancellationToken);
                 if (entity != null)
                 {
-                    _memoryCache.TryAdd(entity);
+                    _memoryCache.TryUpdate(key, entity);
                 }
                 return entity;
             }
@@ -57,9 +111,10 @@ namespace Pet.Jira.Infrastructure.Storage
         public virtual async Task<bool> RemoveAsync(TKey key, CancellationToken cancellationToken = default) 
         {
             if (!Equals(key, default(TKey)))
-            {                
-                return await _localStorage.RemoveAsync(cancellationToken)
-                    && _memoryCache.TryRemove(key, out _);
+            {
+                await _localStorage.RemoveAsync(cancellationToken);
+                _memoryCache.TryRemove(key, out _);
+                return true;
             }
             else
             {
@@ -70,9 +125,10 @@ namespace Pet.Jira.Infrastructure.Storage
         public virtual async Task<bool> UpdateAsync(TKey key, TEntity newEntity, CancellationToken cancellationToken = default)
         {
             if (!Equals(key, default(TKey)))
-            {                
-                return await _localStorage.UpdateAsync(newEntity, cancellationToken) 
-                    && _memoryCache.TryUpdate(key, newEntity);
+            {
+                await _localStorage.UpdateAsync(newEntity, cancellationToken);
+                _memoryCache.TryUpdate(key, newEntity);
+                return true;
             }
             else
             {

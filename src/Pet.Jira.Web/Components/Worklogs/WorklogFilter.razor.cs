@@ -1,8 +1,10 @@
-﻿using Blazored.LocalStorage;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Issues.Queries;
+using Pet.Jira.Application.Storage;
+using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Infrastructure.Jira;
@@ -18,55 +20,69 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogFilter : ComponentBase
     {
-        private readonly ComponentModel Model = ComponentModel.Create();
-        private const string FilterCacheItemName = "WorklogFilter";
+        private readonly ComponentModel _model = ComponentModel.Create();
 
         [Parameter] public EventCallback<GetWorklogCollection.Query> OnSearchPressed { get; set; }
-        [Inject] private ILocalStorageService LocalStorage { get; set; }
         [Inject] private IMediator Mediator { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
+        [Inject] private IStorage<string, UserWorklogFilter> _filterStorage { get; set; }
+        [Inject] private IIdentityService _identityService { get; set; }
 
         protected async Task Search()
         {
-            await SaveFilterCache();
+            await SaveFilterAsync();
             await OnSearchPressed.InvokeAsync(new GetWorklogCollection.Query()
             {
-                StartDate = Model.Filter.StartDate.Value,
-                EndDate = Model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),
-                DailyWorkingStartTime = Model.Filter.DailyWorkingStartTime.Value,
-                DailyWorkingEndTime = Model.Filter.DailyWorkingEndTime.Value,
-                IssueStatusId = Model.Filter.IssueStatus.Id
+                StartDate = _model.Filter.StartDate.Value,
+                EndDate = _model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),
+                DailyWorkingStartTime = _model.Filter.DailyWorkingStartTime.Value,
+                DailyWorkingEndTime = _model.Filter.DailyWorkingEndTime.Value,
+                IssueStatusId = _model.Filter.IssueStatus.Id
             });
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            var user = await _identityService.GetCurrentUserAsync();
+            if (user != null)
+            {
+                var filter = await _filterStorage.GetValueAsync(user.Key);
+                _model.Filter.Initialize(filter);
+            }
         }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await TryInitFilterModelByCacheAsync();
+                await RenderFilterAsync();
+                StateHasChanged();
             }
             else
             {
-                await SaveFilterCache();
+                await SaveFilterAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        private async Task SaveFilterCache()
+        private async Task RenderFilterAsync()
         {
-            await LocalStorage.SetItemAsync(FilterCacheItemName, Model.Filter);
-        }
-
-        private async Task TryInitFilterModelByCacheAsync()
-        {
-            var filterCache = await LocalStorage.GetItemAsync<FilterModel>(FilterCacheItemName);
-            if (filterCache == null)
+            if (_model.Filter.IsInitialized)
             {
                 return;
             }
+            var user = await _identityService.GetCurrentUserAsync();
+            var filter = await _filterStorage.GetValueAsync(user?.Key);
+            _model.Filter.Initialize(filter);
+            await _filterStorage.UpdateAsync(user?.Key, filter);
+        }
 
-            Model.Filter = filterCache;
-            StateHasChanged();
+        private async Task SaveFilterAsync()
+        {
+            var user = await _identityService.GetCurrentUserAsync();
+            var filter = _model.Filter.Convert();
+            filter.Username = user?.Key;
+            await _filterStorage.UpdateAsync(user?.Key, filter);
         }
 
         private async Task<IEnumerable<IssueStatus>> SearchIssueStatuses(string value)
@@ -76,7 +92,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 var result = await Mediator.Send(new GetIssueStatuses.Query());
 
                 if (string.IsNullOrEmpty(value)
-                    || value.Equals(Model.Filter.IssueStatus?.Name, StringComparison.InvariantCultureIgnoreCase))
+                    || value.Equals(_model.Filter.IssueStatus?.Name, StringComparison.InvariantCultureIgnoreCase))
                     return result.IssueStatuses;
                 return result.IssueStatuses
                     .Where(status => status.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
@@ -84,8 +100,8 @@ namespace Pet.Jira.Web.Components.Worklogs
             catch (Exception e)
             {
                 ErrorHandler.ProcessError(e);
-                return await Task.FromResult(Model.Filter.IssueStatus != null
-                    ? new List<IssueStatus> { Model.Filter.IssueStatus }
+                return await Task.FromResult(_model.Filter.IssueStatus != null
+                    ? new List<IssueStatus> { _model.Filter.IssueStatus }
                     : Enumerable.Empty<IssueStatus>());
             }
         }
@@ -120,6 +136,28 @@ namespace Pet.Jira.Web.Components.Worklogs
 
             [Required]
             public IssueStatus IssueStatus { get; set; } = JiraConstants.Status.Default;
+
+            public bool IsInitialized { get; set; }
+
+            public void Initialize(UserWorklogFilter filter)
+            {
+                if (filter != null)
+                {
+                    DailyWorkingStartTime = filter.DailyWorkingStartTime;
+                    DailyWorkingEndTime = filter.DailyWorkingEndTime;
+                    IssueStatus = filter.IssueStatus;
+                }
+            }
+
+            public UserWorklogFilter Convert()
+            {
+                return new UserWorklogFilter
+                {
+                    DailyWorkingStartTime = DailyWorkingStartTime,
+                    DailyWorkingEndTime = DailyWorkingEndTime,
+                    IssueStatus = IssueStatus
+                };
+            }
         }
     }
 }

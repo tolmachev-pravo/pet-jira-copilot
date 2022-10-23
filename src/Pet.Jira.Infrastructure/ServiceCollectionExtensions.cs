@@ -5,6 +5,7 @@ using Pet.Jira.Application.Issues;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs;
+using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
@@ -27,11 +28,17 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
             services.AddTransient<IIssueDataSource, JiraIssueDataSource>();
-            services.AddTransient<IUserDataSource, JiraUserDataSource>();
-            services.AddSingleton<IUserStorage, JiraUserStorage>();
 
-            services.AddTransient<IStorage<string, UserProfile>, UserProfileStorage>();
             services.AddTransient<ILocalStorage<UserProfile>, UserProfileLocalStorage>();
+            services.AddTransient<IDataSource<string, UserProfile>, UserProfileDataSource>();
+            services.AddTransient<IStorage<string, UserProfile>, UserProfileStorage>();
+
+            services.AddTransient<ILocalStorage<UserTheme>, UserThemeLocalStorage>();
+            services.AddTransient<IStorage<string, UserTheme>, UserThemeStorage>();
+
+            services.AddTransient<ILocalStorage<UserWorklogFilter>, UserWorklogFilterLocalStorage>();
+            services.AddTransient<IStorage<string, UserWorklogFilter>, UserWorklogFilterStorage>();
+
             services.AddSingleton<ILoginMemoryCache, LoginMemoryCache>();
             return services;
         }

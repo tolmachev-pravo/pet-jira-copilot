@@ -5,6 +5,7 @@
         public static class Pages
         {
             public static string Verification = "/verification";
+            public static string Home = "/";
         }
     }
 }

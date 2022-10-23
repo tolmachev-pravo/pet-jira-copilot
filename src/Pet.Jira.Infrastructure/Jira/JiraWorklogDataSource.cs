@@ -1,6 +1,10 @@
 ﻿using Atlassian.Jira;
+using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Storage;
+using Pet.Jira.Application.Time;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Queries;
+using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Jira.Query;
 using System;
@@ -8,9 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Pet.Jira.Application.Authentication;
-using Pet.Jira.Application.Time;
-using Pet.Jira.Application.Users;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
@@ -20,20 +21,20 @@ namespace Pet.Jira.Infrastructure.Jira
         private readonly IJiraQueryFactory _queryFactory;
         private readonly IIdentityService _identityService;
         private readonly ITimeProvider _timeProvider;
-        private readonly IUserDataSource _userDataSource;
+        private readonly IStorage<string, UserProfile> _userProfileStorage;
 
         public JiraWorklogDataSource(
             IJiraService jiraService,
             IJiraQueryFactory queryFactory,
             IIdentityService identityService,
             ITimeProvider timeProvider,
-            IUserDataSource userDataSource)
+            IStorage<string, UserProfile> userProfileStorage)
         {
             _jiraService = jiraService;
             _queryFactory = queryFactory;
             _identityService = identityService;
             _timeProvider = timeProvider;
-            _userDataSource = userDataSource;
+            _userProfileStorage = userProfileStorage;
         }
 
         /// <summary>
@@ -57,15 +58,17 @@ namespace Pet.Jira.Infrastructure.Jira
                 MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
             };
 
-            var currentUser = await _userDataSource.GetCurrentUserAsync(cancellationToken);
+            var user = await _identityService.GetCurrentUserAsync();
+            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
+
             var worklogFilter = new Func<Worklog, bool>(worklog =>
-                worklog.Author == currentUser.Username
+                worklog.Author == userProfile.Username
                 && worklog.StartDate >= query.StartDate
                 && worklog.StartDate <= query.EndDate);
 
             var issueWorklogs = await _jiraService.GetIssueWorklogsAsync(issueSearchOptions, worklogFilter, cancellationToken);
 
-            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>(_timeProvider, currentUser.TimeZoneInfo));
+            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>(_timeProvider, userProfile.TimeZoneInfo));
         }
 
         /// <summary>
@@ -90,7 +93,8 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
-            var currentUser = await _userDataSource.GetCurrentUserAsync(cancellationToken);
+            var user = await _identityService.GetCurrentUserAsync();
+            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
 
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
                 changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
@@ -109,12 +113,12 @@ namespace Pet.Jira.Infrastructure.Jira
                     .Where(item => item.ChangeLog.Issue.Key == issue.Key)
                     .OrderBy(item => item.ChangeLog.CreatedDate)
                     .ToList()
-                    .ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, currentUser.TimeZoneInfo)
+                    .ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, userProfile.TimeZoneInfo)
                     .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
                 result.AddRange(rawIssueWorklogs);
             }
 
-            return result.Where(item => item.Author == currentUser.Username);
+            return result.Where(item => item.Author == userProfile.Username);
         }
     }
 }
