@@ -57,7 +57,6 @@ namespace Pet.Jira.Web.Authentication
                     });
 
                 _loginMemoryCache.TryRemove(key, out _);
-                await _next.Invoke(context);
                 context.Response.Redirect(WebConstants.Pages.Home);
                 return;
 
