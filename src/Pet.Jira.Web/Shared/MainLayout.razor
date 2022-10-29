@@ -1,37 +1,5 @@
 ﻿@inherits LayoutComponentBase
 
-<style>
-    .pet-application-label {
-    }
-
-    .pet-theme-switch-label {
-    }
-
-    @@media (max-width:320px) { /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
-    }
-
-    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
-        .pet-application-label {
-            display: none;
-        }
-
-        .pet-theme-switch-label {
-            display: none;
-        }
-    }
-
-    @@media (max-width:600px) { /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */
-    }
-
-    @@media (max-width:801px) { /* tablet, landscape iPad, lo-res laptops ands desktops */
-    }
-
-    @@media (max-width:1025px) { /* big landscape tablets, laptops, and desktops */
-    }
-
-    @@media (max-width:1281px) { /* hi-res laptops and desktops */
-    }
-</style>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -40,10 +8,10 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
-        <MudText Typo="Typo.h6" Class="ml-3 pet-application-label">Jira workflow</MudText>
+        <MudText Typo="Typo.h6" Class="ml-3 pet-not-display-on-mobile-480">Jira workflow</MudText>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/tolmachev-pravo/Pet.Jira" Target="_blank" />
         <MudSwitch CheckedChanged="@ToggleThemeAsync" Checked="@_model.Theme.IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool">
-            <MudElement Class="pet-theme-switch-label">Light/Dark</MudElement>
+            <MudElement Class="pet-not-display-on-mobile-480">Light/Dark</MudElement>
         </MudSwitch>
         <MudSpacer></MudSpacer>
         <AuthorizeView>

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Dto;
-using Pet.Jira.Web.Components.Clipboard;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
@@ -20,13 +19,10 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private ISnackbar Snackbar { get; set; }
         [Parameter] public IEnumerable<WorklogCollectionDay> Items { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
-        [Inject] private IClipboard _clipboard { get; set; }
-
-        private string DefaultTimeFormat = "HH:mm";
 
         public void Refresh(IEnumerable<WorklogCollectionDay> items)
         {
-            Items = Items;
+            Items = items;
             StateHasChanged();
         }
 
@@ -48,27 +44,6 @@ namespace Pet.Jira.Web.Components.Worklogs
             {
                 ErrorHandler.ProcessError(e);
             }
-        }
-
-        private async Task CopyToClipboardInReviewAsync(WorklogCollectionItem entity)
-        {
-            var text = $"**IN REVIEW** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}";
-            await CopyToClipboardAsync(text);
-        }
-
-        private async Task CopyToClipboardInProgressAsync(WorklogCollectionItem entity)
-        {
-            var text = $"**IN PROGRESS** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}";
-            await CopyToClipboardAsync(text);
-        }
-
-        private async Task CopyToClipboardAsync(string text)
-        {
-            await _clipboard.CopyToAsync(text);
-            Snackbar.Add(
-                $"Copied to clipboard",
-                Severity.Success,
-                config => { config.ActionColor = Color.Success; });
         }
 
         private class ComponentModel
