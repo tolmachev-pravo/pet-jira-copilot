@@ -29,8 +29,10 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
+    <div id="components-reconnect-modal"></div>
+
     <app>
-        <component type="typeof(App)" render-mode="ServerPrerendered" />
+        @(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered))
     </app>
 
     <div id="blazor-error-ui">
@@ -47,6 +49,14 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/MudBlazor.Markdown/MudBlazor.Markdown.min.js"></script>
+    <script>
+        Blazor.start({
+            reconnectionOptions: {
+                maxRetries: 10,
+                retryIntervalMilliseconds: 60000
+            }
+        });
+    </script>
     <script>
         // Wait until a 'reload' button appears
         new MutationObserver((mutations, observer) => {
