@@ -63,6 +63,7 @@ namespace Pet.Jira.Infrastructure.Mock
             IssueGenerator.Create(),
             IssueGenerator.Create(),
             IssueGenerator.Create(),
+            IssueGenerator.Create(),
             IssueGenerator.Create()
         };
 
@@ -73,6 +74,12 @@ namespace Pet.Jira.Infrastructure.Mock
                 StartDate = DateTime.Now.Date.AddHours(11),
                 TimeSpent = TimeSpan.FromHours(1),
                 Issue = Issues[0]
+            },
+            new IssueWorklog
+            {
+                StartDate = DateTime.Now.Date.AddHours(13),
+                TimeSpent = TimeSpan.FromHours(2),
+                Issue = Issues[7]
             },
             new IssueWorklog
             {

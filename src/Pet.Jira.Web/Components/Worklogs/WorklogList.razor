@@ -2,6 +2,7 @@
 @using Pet.Jira.Web.Components.Common
 
 <style>
+
     .pet-xs-9-10 {
         flex-basis: 83% !important;
         max-width: 83% !important;
@@ -45,6 +46,59 @@
     .mud-grid-spacing-xs-1 {
         margin: 0px;
     }
+
+    .pet-table-summary-chip {
+    }
+
+    .pet-table-summary-chip-label {
+    }
+
+    .mud-fab-size-small {
+        width: 32px;
+        height: 32px;
+    }
+
+    .mud-fab {
+        min-height: 32px;
+    }
+
+    .pet-input-control {
+        margin-top: 0px
+    }
+
+    .pet-button {
+        padding: 4px !important
+    }
+
+    .pet-input-control > .mud-input-control-input-container > div.mud-input.mud-input-text {
+        margin-top: 0px !important;
+    }
+
+    @@media (max-width:320px) { /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+    }
+
+    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
+        .pet-table-summary-chip-label {
+            display: none;
+        }
+    }
+
+    @@media (max-width:600px) { /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */
+    }
+
+    @@media (max-width:801px) { /* tablet, landscape iPad, lo-res laptops ands desktops */
+    }
+
+    @@media (max-width:1025px) { /* big landscape tablets, laptops, and desktops */
+    }
+
+    @@media (max-width:1281px) { /* hi-res laptops and desktops */
+    }
+
+    .pet-table-summary-date-container{
+        text-align: center;
+        width: 128px
+    }
 </style>
 
 @if (Items.IsEmpty())
@@ -53,96 +107,141 @@
 }
 else
 {
-    <MudSimpleTable Dense=true Hover=true>
+    <MudSimpleTable Dense=true Hover=true Class="mud-table-container">
         <thead>
-        <tr>
-            <th></th>
-            <th class="pet-time-tr">Started</th>
-            <th class="pet-time-tr">Completed</th>
-            <th>Issue</th>
-            <th>Time Spent</th>
-            <th></th>
-        </tr>
         </thead>
         <tbody>
             @foreach (var item in Items)
             {
-                <tr class="pet-table-day-header-tr">
-                    <td colspan="1"></td>
-                    <td colspan="1">
-                        <MudPaper Class="pet-horizontal-center">
-                            <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress"/>
-                        </MudPaper>
-                    </td>
-                    <td colspan="4">
-                        <b>@item.Date.ToString("dd-MM-yyyy")</b>
-                        <MudContainer Class="pet-table-summary-container">
-                            <MudChip Color="Color.Default" Size="Size.Small"><b>Logged time: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
-                            <MudChip Color="Color.Default" Size="Size.Small"><b>Estimated time: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")</MudChip>
-                            @if (@item.Date.DayOfWeek == DayOfWeek.Saturday || @item.Date.DayOfWeek == DayOfWeek.Sunday)
-                            {
-                                <MudChip Color="Color.Error" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
-                            }
-                            else
-                            {
-                                <MudChip Color="Color.Default" Size="Size.Small"><b>Day of week: </b> @item.Date.DayOfWeek</MudChip>
-                            }
+                <tr>
+                    <td>
+                        <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+                            <MudPaper Class="flex-none d-flex gap-4 py-2 align-center" Width="196px" Elevation="0">
+                                <MudPaper Width="64px" Elevation="0">
+                                    <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress" />
+                                </MudPaper>
+                                <MudPaper Class="pet-table-summary-date-container" Width="128px" Elevation="0">
+                                    <b>@item.Date.ToString("dd-MM-yyyy")</b>
+                                </MudPaper>
+                            </MudPaper>
+                            <MudPaper Class="flex-auto d-flex gap-1" Width="300px" Elevation="0">
 
-                        </MudContainer>
-                            @if (item.HasRawEstimatedWorklogs)
-                            {
-                                <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
-                                    <MudIcon Icon="@Icons.Sharp.AddCircle" Color="Color.Primary"/>
-                                </MudBadge>
-                            }
+                                <MudChip Color="Color.Default" Size="Size.Small">
+                                    <b class="pet-table-summary-chip-label">Logged: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
+                                </MudChip>
+                                <MudChip Color="Color.Default" Size="Size.Small">
+                                    <b class="pet-table-summary-chip-label">Estimated: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")
+                                </MudChip>
+                                @if (@item.Date.DayOfWeek == DayOfWeek.Saturday || @item.Date.DayOfWeek == DayOfWeek.Sunday)
+                                {
+                                    <MudChip Color="Color.Error" Size="Size.Small">
+                                        <b class="pet-table-summary-chip-label">Day: </b> @item.Date.DayOfWeek
+                                    </MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Default" Size="Size.Small">
+                                        <b class="pet-table-summary-chip-label">Day: </b> @item.Date.DayOfWeek
+                                    </MudChip>
+                                }
+                                @if (item.HasRawEstimatedWorklogs)
+                                {
+                                    <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Default" Overlap="true" Bordered="true" Class="pet-table-mud-badge-counter">
+                                        <MudIcon Icon="@Icons.Sharp.AddCircle" Color="Color.Primary" />
+                                    </MudBadge>
+                                }
+                            </MudPaper>
+                        </MudPaper>
                     </td>
                 </tr>
                 @foreach (var entity in item.EstimatedItems)
                 {
                     <tr>
-                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"></MudIcon></td>
-                        <td>@entity.StartDate.ToString(DefaultTimeFormat)</td>
-                        <td>@entity.CompleteDate.ToString(DefaultTimeFormat)</td>
                         <td>
-                            <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary" Size="Size.Small" Dense="true">
-                                <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync(entity))">Markdown (In review)</MudMenuItem>
-                                <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync(entity))">Markdown (In progress)</MudMenuItem>
-                            </MudMenu>
-                            <MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary 
-                        </td>
-                        <td><MudTextField @bind-Value="@entity.TimeSpent" Variant="Variant.Text" IconSize="Size.Small"></MudTextField></td>
-                        <td>
-                            <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async () => await AddWorklogAsync(entity))" Disabled="@entity.IsEmpty"
-                                    Style="padding: 4px !important">
-                            </MudFab>
+                            <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+                                <MudPaper Class="flex-none d-flex gap-1" Width="128px" Elevation="0">
+                                        <MudChip Color="Color.Primary" Size="Size.Small">
+                                        @entity.StartDate.ToString(DefaultTimeFormat) <MudIcon Icon="@Icons.Filled.ArrowRightAlt" Size="Size.Small"/> @entity.CompleteDate.ToString(DefaultTimeFormat)
+                                        </MudChip>
+                                </MudPaper>
+                                <MudPaper Class="flex-auto d-flex gap-1" Width="300px" Elevation="0">
+                                    <MudPaper MinWidth="300px" Elevation="0">
+                                        <WorklogMenu Entity="@entity" Color="Color.Primary"/>
+                                        <MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary
+                                    </MudPaper>
+                                </MudPaper>
+                                <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
+                                    <MudPaper Width="96px" Elevation="0">
+                                        <MudTextField @bind-Value="@entity.TimeSpent" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
+                                    </MudPaper>
+                                    <MudPaper Width="40px" Elevation="0">
+                                        <MudFab Size="Size.Small" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@(async () => await AddWorklogAsync(entity))"
+                                    Disabled="@entity.IsEmpty"
+                                    Class="pet-button" />
+                                    </MudPaper>
+                                </MudPaper>
+                            </MudPaper>
                         </td>
                     </tr>
                     @foreach (var child in entity.ChildItems)
                     {
                         <tr>
-                            <td></td>
-                            <td><MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Default"></MudIcon></td>
-                            <td>@child.StartDate.ToString(DefaultTimeFormat)</td>
-                            <td><MudLink Href="@child.Issue.Link" Typo="Typo.body2">@child.Issue.Key</MudLink> @child.Issue.Summary</td>
-                            <td>@child.TimeSpent</td>
-                            <td><MudFab Color="Color.Tertiary" Icon="@Icons.TwoTone.Check" Size="Size.Small"></MudFab></td>
+                            <td>
+                                <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+                                    <MudPaper Class="flex-none d-flex gap-1" Width="128px" Elevation="0">
+                                    </MudPaper>
+                                    <MudPaper Class="flex-auto d-flex gap-1" Width="300px" Elevation="0">
+                                        <MudPaper MinWidth="300px" Elevation="0">
+                                            <MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Default"/>
+                                            <MudLink Href="@child.Issue.Link" Typo="Typo.body2">@child.Issue.Key</MudLink> @child.Issue.Summary
+                                        </MudPaper>
+                                    </MudPaper>
+                                    <MudPaper Class="flex-none d-flex gap-4 align-center" Width="128px" Elevation="0">
+                                        <MudPaper Width="96px" Elevation="0">
+                                            @child.TimeSpent
+                                        </MudPaper>
+                                        <MudPaper Width="40px" Elevation="0">
+                                            <MudFab Color="Color.Tertiary" Icon="@Icons.TwoTone.Check" Size="Size.Small"></MudFab>
+                                        </MudPaper>
+                                    </MudPaper>
+                                </MudPaper>
+                            </td>
                         </tr>
                     }
                 }
                 @foreach (var entity in item.ActualItems.Where(item => item.ParentItem == null))
                 {
                     <tr>
-                        <td><MudIcon Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"></MudIcon></td>
-                        <td></td>
-                        <td>@entity.StartDate.ToString(DefaultTimeFormat)</td>
-                        <td><MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary</td>
-                        <td>@entity.TimeSpent</td>
-                        <td><MudFab Color="Color.Tertiary" Icon="@Icons.Filled.Check" Size="Size.Small"></MudFab></td>
+                        <td>
+                            <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+                                <MudPaper Class="flex-none d-flex gap-1" Width="128px" Elevation="0">
+                                        <MudChip Color="Color.Tertiary" Size="Size.Small">
+                                        @entity.StartDate.AddTicks(-@entity.TimeSpent.Ticks).ToString(DefaultTimeFormat) <MudIcon Icon="@Icons.Filled.ArrowRightAlt" /> @entity.StartDate.ToString(DefaultTimeFormat)
+                                        </MudChip>
+                                </MudPaper>
+                                <MudPaper Class="flex-auto d-flex gap-1" Width="300px" Elevation="0">
+                                    <MudPaper MinWidth="300px" Elevation="0">
+                                        <WorklogMenu Entity="@entity" Color="Color.Primary"/>
+                                        <MudLink Href="@entity.Issue.Link" Typo="Typo.body2">@entity.Issue.Key</MudLink> @entity.Issue.Summary
+                                    </MudPaper>
+                                </MudPaper>
+                                <MudPaper Class="flex-none d-flex gap-4 align-center" Width="128px" Elevation="0">
+                                    <MudPaper Width="96px" Elevation="0">
+                                        @entity.TimeSpent
+                                    </MudPaper>
+                                    <MudPaper Width="40px" Elevation="0">
+                                        <MudFab Color="Color.Tertiary" Icon="@Icons.TwoTone.Check" Size="Size.Small"></MudFab>
+                                    </MudPaper>
+                                </MudPaper>
+                            </MudPaper>
+                        </td>
                     </tr>
                 }
+
             }
         </tbody>
     </MudSimpleTable>
 }
 
-@code {}
+@code {
+    }

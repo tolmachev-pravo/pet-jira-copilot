@@ -5,14 +5,13 @@
     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 </MudOverlay>
 
-<MudGrid Spacing="1" Justify="Justify.FlexStart" Style="pet-grid-container">
-    <MudItem xs="2">
+<MudPaper Class="d-flex flex-wrap gap-4 border-none" Outlined="true">
+    <MudPaper Class="flex-none pa-4" Width="280px" Square="true" Outlined="true">
         <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
-    </MudItem>
-    <MudDivider Vertical="true" FlexItem="true" />
-    <MudItem xs="9" Class="pet-xs-9-10">
+    </MudPaper> 
+    <MudPaper Class="flex-1 d-flex py-4" Outlined="true">
         <WorklogList Items="@Model.Items"></WorklogList>
-    </MudItem>
-</MudGrid>
+    </MudPaper>
+</MudPaper>
 
 @code {}
