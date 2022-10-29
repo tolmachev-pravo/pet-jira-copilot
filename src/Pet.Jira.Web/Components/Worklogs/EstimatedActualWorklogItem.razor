@@ -1,16 +1,4 @@
-﻿<style>
-    .pet-time-spent-container1 {
-        width: 128px;
-    }
-
-    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
-        .pet-time-spent-container {
-             width: 128px;
-        }
-    }
-</style>
-
-<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+﻿<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
     <MudPaper Class="flex-auto d-flex gap-1 align-center" Width="150px" Elevation="0">
         <MudPaper Class="flex-none" Width="105px" Elevation="0">
         </MudPaper>
@@ -19,7 +7,7 @@
             <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
         </MudElement>
     </MudPaper>
-    <MudPaper Class="flex-none d-flex justify-end pet-time-spent-container1 align-center" Elevation="0">
+    <MudPaper Class="flex-none d-flex justify-end align-center" Elevation="0" Width="128px">
         <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
             <MudTextField @bind-Value="@Entity.TimeSpent" Disabled="true" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
             <MudPaper Width="40px" Elevation="0">

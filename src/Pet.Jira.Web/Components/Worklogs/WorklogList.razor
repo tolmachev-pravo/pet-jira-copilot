@@ -2,44 +2,12 @@
 @using Pet.Jira.Web.Components.Common
 
 <style>
-    .pet-paper {
-        background-color: inherit;
-    }
-
-    .pet-table-summary-tr {
-        background-color: var(--mud-palette-background-grey);
-    }
-
-    .pet-xs-9-10 {
-        flex-basis: 83% !important;
-        max-width: 83% !important;
-        padding-left: 22px !important;
-    }
-
-    .pet-time-tr {
-        min-width: 50px;
-    }
-
-    .pet-table-day-summary-td {
-        font-size: 12px !important;
-    }
-
     .mud-simple-table.mud-table-dense * tr td {
         padding: 4px 14px 4px 14px;
     }
 
     .mud-chip {
         margin: 0px;
-    }
-
-    .pet-table-mud-badge-counter {
-        margin-left: 0px
-    }
-
-    .pet-table-summary-container {
-        display: inline-block !important;
-        width: auto !important;
-        padding-right: 8px !important;
     }
 
     .mud-progress-linear-bar {
@@ -52,12 +20,6 @@
 
     .mud-grid-spacing-xs-1 {
         margin: 0px;
-    }
-
-    .pet-table-summary-chip {
-    }
-
-    .pet-table-summary-chip-label {
     }
 
     .mud-fab-size-small {
@@ -81,30 +43,21 @@
         margin-top: 0px !important;
     }
 
-    @@media (max-width:320px) { /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
-    }
-
-    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
-        .pet-table-summary-chip-label {
-            display: none;
-        }
-    }
-
-    @@media (max-width:600px) { /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */
-    }
-
-    @@media (max-width:801px) { /* tablet, landscape iPad, lo-res laptops ands desktops */
-    }
-
-    @@media (max-width:1025px) { /* big landscape tablets, laptops, and desktops */
-    }
-
-    @@media (max-width:1281px) { /* hi-res laptops and desktops */
-    }
-
-    .pet-table-summary-date-container{
+    .pet-table-summary-date-container {
         text-align: center;
         width: 128px
+    }
+
+    .pet-table-mud-badge-counter {
+        margin-left: 0px
+    }
+
+    .pet-paper {
+        background-color: inherit;
+    }
+
+    .pet-table-summary-tr {
+        background-color: var(--mud-palette-background-grey);
     }
 </style>
 
@@ -120,7 +73,7 @@ else
             {
                 <tr class="pet-table-summary-tr">
                     <td>
-                        <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper"  Elevation="0" Width="100%">
+                        <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper" Elevation="0" Width="100%">
                             <MudPaper Class="flex-none d-flex gap-4 py-2 align-center pet-paper" Width="196px" Elevation="0">
                                 <MudPaper Width="64px" Elevation="0">
                                     <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress" />
@@ -132,21 +85,21 @@ else
                             <MudPaper Class="flex-auto d-flex gap-1 pet-paper" Width="300px" Elevation="0">
 
                                 <MudChip Color="Color.Default" Size="Size.Small">
-                                    <b class="pet-table-summary-chip-label">Logged: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
+                                    <b class="pet-not-display-on-mobile-480">Logged: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
                                 </MudChip>
                                 <MudChip Color="Color.Default" Size="Size.Small">
-                                    <b class="pet-table-summary-chip-label">Estimated: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")
+                                    <b class="pet-not-display-on-mobile-480">Estimated: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")
                                 </MudChip>
                                 @if (@item.Date.DayOfWeek == DayOfWeek.Saturday || @item.Date.DayOfWeek == DayOfWeek.Sunday)
                                 {
                                     <MudChip Color="Color.Error" Size="Size.Small">
-                                        <b class="pet-table-summary-chip-label">Day: </b> @item.Date.DayOfWeek
+                                        <b class="pet-not-display-on-mobile-480">Day: </b> @item.Date.DayOfWeek
                                     </MudChip>
                                 }
                                 else
                                 {
                                     <MudChip Color="Color.Default" Size="Size.Small">
-                                        <b class="pet-table-summary-chip-label">Day: </b> @item.Date.DayOfWeek
+                                        <b class="pet-not-display-on-mobile-480">Day: </b> @item.Date.DayOfWeek
                                     </MudChip>
                                 }
                                 @if (item.HasRawEstimatedWorklogs)
@@ -183,11 +136,7 @@ else
                         </td>
                     </tr>
                 }
-
             }
         </tbody>
     </MudSimpleTable>
 }
-
-@code {
-    }
