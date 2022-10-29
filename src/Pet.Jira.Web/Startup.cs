@@ -17,6 +17,8 @@ using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
+using Pet.Jira.Web.Components.Clipboard;
+using Pet.Jira.Web.Components.Markdown;
 using System;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -49,7 +51,10 @@ namespace Pet.Jira.Web
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddMudMarkdownServices();
+            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IMarkdownService, MarkdownService>();
+            services.AddTransient<IClipboard, Clipboard>();
 
             // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));

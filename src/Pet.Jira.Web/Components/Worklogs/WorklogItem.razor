@@ -1,0 +1,45 @@
+﻿<style>
+    .pet-time-spent-container {
+        width: 128px;
+    }
+
+    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
+        .pet-time-spent-container {
+            width: 100%;
+        }
+    }
+</style>
+
+<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+    <MudPaper Class="flex-auto gap-1 align-center" Width="300px" Elevation="0">
+        <MudChip Color="Color.Primary" Size="Size.Small">
+            @Entity.StartDate.ToString(_defaultTimeFormat) <MudIcon Icon="@Icons.Filled.ArrowRightAlt" Size="Size.Small" /> @Entity.CompleteDate.ToString(_defaultTimeFormat)
+        </MudChip>
+        <WorklogMenu Entity="@Entity" Color="Color.Primary" />
+        <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
+    </MudPaper>
+    <MudPaper Class="flex-none d-flex justify-end pet-time-spent-container align-center" Elevation="0">
+        <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
+            <MudTextField @bind-Value="@Entity.TimeSpent" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
+            <MudPaper Width="40px" Elevation="0">
+                <MudFab Size="Size.Small"
+                        Icon="@Icons.Material.Filled.Add"
+                        Color="Color.Primary"
+                        OnClick="AddAsync"
+                        Disabled="@Entity.IsEmpty"
+                        Class="pet-button" />
+            </MudPaper>
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+
+@code {
+    // gap-1 - for controlling gutters between grid and flexbox items. https://mudblazor.com/utilities/gap#basic-usage
+    // d-flex - enable flex. https://mudblazor.com/utilities/enable-flex#enabling-flexbox
+    // flex-wrap - controlling how flex items wrap. the flex items break into multiple lines. https://mudblazor.com/utilities/flex-wrap#wrap
+    // border-none.
+    // align-center - vertical align elements inside paper
+    // flex-none - prevents a flex item from growing or shrinking. https://mudblazor.com/utilities/flex#basic-usage-none
+    // flex-auto - allows a flex item to grow and shrink as needed and taking its initial size into account
+}

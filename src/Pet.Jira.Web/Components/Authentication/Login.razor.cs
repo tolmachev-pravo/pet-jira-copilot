@@ -7,6 +7,10 @@ using Pet.Jira.Web.Shared;
 using System;
 using System.Threading.Tasks;
 using Pet.Jira.Web.Components.Common;
+using Pet.Jira.Infrastructure.Users;
+using Pet.Jira.Web.Authentication;
+using Pet.Jira.Application.Storage;
+using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Web.Components.Authentication
 {
@@ -14,7 +18,10 @@ namespace Pet.Jira.Web.Components.Authentication
     {
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private IMediator Mediator { get; set; }
-        [Inject] private ILoginStorage LoginStorage { get; set; }
+        [Inject] private ILoginMemoryCache LoginMemoryCache { get; set; }
+        [Inject] private IStorage<string, UserProfile> _userProfileStorage { get; set; }
+        [Inject] private IDataSource<string, UserProfile> _userProfileDataSource { get; set; }
+        [Inject] private IIdentityService _identityService { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
         private readonly ComponentModel Model = ComponentModel.Create();
@@ -37,7 +44,7 @@ namespace Pet.Jira.Web.Components.Authentication
                 Model.StateTo(ComponentModelState.InProgress);
                 await Mediator.Send(new Application.Worklogs.Commands.Login.Command(Model.LoginRequest));
                 var loginDto = LoginDto.Create(Model.LoginRequest);
-                LoginStorage.TryAdd(loginDto);
+                LoginMemoryCache.TryAdd(loginDto);
                 NavigationManager.NavigateTo($"/login?key={loginDto.Id}", true);
             }
             catch (Exception e)

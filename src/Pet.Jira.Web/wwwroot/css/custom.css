@@ -1,16 +1,51 @@
 ﻿.mud-input {
     font-size: 0.9rem !important;
 }
-.pet-center {
+.pet-horizontal-center {
     display: block;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
+}
+
+.pet-vertical-center {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pet-grid-container {
+    display: grid !important;
 }
 
 .pet-white {
-    color: white !important
+    color: white !important;
 }
 
 :root {
-    --mud-drawer-width-left: 190px !important;
+    --mud-drawer-width-left: 180px !important;
+}
+
+.pet-not-display-on-mobile-480 {
+}
+
+@media (max-width:320px) { /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+}
+
+@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
+    .pet-not-display-on-mobile-480 {
+        display: none;
+    }
+}
+
+@media (max-width:600px) { /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */
+}
+
+@media (max-width:801px) { /* tablet, landscape iPad, lo-res laptops ands desktops */
+}
+
+@media (max-width:1025px) { /* big landscape tablets, laptops, and desktops */
+}
+
+@media (max-width:1281px) { /* hi-res laptops and desktops */
 }

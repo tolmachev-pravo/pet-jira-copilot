@@ -40,7 +40,7 @@ namespace Pet.Jira.Application.Worklogs.Commands
             {
                 try
                 {
-                    await _worklogRepository.AddAsync(request.Worklog);
+                    await _worklogRepository.AddAsync(request.Worklog, cancellationToken);
                     return new Model { Worklog = request.Worklog };
                 }
                 catch (AuthenticationException e)

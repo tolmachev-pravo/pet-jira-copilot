@@ -16,19 +16,21 @@ namespace Pet.Jira.Web.Authentication
             _authenticationStateProvider = authenticationStateProvider;
         }
 
-        public User CurrentUser => GetCurrentUser().GetAwaiter().GetResult();
+        public User CurrentUser => GetCurrentUserAsync().GetAwaiter().GetResult();
 
-        public async Task<User> GetCurrentUser()
+        public async Task<User> GetCurrentUserAsync()
         {
             var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authenticationState.User;
-            return new User
-            {
-                Username = user.Identity.Name,
-                Password = user.Claims
-                    .FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)?
-                    .Value
-            };
+            return user.Identity.IsAuthenticated
+                ? new User
+                {
+                    Username = user.Identity.Name,
+                    Password = user.Claims
+                        .FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)?
+                        .Value
+                }
+                : null;
         }
     }
 }

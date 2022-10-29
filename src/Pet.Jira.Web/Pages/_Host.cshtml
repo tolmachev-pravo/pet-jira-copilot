@@ -17,6 +17,16 @@
     <link href="css/custom.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="_content/MudBlazor.Markdown/MudBlazor.Markdown.min.css" rel="stylesheet" />
+    <link href="Pet.Jira.Web.styles.css" rel="stylesheet" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
     <app>
@@ -36,5 +46,21 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/MudBlazor.Markdown/MudBlazor.Markdown.min.js"></script>
+    <script>
+        // Wait until a 'reload' button appears
+        new MutationObserver((mutations, observer) => {
+            if (document.querySelector('#components-reconnect-modal h5 a')) {
+                // Now every 10 seconds, see if the server appears to be back, and if so, reload
+                async function attemptReload() {
+                    await fetch(''); // Check the server really is back
+                    location.reload();
+                }
+                observer.disconnect();
+                attemptReload();
+                setInterval(attemptReload, 10000);
+            }
+        }).observe(document.body, { childList: true, subtree: true });
+    </script>
 </body>
 </html>

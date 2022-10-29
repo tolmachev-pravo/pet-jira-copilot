@@ -1,4 +1,5 @@
-﻿using Pet.Jira.Domain.Models.Worklogs;
+﻿using Pet.Jira.Application.Time;
+using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,10 @@ namespace Pet.Jira.Infrastructure.Jira
 {
     public static class JiraExtensions
     {
-        public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems, string issueStatusId)
+        public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems, 
+            string issueStatusId,
+            ITimeProvider timeProvider,
+            TimeZoneInfo timeZoneInfo)
             where T: IWorklog, new()
         {
             var i = 0;
@@ -20,7 +24,7 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     yield return new T()
                     {
-                        CompleteDate = item.ChangeLog.CreatedDate,
+                        CompleteDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
                         StartDate = DateTime.MinValue,
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author
@@ -32,7 +36,7 @@ namespace Pet.Jira.Infrastructure.Jira
                     yield return new T()
                     {
                         CompleteDate = DateTime.MaxValue,
-                        StartDate = item.ChangeLog.CreatedDate,
+                        StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author
                     };
@@ -42,8 +46,8 @@ namespace Pet.Jira.Infrastructure.Jira
                 {
                     yield return new T()
                     {
-                        CompleteDate = issueChangeLogItems[i + 1].ChangeLog.CreatedDate,
-                        StartDate = item.ChangeLog.CreatedDate,
+                        CompleteDate = timeProvider.ConvertToUserTimezone(issueChangeLogItems[i + 1].ChangeLog.CreatedDate, timeZoneInfo),
+                        StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author
                     };

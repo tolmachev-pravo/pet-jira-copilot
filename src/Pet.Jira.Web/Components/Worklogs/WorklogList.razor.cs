@@ -20,11 +20,9 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public IEnumerable<WorklogCollectionDay> Items { get; set; }
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
-        private string DefaultTimeFormat = "HH:mm";
-
         public void Refresh(IEnumerable<WorklogCollectionDay> items)
         {
-            Items = Items;
+            Items = items;
             StateHasChanged();
         }
 

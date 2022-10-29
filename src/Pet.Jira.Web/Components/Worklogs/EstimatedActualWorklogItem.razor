@@ -1,0 +1,31 @@
+﻿<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
+    <MudPaper Class="flex-auto d-flex gap-1 align-center" Width="150px" Elevation="0">
+        <MudPaper Class="flex-none" Width="105px" Elevation="0">
+        </MudPaper>
+        <MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Default" Size="Size.Small" />
+        <MudElement Class="pet-not-display-on-mobile-480">
+            <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
+        </MudElement>
+    </MudPaper>
+    <MudPaper Class="flex-none d-flex justify-end align-center" Elevation="0" Width="128px">
+        <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
+            <MudTextField @bind-Value="@Entity.TimeSpent" Disabled="true" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
+            <MudPaper Width="40px" Elevation="0">
+                <MudFab Size="Size.Small"
+                        Icon="@Icons.Material.Filled.Check"
+                        Color="Color.Tertiary" />
+            </MudPaper>
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+
+@code {
+    // gap-1 - for controlling gutters between grid and flexbox items. https://mudblazor.com/utilities/gap#basic-usage
+    // d-flex - enable flex. https://mudblazor.com/utilities/enable-flex#enabling-flexbox
+    // flex-wrap - controlling how flex items wrap. the flex items break into multiple lines. https://mudblazor.com/utilities/flex-wrap#wrap
+    // border-none.
+    // align-center - vertical align elements inside paper
+    // flex-none - prevents a flex item from growing or shrinking. https://mudblazor.com/utilities/flex#basic-usage-none
+    // flex-auto - allows a flex item to grow and shrink as needed and taking its initial size into account
+}

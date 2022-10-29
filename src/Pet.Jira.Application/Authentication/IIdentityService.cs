@@ -5,7 +5,7 @@ namespace Pet.Jira.Application.Authentication
 {
     public interface IIdentityService
     {
-        Task<User> GetCurrentUser();
+        Task<User> GetCurrentUserAsync();
         User CurrentUser { get; }
     }
 }

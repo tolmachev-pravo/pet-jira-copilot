@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -34,7 +36,7 @@ namespace Pet.Jira.Infrastructure.Jira
             _linkGenerator = linkGenerator;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
-            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user.Username, _user.Password);
+            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user?.Username, _user?.Password);
         }
 
         /// <summary>
@@ -215,9 +217,18 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default)
         {
             var myself = await _jiraClient.Users.GetMyselfAsync(cancellationToken);
+            var userData = _jiraClient.RestClient.DownloadData(myself.Self);
+            var timeZoneId = GetJsonParameterValue(userData, "timeZone");
+            var avatarUrl = myself.AvatarUrls.Large;
+            var avatar = _jiraClient.RestClient.DownloadData(avatarUrl);
+            string img64 = Convert.ToBase64String(avatar);
+            string urlData = string.Format("data:image/jpg;base64, {0}", img64);
+
             return new UserDto
             {
-                Username = myself.Username
+                Username = myself.Username,
+                TimeZoneId = timeZoneId,
+                Avatar = urlData
             };
         }
 
@@ -276,6 +287,13 @@ namespace Pet.Jira.Infrastructure.Jira
         {
             var issueStatuses = await _jiraClient.Statuses.GetStatusesAsync(cancellationToken);
             return issueStatuses.Select(issueStatus => IssueStatusDto.Create(issueStatus));
+        }
+
+        private static string GetJsonParameterValue(byte[] jsonObject, string parameter)
+        {
+            var json = System.Text.Encoding.UTF8.GetString(jsonObject);
+            var jsonNode = JsonNode.Parse(json);
+            return (string)jsonNode[parameter];
         }
 
         public async Task<bool> PingAsync(CancellationToken cancellationToken = default)

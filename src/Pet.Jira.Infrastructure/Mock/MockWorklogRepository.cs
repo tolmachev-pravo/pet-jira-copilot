@@ -2,13 +2,14 @@
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockWorklogRepository : IWorklogRepository
     {
-        public Task AddAsync(AddedWorklogDto worklog)
+        public Task AddAsync(AddedWorklogDto worklog, CancellationToken cancellationToken = default)
         {
             MockWorklogStorage.IssueWorklogs.Add(new IssueWorklog
             {
