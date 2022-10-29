@@ -1,8 +1,8 @@
 ﻿@using Pet.Jira.Domain.Models.Issues
 
 <MudDateRangePicker Label="Date range" @bind-DateRange="_model.Filter.DateRange"/>
-<MudTimePicker Label="Daily working start time" @bind-Time="_model.Filter.DailyWorkingStartTime" />
-<MudTimePicker Label="Daily working end time" @bind-Time="_model.Filter.DailyWorkingEndTime" />
+<MudTimePicker Label="Daily working start time" @bind-Time="_model.Filter.DailyWorkingStartTime" Editable="true" />
+<MudTimePicker Label="Daily working end time" @bind-Time="_model.Filter.DailyWorkingEndTime" Editable="true" />
 <MudAutocomplete T="IssueStatus" Label="In work issue status" @bind-Value="_model.Filter.IssueStatus"
                  SearchFunc="@SearchIssueStatuses" ToStringFunc="status => status?.Name" MaxItems="Int32.MaxValue"
                  ResetValueOnEmptyText="true" Dense="true"/>
