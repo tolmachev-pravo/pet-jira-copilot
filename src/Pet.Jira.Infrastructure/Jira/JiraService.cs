@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
@@ -10,9 +9,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Nodes;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -296,11 +295,11 @@ namespace Pet.Jira.Infrastructure.Jira
             return (string)jsonNode[parameter];
         }
 
-        public async Task<bool> PingAsync(CancellationToken cancellationToken = default)
+        public async Task<HttpStatusCode> PingAsync(CancellationToken cancellationToken = default)
         {
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
             var content = await httpClient.GetAsync(_config.Url, cancellationToken);
-            return content.StatusCode == HttpStatusCode.OK;
+            return content.StatusCode;
         }
     }
 }

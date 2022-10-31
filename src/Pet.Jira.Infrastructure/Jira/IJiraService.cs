@@ -4,6 +4,7 @@ using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,7 +54,7 @@ namespace Pet.Jira.Infrastructure.Jira
         Task<IEnumerable<IssueStatusDto>> GetIssueStatusesAsync(
             CancellationToken cancellationToken = default);
 
-        Task<bool> PingAsync(
+        Task<HttpStatusCode> PingAsync(
             CancellationToken cancellationToken = default);
     }
 }

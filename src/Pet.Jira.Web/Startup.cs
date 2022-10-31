@@ -13,7 +13,6 @@ using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
-using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
@@ -81,8 +80,15 @@ namespace Pet.Jira.Web
 
             // Health checks
             services.AddHealthChecks()
-                .AddJiraHealthCheck();
-            services.AddHealthChecksUI().AddInMemoryStorage();
+                .AddInfrastructureHealthChecks();
+            services
+                .AddHealthChecksUI(setupSettings: setup =>
+                {
+                    setup.AddHealthCheckEndpoint("Application health checks", "/health");
+                    setup.SetEvaluationTimeInSeconds(30);
+                    setup.SetApiMaxActiveRequests(1);
+                    setup.SetMinimumSecondsBetweenFailureNotifications(120);
+                }).AddInMemoryStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

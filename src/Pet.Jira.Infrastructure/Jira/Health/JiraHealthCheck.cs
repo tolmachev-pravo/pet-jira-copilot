@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -11,7 +12,7 @@ namespace Pet.Jira.Infrastructure.Jira.Health
     public class JiraHealthCheck : IHealthCheck
     {
         private readonly IJiraConfiguration _jiraConfiguration;
-        public static string Name = "jira_health_check";
+        public static string Name = "jira_access";
 
         public JiraHealthCheck(
             IOptions<JiraConfiguration> jiraConfiguration)
@@ -21,27 +22,38 @@ namespace Pet.Jira.Infrastructure.Jira.Health
 
         public async Task<HealthCheckResult> CheckHealthAsync(
             HealthCheckContext context,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
-            var healthCheckResultHealthy = await PingAsync(cancellationToken);
-
-            if (healthCheckResultHealthy)
+            try
             {
-                return 
-                    HealthCheckResult.Healthy("Healthy", new Dictionary<string, object>
-                    {
-                        {"Url", _jiraConfiguration.Url}
-                    });
-            }
+                var statusCode = await PingAsync(cancellationToken);
+                var healthy = statusCode == HttpStatusCode.OK;
+                var data = new Dictionary<string, object>
+                {
+                    {"Url", _jiraConfiguration.Url},
+                    {"StatusCode", statusCode}
+                };
+                var description = $"Status code: {statusCode}";
 
-            return HealthCheckResult.Unhealthy("Unhealthy");
+                return healthy
+                    ? HealthCheckResult.Healthy(description, data)
+                    : HealthCheckResult.Unhealthy(description, data: data);
+            }
+            catch (Exception ex)
+            {
+                var data = new Dictionary<string, object>
+                {
+                    {"Url", _jiraConfiguration.Url}
+                };
+                return HealthCheckResult.Unhealthy(exception: ex, data: data);
+            }
         }
 
-        public async Task<bool> PingAsync(CancellationToken cancellationToken = default)
+        public async Task<HttpStatusCode> PingAsync(CancellationToken cancellationToken = default)
         {
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
             var content = await httpClient.GetAsync(_jiraConfiguration.Url, cancellationToken);
-            return content.StatusCode == HttpStatusCode.OK;
+            return content.StatusCode;
         }
     }
 }
