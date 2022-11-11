@@ -25,4 +25,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Worklogs\WorklogTimeRange.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Worklogs\WorklogTimeRange.razor" />
+  </ItemGroup>
+
 </Project>

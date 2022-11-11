@@ -1,13 +1,7 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Dto;
-using Pet.Jira.Application.Worklogs.Queries;
 using Pet.Jira.Web.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Worklogs

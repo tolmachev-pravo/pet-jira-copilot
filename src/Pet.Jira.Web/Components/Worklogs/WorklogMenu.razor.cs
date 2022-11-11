@@ -10,6 +10,8 @@ namespace Pet.Jira.Web.Components.Worklogs
     {
         [Parameter] public WorklogCollectionItem Entity { get; set; }
         [Parameter] public Color Color { get; set; } = Color.Default;
+        [Parameter] public string Icon { get; set; } = Icons.Outlined.ArrowCircleDown;
+
         [Inject] private IClipboard _clipboard { get; set; }
         [Inject] private ISnackbar _snackbar { get; set; }
 
