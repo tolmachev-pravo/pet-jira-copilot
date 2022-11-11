@@ -1,23 +1,23 @@
-﻿<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
-    <MudPaper Class="flex-auto d-flex gap-1 align-center" Width="150px" Elevation="0">
+﻿<MudElement Class="gap-1 d-flex flex-wrap border-none align-center">
+    <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 150px">
         <MudPaper Class="flex-none" Width="105px" Elevation="0">
         </MudPaper>
-        <MudIcon Icon="@Icons.Filled.KeyboardArrowRight" Color="Color.Default" Size="Size.Small" />
-        <MudElement Class="pet-not-display-on-mobile-480">
+        <WorklogMenu Entity="@Entity" Color="Color.Tertiary" Icon="@Icons.Outlined.ArrowCircleRight" />
+        <MudElement Class="pet-not-display-on-600">
             <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
         </MudElement>
-    </MudPaper>
-    <MudPaper Class="flex-none d-flex justify-end align-center" Elevation="0" Width="128px">
-        <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
+    </MudElement>
+    <MudElement Class="flex-none d-flex justify-end align-center" Style="width: 128px">
+        <MudElement Class="flex-none d-flex gap-4" Style="width: 128px">
             <MudTextField @bind-Value="@Entity.TimeSpent" Disabled="true" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
-            <MudPaper Width="40px" Elevation="0">
+            <MudElement Style="width: 40px">
                 <MudFab Size="Size.Small"
                         Icon="@Icons.Material.Filled.Check"
                         Color="Color.Tertiary" />
-            </MudPaper>
-        </MudPaper>
-    </MudPaper>
-</MudPaper>
+            </MudElement>
+        </MudElement>
+    </MudElement>
+</MudElement>
 
 
 @code {

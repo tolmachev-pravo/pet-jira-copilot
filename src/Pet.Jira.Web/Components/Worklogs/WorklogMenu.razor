@@ -1,14 +1,8 @@
-﻿<style>
-    .pet-paper {
-        background-color: inherit;
-    }
-</style>
-
-<MudMenu Icon="@Icons.Material.Filled.Settings" Color="@Color" Size="Size.Small" Dense="true">
+﻿
+<MudMenu Icon="@Icon" Color="@Color" Size="Size.Small" Dense="true" Class="pet-vertical-align-middle">
     <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync(Entity))">Markdown (In review)</MudMenuItem>
     <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync(Entity))">Markdown (In progress)</MudMenuItem>
 </MudMenu>
 
 @code {
-
-}
+    }

@@ -1,34 +1,23 @@
 ﻿<style>
-    .pet-time-spent-container {
-        width: 128px;
-    }
-
-    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
-        .pet-time-spent-container {
-            width: 100%;
-        }i                                                                                                          
-    }
 </style>
 
-<MudPaper Class="gap-1 d-flex flex-wrap border-none align-center" Elevation="0" Width="100%">
-    <MudPaper Class="flex-auto gap-1 align-center" Width="300px" Elevation="0">
-        <MudChip Color="Color.Tertiary" Size="Size.Small">
-            @Entity.StartDate.AddTicks(-@Entity.TimeSpent.Ticks).ToString(_defaultTimeFormat) <MudIcon Icon="@Icons.Filled.ArrowRightAlt" Size="Size.Small" /> @Entity.StartDate.ToString(_defaultTimeFormat)
-        </MudChip>
-        <WorklogMenu Entity="@Entity" Color="Color.Primary" />
+<MudElement Class="gap-1 d-flex flex-wrap border-none align-center">
+    <MudElement Class="flex-auto gap-1 align-center" Style="width: 300px">
+        <WorklogTimeRange StartDate="@Entity.StartDate" CompleteDate="@Entity.CompleteDate" Color="Color.Tertiary" />
+        <WorklogMenu Entity="@Entity" Color="Color.Tertiary" />
         <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
-    </MudPaper>
-    <MudPaper Class="flex-none d-flex justify-end pet-time-spent-container align-center" Elevation="0">
-        <MudPaper Class="flex-none d-flex gap-4" Width="128px" Elevation="0">
+    </MudElement>
+    <MudElement Class="flex-none d-flex justify-end pet-time-spent-container align-center">
+        <MudElement Class="flex-none d-flex gap-4" Style="width: 128px">
             <MudTextField @bind-Value="@Entity.TimeSpent" Disabled="true" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
-            <MudPaper Width="40px" Elevation="0">
+            <MudElement Style="width: 40px">
                 <MudFab Size="Size.Small"
                         Icon="@Icons.Material.Filled.Check"
                         Color="Color.Tertiary" />
-            </MudPaper>
-        </MudPaper>
-    </MudPaper>
-</MudPaper>
+            </MudElement>
+        </MudElement>
+    </MudElement>
+</MudElement>
 
 
 @code {
