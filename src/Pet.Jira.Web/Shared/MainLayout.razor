@@ -5,11 +5,11 @@
 
 <MudThemeProvider @bind-IsDarkMode="@_model.Theme.IsDarkMode" />
 
-<MudOverlay Visible="@_model.Theme.InProgress" DarkBackground="true" ZIndex="9999">
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Style="height:150px; width:150px;" />
+<MudOverlay Visible="@_model.InProgress" DarkBackground="true" ZIndex="9999">
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Style="height:111px; width:111px;" />
 </MudOverlay>
 
-@if (_model.Theme.IsInitialized)
+@if (_model.IsInitialized)
 {
     <MudLayout>
         <MudAppBar Elevation="1">
