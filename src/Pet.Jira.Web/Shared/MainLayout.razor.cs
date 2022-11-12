@@ -45,6 +45,7 @@ namespace Pet.Jira.Web.Shared
                 var theme = await _userThemeStorage.GetValueAsync(user.Key);
                 _model.Theme.Initialize(theme);
             }
+            await base.OnInitializedAsync();
         }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -53,7 +54,7 @@ namespace Pet.Jira.Web.Shared
             {
                 await RenderThemeAsync();
                 await RenderProfileAsync();
-                StateHasChanged();
+                StateHasChanged();                
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -105,6 +106,7 @@ namespace Pet.Jira.Web.Shared
         {
             public bool IsDarkMode { get; set; }
             public bool IsInitialized { get; set; }
+            public bool InProgress => !IsInitialized;
 
             public void Initialize(UserTheme theme)
             {
