@@ -2,6 +2,8 @@
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Web.Components.Clipboard;
+using Pet.Jira.Web.Shared;
+using System;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Worklogs
@@ -17,23 +19,55 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task CopyToClipboardInReviewAsync(WorklogCollectionItem entity)
         {
-            var text = $"**IN REVIEW** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}";
-            await CopyToClipboardAsync(text);
+            ClipboardItemElementCollection clipboardItemElements = new()
+            {
+                new ClipboardItemElement
+                {
+                    MimeType = ClipboardMimeType.Html,
+                    Data = $"<b>IN REVIEW</b> <a href=\"{entity.Issue.Link}\">{entity.Issue.Key}</a> {entity.Issue.Summary}"
+                },
+                new ClipboardItemElement
+                {
+                    MimeType = ClipboardMimeType.Plain,
+                    Data = $"**IN REVIEW** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}"
+                }
+            };
+            await CopyToClipboardAsync(clipboardItemElements);
         }
 
         private async Task CopyToClipboardInProgressAsync(WorklogCollectionItem entity)
         {
-            var text = $"**IN PROGRESS** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}";
-            await CopyToClipboardAsync(text);
+            ClipboardItemElementCollection clipboardItemElements = new()
+            {
+                new ClipboardItemElement
+                {
+                    MimeType = ClipboardMimeType.Html,
+                    Data = $"<b>IN PROGRESS</b> <a href=\"{entity.Issue.Link}\">{entity.Issue.Key}</a> {entity.Issue.Summary}"
+                },
+                new ClipboardItemElement
+                {
+                    MimeType = ClipboardMimeType.Plain,
+                    Data = $"**IN PROGRESS** [{entity.Issue.Key}]({entity.Issue.Link}) {entity.Issue.Summary}"
+                }
+            };
+            await CopyToClipboardAsync(clipboardItemElements);
         }
 
-        private async Task CopyToClipboardAsync(string text)
+        private async Task CopyToClipboardAsync(ClipboardItemElementCollection clipboardItemElements)
         {
-            await _clipboard.CopyToAsync(text);
-            _snackbar.Add(
-                $"Copied to clipboard",
-                Severity.Success,
-                config => { config.ActionColor = Color.Success; });
+            var isClipboardSupported = !await _clipboard.IsSupportedAsync();
+            if (isClipboardSupported)
+            {
+                await _clipboard.WriteAsync(clipboardItemElements);
+                _snackbar.Add(
+                    $"Copied to clipboard",
+                    Severity.Success,
+                    config => { config.ActionColor = Color.Success; });
+            }
+            else
+            {
+                throw new Exception("Clipboard is not supported in this browser");
+            }
         }
     }
 }

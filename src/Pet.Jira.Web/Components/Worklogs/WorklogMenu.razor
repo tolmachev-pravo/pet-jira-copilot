@@ -1,7 +1,9 @@
-﻿
-<MudMenu Icon="@Icon" Color="@Color" Size="Size.Small" Dense="true" Class="pet-vertical-align-middle">
-    <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync(Entity))">Markdown (In review)</MudMenuItem>
-    <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync(Entity))">Markdown (In progress)</MudMenuItem>
+﻿<MudMenu Icon="@Icon" Color="@Color" Size="Size.Small" Dense="true" Class="pet-vertical-align-middle"
+         AnchorOrigin=Origin.BottomLeft TransformOrigin=Origin.TopLeft>
+    <ChildContent>
+        <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync(Entity))">Copy as In review</MudMenuItem>
+        <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync(Entity))">Copy as In progress</MudMenuItem>
+    </ChildContent>
 </MudMenu>
 
 @code {
