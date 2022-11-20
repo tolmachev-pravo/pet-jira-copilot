@@ -55,7 +55,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task CopyToClipboardAsync(ClipboardItemElementCollection clipboardItemElements)
         {
-            var isClipboardSupported = !await _clipboard.IsSupportedAsync();
+            var isClipboardSupported = await _clipboard.IsSupportedAsync();
             if (isClipboardSupported)
             {
                 await _clipboard.WriteAsync(clipboardItemElements);
