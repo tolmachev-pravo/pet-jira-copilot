@@ -1,5 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using Pet.Jira.Application.Extensions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Thinktecture.Blazor.AsyncClipboard;
@@ -31,18 +32,25 @@ namespace Pet.Jira.Web.Components.Clipboard
         /// <returns></returns>
         public async Task WriteAsync(ClipboardItemElementCollection clipboardItemElements)
         {
-            var jsClipboard = await _jsRuntime.InvokeAsync<IJSObjectReference>("clipboard");
-
-            var elements = await clipboardItemElements.ToDictionaryAsync(
-                element => element.MimeType.ToEnumString(),
-                element => jsClipboard.InvokeAsync<IJSObjectReference>("convertToBlob", element.Data, element.MimeType));
-
-            var items = new[]
+            try
             {
-                new ClipboardItem(elements, new ClipboardItemOptions { PresentationStyle = PresentationStyle.Inline })
-            };
-            
-            await _asyncClipboardService.WriteAsync(items);
+                var jsClipboard = await _jsRuntime.InvokeAsync<IJSObjectReference>("clipboard");
+
+                var elements = await clipboardItemElements.ToDictionaryAsync(
+                    element => element.MimeType.ToEnumString(),
+                    element => jsClipboard.InvokeAsync<IJSObjectReference>("convertToPromise", element.Data, element.MimeType));
+
+                var items = new[]
+                {
+                    new ClipboardItem(elements, new ClipboardItemOptions { PresentationStyle = PresentationStyle.Inline })
+                };
+
+                await _asyncClipboardService.WriteAsync(items);
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException("Clipboard.Write is not supported in this browser", ex);
+            }
         }
 
         /// <summary>
@@ -58,7 +66,7 @@ namespace Pet.Jira.Web.Components.Clipboard
             catch
             {
                 return false;
-            }            
+            }
         }
     }
 }
