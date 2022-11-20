@@ -14,8 +14,6 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
-        private readonly string _defaultTimeFormat = "HH:mm";
-
         private async Task AddAsync()
         {
             await OnAddPressed.InvokeAsync(Entity);
