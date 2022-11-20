@@ -17,6 +17,7 @@ using Pet.Jira.Web.Common;
 using Pet.Jira.Web.Components.Clipboard;
 using Pet.Jira.Web.Components.Markdown;
 using System;
+using Thinktecture.Blazor.AsyncClipboard;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
@@ -50,8 +51,7 @@ namespace Pet.Jira.Web
             });
             services.AddMudMarkdownServices();
             services.AddTransient<IIdentityService, IdentityService>();
-            services.AddTransient<IMarkdownService, MarkdownService>();
-            services.AddTransient<IClipboard, Clipboard>();
+            services.AddTransient<IMarkdownService, MarkdownService>();            
 
             // Layers
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
@@ -75,6 +75,10 @@ namespace Pet.Jira.Web
 
             // Local storage
             services.AddBlazoredLocalStorage();
+
+            // Clipboard
+            services.AddAsyncClipboardService();
+            services.AddTransient<IClipboard, Clipboard>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
