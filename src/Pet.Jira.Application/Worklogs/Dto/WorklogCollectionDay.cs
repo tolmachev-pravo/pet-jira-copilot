@@ -66,7 +66,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             // Заполняем предполагаемое время для каждой задачи в пропорциях
             foreach (var estimatedWorklog in EstimatedItems)
             {
-                if (estimatedWorklog.ChildTimeSpent == TimeSpan.Zero)
+                if (estimatedWorklog.ChildTimeSpent == TimeSpan.Zero && estimatedRestAutoTimeSpent > 0)
                 {
                     var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
                     var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
