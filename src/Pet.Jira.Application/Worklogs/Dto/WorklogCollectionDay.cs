@@ -25,7 +25,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// Worklog items
         /// </summary>
         public IList<WorklogCollectionItem> Items { get; set; } = new List<WorklogCollectionItem>();
-        
+
         public IEnumerable<WorklogCollectionItem> ActualItems => Items.Where(item => item.Type == WorklogCollectionItemType.Actual);
         public IEnumerable<WorklogCollectionItem> EstimatedItems => Items.Where(item => item.Type == WorklogCollectionItemType.Estimated);
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
@@ -55,11 +55,13 @@ namespace Pet.Jira.Application.Worklogs.Dto
             var manualActualWorklogs = ActualItems.Except(autoActualWorklogs);
             // Вручную списанное время
             var manualTimeSpent = manualActualWorklogs.Sum(record => record.TimeSpent.Ticks);
+            // Автоматически списанное время
+            var autoTimeSpent = autoActualWorklogs.Sum(record => record.TimeSpent.Ticks);
 
-            // Время выполнения всех задач
-            var fullRawTimeSpent = EstimatedItems.Sum(record => record.RawTimeSpent.Ticks);
+            // Чистое время выполнения всех незалогированных задач
+            var fullRawTimeSpent = EstimatedItems.Where(record => record.ChildTimeSpent == TimeSpan.Zero).Sum(record => record.RawTimeSpent.Ticks);
             // Предполагаемый остаток для автоматического списания времени
-            var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime.Ticks - manualTimeSpent);
+            var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime.Ticks - manualTimeSpent - autoTimeSpent);
 
             // Заполняем предполагаемое время для каждой задачи в пропорциях
             foreach (var estimatedWorklog in EstimatedItems)
