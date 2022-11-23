@@ -55,7 +55,7 @@ namespace Pet.Jira.Web.Shared
                 await RenderThemeAsync();
                 await RenderProfileAsync();
                 _model.Initialize();
-                StateHasChanged();                
+                StateHasChanged();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -78,7 +78,7 @@ namespace Pet.Jira.Web.Shared
             {
                 return;
             }
-            
+
             var user = await _identityService.GetCurrentUserAsync();
             if (user == null)
             {
@@ -89,7 +89,17 @@ namespace Pet.Jira.Web.Shared
                 await _userProfileStorage.ForceInitAsync(user.Key);
                 var profile = await _userProfileStorage.GetValueAsync(user.Key);
                 _model.Profile.Initialize(profile);
-            }            
+            }
+        }
+
+        protected async Task Logout()
+        {
+            var user = await _identityService.GetCurrentUserAsync();
+            if (user != null)
+            {
+                await _userProfileStorage.RemoveAsync(user.Key);
+                await _userThemeStorage.RemoveAsync(user.Key);
+            }
         }
 
         public class ComponentModel
@@ -106,7 +116,7 @@ namespace Pet.Jira.Web.Shared
 
             public void Initialize()
             {
-                IsInitialized = true;                
+                IsInitialized = true;
             }
         }
 

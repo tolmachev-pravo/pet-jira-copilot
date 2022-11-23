@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Pet.Jira.Application.Authentication;
-using Pet.Jira.Application.Storage;
-using Pet.Jira.Application.Users;
 using Pet.Jira.Web.Common;
 using System;
 using System.Security.Claims;
@@ -15,16 +13,13 @@ namespace Pet.Jira.Web.Authentication
     {
         private readonly RequestDelegate _next;
         private readonly ILoginMemoryCache _loginMemoryCache;
-        private readonly IMemoryCache<string, UserTheme> _userThemeMemoryCache;
 
         public AuthenticationMiddleware(
             RequestDelegate next, 
-            ILoginMemoryCache loginMemoryCache,
-            IMemoryCache<string, UserTheme> userThemeMemoryCache)
+            ILoginMemoryCache loginMemoryCache)
         {
             _next = next;
             _loginMemoryCache = loginMemoryCache;
-            _userThemeMemoryCache = userThemeMemoryCache;
         }
 
         public async Task Invoke(HttpContext context)
@@ -63,7 +58,6 @@ namespace Pet.Jira.Web.Authentication
             }
             else if (context.Request.Path == "/logout")
             {
-                _userThemeMemoryCache.TryRemove(context.User.Identity.Name, out _);
                 await context.SignOutAsync();
                 context.Response.Redirect("/");
                 return;
