@@ -26,14 +26,10 @@
                         <MudIcon Icon="@Icons.Rounded.AccountCircle" />
                     </MudAvatar>
                     <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
-                    <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit">
-                        <MudIcon Icon="@Icons.Filled.Logout" />
-                    </MudLink>
+                    <MudIconButton Icon="@Icons.Filled.Logout" OnClick="Logout" Color="Color.Inherit" Href="/logout" Size="Size.Small" />
                 </Authorized>
                 <NotAuthorized>
-                    <MudLink Href="/login" Class="pet-white" Color="Color.Inherit">
-                        <MudIcon Icon="@Icons.Filled.Login" />
-                    </MudLink>
+                    <MudIconButton Icon="@Icons.Filled.Login" Href="/login" Color="Color.Inherit" Size="Size.Small"/>
                 </NotAuthorized>
             </AuthorizeView>
         </MudAppBar>
