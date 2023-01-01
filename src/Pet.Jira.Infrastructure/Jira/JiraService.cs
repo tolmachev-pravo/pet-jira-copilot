@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
@@ -292,6 +291,33 @@ namespace Pet.Jira.Infrastructure.Jira
             var json = System.Text.Encoding.UTF8.GetString(jsonObject);
             var jsonNode = JsonNode.Parse(json);
             return (string)jsonNode[parameter];
+        }
+
+        /// <summary>
+        /// Get issues comments
+        /// </summary>
+        /// <param name="issues"></param>
+        /// <param name="filter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<IEnumerable<IssueCommentDto>> GetIssueCommentsAsync(
+            IEnumerable<IssueDto> issues, 
+            Func<Comment, bool> filter = null, 
+            CancellationToken cancellationToken = default)
+        {
+            var result = new List<IssueCommentDto> { };
+            foreach (var issue in issues)
+            {
+                var options = new CommentQueryOptions();
+                var comments = await _jiraClient.Issues.GetCommentsAsync(issue.Key, options,  cancellationToken);
+                comments = comments.WhereIfNotNull(filter);
+
+                result.AddRange(comments.Select(comment =>
+                    IssueCommentDto.Create(comment, issue)));
+            }
+
+            return result;
         }
     }
 }

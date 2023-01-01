@@ -41,7 +41,8 @@ namespace Pet.Jira.Application.Extensions
                         Issue = dateWorklog.Issue,
                         StartDate = estimatedStartDate,
                         CompleteDate = estimatedEndDate,
-                        TimeSpent = estimatedEndDate - estimatedStartDate
+                        TimeSpent = estimatedEndDate - estimatedStartDate,
+                        Source = dateWorklog.Source
                     };
                 }
                 day = day.AddDays(-1);
