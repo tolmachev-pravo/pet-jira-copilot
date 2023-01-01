@@ -37,7 +37,8 @@ namespace Pet.Jira.Web.Components.Worklogs
                 EndDate = _model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),
                 DailyWorkingStartTime = _model.Filter.DailyWorkingStartTime.Value,
                 DailyWorkingEndTime = _model.Filter.DailyWorkingEndTime.Value,
-                IssueStatusId = _model.Filter.IssueStatus.Id
+                IssueStatusId = _model.Filter.IssueStatus.Id,
+                CommentWorklogTime = _model.Filter.CommentWorklogTime.Value
             });
         }
 
@@ -137,6 +138,9 @@ namespace Pet.Jira.Web.Components.Worklogs
             [Required]
             public IssueStatus IssueStatus { get; set; } = JiraConstants.Status.Default;
 
+            [Required]
+            public TimeSpan? CommentWorklogTime { get; set; } = TimeSpan.Zero;
+
             public bool IsInitialized { get; set; }
 
             public void Initialize(UserWorklogFilter filter)
@@ -146,6 +150,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                     DailyWorkingStartTime = filter.DailyWorkingStartTime;
                     DailyWorkingEndTime = filter.DailyWorkingEndTime;
                     IssueStatus = filter.IssueStatus;
+                    CommentWorklogTime = filter.CommentWorklogTime;
                 }
             }
 
@@ -155,7 +160,8 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     DailyWorkingStartTime = DailyWorkingStartTime,
                     DailyWorkingEndTime = DailyWorkingEndTime,
-                    IssueStatus = IssueStatus
+                    IssueStatus = IssueStatus,
+                    CommentWorklogTime = CommentWorklogTime
                 };
             }
         }

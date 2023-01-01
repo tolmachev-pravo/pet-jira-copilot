@@ -163,7 +163,7 @@ namespace Pet.Jira.Infrastructure.Jira
                     .Where(item => item.Issue.Key == issue.Key)
                     .OrderBy(item => item.CreatedDate)
                     .ToList()
-                    .ConvertTo<RawIssueWorklog>(_timeProvider, userProfile.TimeZoneInfo)
+                    .ConvertTo<RawIssueWorklog>(_timeProvider, userProfile.TimeZoneInfo, WorklogSource.Comment, query.CommentWorklogTime)
                     .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
                 result.AddRange(rawIssueWorklogs);
             }

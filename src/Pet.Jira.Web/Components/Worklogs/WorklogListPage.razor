@@ -4,7 +4,6 @@
 <style>
     .pet-filter-container {
         width: 280px;
-        height: 300px;
     }
 
     @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
@@ -23,9 +22,9 @@
 </MudOverlay>
 
 <MudPaper Class="d-flex flex-wrap gap-4 border-none mb-4 pet-backgorund-container" Outlined="true">
-    <MudPaper Class="flex-none pa-4 pet-filter-container"  Square="true" Outlined="true">
-        <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
-    </MudPaper> 
+    <MudElement Class="pet-filter-container">
+        <WorklogFilter OnSearchPressed="SearchAsync" />
+    </MudElement>
     <MudPaper Class="flex-1 pet-horizontal-center" Outlined="true">
         <WorklogList Items="@Model.Items"></WorklogList>
     </MudPaper>

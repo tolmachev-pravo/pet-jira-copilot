@@ -62,7 +62,9 @@ namespace Pet.Jira.Infrastructure.Jira
         public static IEnumerable<T> ConvertTo<T>(
             this List<IssueCommentDto> comments,
             ITimeProvider timeProvider,
-            TimeZoneInfo timeZoneInfo)
+            TimeZoneInfo timeZoneInfo,
+            WorklogSource source,
+            TimeSpan time)
                 where T : IWorklog, new()
         {
             foreach (var comment in comments)
@@ -71,10 +73,10 @@ namespace Pet.Jira.Infrastructure.Jira
                 yield return new T()
                 {
                     CompleteDate = createdDate,
-                    StartDate = createdDate.AddMinutes(-10),
+                    StartDate = createdDate.Add(-time),
                     Issue = comment.Issue.Adapt(),
                     Author = comment.Author,
-                    Source = WorklogSource.Comment
+                    Source = source
                 };
             }
         }

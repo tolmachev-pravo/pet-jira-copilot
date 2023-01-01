@@ -9,6 +9,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public string IssueStatusId { get; set; }
+            public TimeSpan CommentWorklogTime { get; set; }
         }
     }
 }
