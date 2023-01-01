@@ -118,6 +118,56 @@ namespace Pet.Jira.Infrastructure.Jira
                 result.AddRange(rawIssueWorklogs);
             }
 
+            var commentWorklogs = await GetCommentRawIssueWorklogsAsync(query, cancellationToken);
+            result.AddRange(commentWorklogs);
+            return result.Where(item => item.Author == userProfile.Username);
+        }
+
+        /// <summary>
+        /// Get raw issue worklogs
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<RawIssueWorklog>> GetCommentRawIssueWorklogsAsync(
+            GetRawIssueWorklogs.Query query,
+            CancellationToken cancellationToken = default)
+        {
+            var issueQuery = _queryFactory.Create()
+                .Where("updatedDate", JiraQueryComparisonType.GreaterOrEqual, query.StartDate)
+                .Where("watcher", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
+                .Where("assignee", JiraQueryComparisonType.NotEqual, JiraQueryMacros.CurrentUser)
+                .OrderBy("updatedDate", JiraQueryOrderType.Desc)
+                .ToString();
+            var issueSearchOptions = new IssueSearchOptions(issueQuery)
+            {
+                MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
+            };
+
+            var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
+
+            var user = await _identityService.GetCurrentUserAsync();
+            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
+
+            var filter = new Func<Comment, bool>(comment =>
+                comment.Author == userProfile.Username
+                && comment.CreatedDate.Value >= query.StartDate
+                && comment.CreatedDate.Value <= query.EndDate);
+
+            var comments = await _jiraService.GetIssueCommentsAsync(issues, filter, cancellationToken);
+
+            var result = new List<RawIssueWorklog> { };
+            foreach (var issue in issues)
+            {
+                var rawIssueWorklogs = comments
+                    .Where(item => item.Issue.Key == issue.Key)
+                    .OrderBy(item => item.CreatedDate)
+                    .ToList()
+                    .ConvertTo<RawIssueWorklog>(_timeProvider, userProfile.TimeZoneInfo)
+                    .Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
+                result.AddRange(rawIssueWorklogs);
+            }
+
             return result.Where(item => item.Author == userProfile.Username);
         }
     }

@@ -3,8 +3,8 @@
 
 <MudElement Class="gap-1 d-flex flex-wrap border-none align-center">
     <MudElement Class="flex-auto gap-1 align-center" Style="width: 300px">
-        <WorklogTimeRange StartDate="@Entity.StartDate" CompleteDate="@Entity.CompleteDate" Color="Color.Primary" />
-        <WorklogMenu Entity="@Entity" Color="Color.Primary" />
+        <WorklogTimeRange StartDate="@Entity.StartDate" CompleteDate="@Entity.CompleteDate" Color="@Color" />
+        <WorklogMenu Entity="@Entity" Color="@Color" />
         <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
     </MudElement>
     <MudElement Class="flex-none d-flex justify-end pet-time-spent-container align-center">
@@ -13,7 +13,7 @@
             <MudElement Style="width: 40px">
                 <MudFab Size="Size.Small"
                         Icon="@Icons.Material.Filled.Add"
-                        Color="Color.Primary"
+                        Color="@Color"
                         OnClick="AddAsync"
                         Disabled="@Entity.IsEmpty"
                         Class="pet-button" />

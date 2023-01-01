@@ -8,8 +8,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogItem : ComponentBase
     {
-        [Parameter] public WorklogCollectionItem Entity { get; set; }
-        [Parameter] public Color Color { get; set; } = Color.Default;
+        [Parameter] public WorklogCollectionItem Entity { get; set; }        
         [Parameter] public EventCallback<WorklogCollectionItem> OnAddPressed { get; set; }
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
@@ -18,5 +17,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             await OnAddPressed.InvokeAsync(Entity);
         }
+
+        public Color Color => Entity.Source == WorklogCollectionItemSource.Assignee ? Color.Primary : Color.Info;
     }
 }

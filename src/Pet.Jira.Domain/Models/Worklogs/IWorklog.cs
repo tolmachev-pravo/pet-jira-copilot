@@ -10,5 +10,6 @@ namespace Pet.Jira.Domain.Models.Worklogs
         TimeSpan TimeSpent { get; set; }
         IIssue Issue { get; set; }
         string Author { get; set; }
+        WorklogSource Source { get; set; }
     }
 }

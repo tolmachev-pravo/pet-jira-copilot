@@ -14,6 +14,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public IIssue Issue { get; set; }
 
         public WorklogCollectionItemType Type { get; set; }
+        public WorklogCollectionItemSource Source { get; set; }
 
         public IList<WorklogCollectionItem> ChildItems{ get; set; }
         public TimeSpan ChildTimeSpent => new TimeSpan(ChildItems.Sum(item => item.TimeSpent.Ticks));
@@ -34,6 +35,17 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 Issue = worklog.Issue,
                 Type = type
             };
+
+            switch (worklog.Source)
+            {
+                case WorklogSource.Assignee:
+                    result.Source = WorklogCollectionItemSource.Assignee;
+                    break;
+                case WorklogSource.Comment:
+                    result.Source = WorklogCollectionItemSource.Comment;
+                    break;
+            }
+
             if (dailyItems != null)
             {
                 result.ChildItems = dailyItems
@@ -53,7 +65,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 CompleteDate = CompleteDate.Add(TimeSpent),
                 TimeSpent = TimeSpent,
                 Issue = Issue,
-                Type = type
+                Type = type,
+                Source = Source
             };
         }
 
