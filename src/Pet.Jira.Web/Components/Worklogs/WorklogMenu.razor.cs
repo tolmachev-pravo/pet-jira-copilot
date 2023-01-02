@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Pet.Jira.Application.TextBuilder;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Infrastructure.TextBuilder;
 using Pet.Jira.Web.Components.Clipboard;
 using Pet.Jira.Web.Shared;
 using System;
@@ -22,42 +24,50 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task CopyToClipboardInReviewAsync()
         {
-            ClipboardItemElementCollection clipboardItemElements = new()
-            {
-                new ClipboardItemElement
-                {
-                    MimeType = ClipboardMimeType.Html,
-                    Data = $"<b>IN REVIEW</b> {HtmlMainText()}"
-                },
-                new ClipboardItemElement
-                {
-                    MimeType = ClipboardMimeType.Plain,
-                    Data = $"**IN REVIEW** {MarkdownMainText()}"
-                }
-            };
+            var clipboardItemElements = BuildClipboardElementCollection(InReviewText);
             await CopyToClipboardAsync(clipboardItemElements);
         }
 
         private async Task CopyToClipboardInProgressAsync()
         {
-            ClipboardItemElementCollection clipboardItemElements = new()
+            var clipboardItemElements = BuildClipboardElementCollection(InProgressText);
+            await CopyToClipboardAsync(clipboardItemElements);
+        }
+
+        private static ClipboardItemElementCollection BuildClipboardElementCollection(Func<ITextBuilder, string> buildText)
+        {
+            return new ClipboardItemElementCollection
             {
                 new ClipboardItemElement
                 {
                     MimeType = ClipboardMimeType.Html,
-                    Data = $"<b>IN PROGRESS</b> {HtmlMainText()}"
+                    Data = buildText(new HtmlTextBuilder())
                 },
                 new ClipboardItemElement
                 {
                     MimeType = ClipboardMimeType.Plain,
-                    Data = $"**IN PROGRESS** {MarkdownMainText()}"
+                    Data = buildText(new MarkdownTextBuilder())
                 }
             };
-            await CopyToClipboardAsync(clipboardItemElements);
         }
 
-        private string MarkdownMainText() => $"[{Entity.Issue.Key}]({Entity.Issue.Link}) {Entity.Issue.Summary}";
-        private string HtmlMainText() => $"<a href=\"{Entity.Issue.Link}\">{Entity.Issue.Key}</a> {Entity.Issue.Summary}";
+        private string InReviewText(ITextBuilder textBuilder)
+        {
+            return textBuilder
+                .AddText("IN REVIEW", TextOption.Bold)
+                .AddLink(Entity.Issue.Link, Entity.Issue.Key)
+                .AddText(Entity.Issue.Summary)
+                .Build();
+        }
+
+        private string InProgressText(ITextBuilder textBuilder)
+        {
+            return textBuilder
+                .AddText("IN PROGRESS", TextOption.Bold)
+                .AddLink(Entity.Issue.Link, Entity.Issue.Key)
+                .AddText(Entity.Issue.Summary)
+                .Build();
+        }
 
         private async Task CopyToClipboardAsync(ClipboardItemElementCollection clipboardItemElements)
         {
@@ -76,7 +86,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     throw new NotSupportedException("Clipboard is not supported in this browser");
                 }
-            }        
+            }
             catch (Exception e)
             {
                 ErrorHandler.ProcessError(e);
