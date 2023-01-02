@@ -9,6 +9,7 @@ using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
+using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Jira.Query;
 using Pet.Jira.Infrastructure.Storage;
 using Pet.Jira.Infrastructure.Users;
@@ -41,6 +42,16 @@ namespace Pet.Jira.Infrastructure
 
             services.AddSingleton<ILoginMemoryCache, LoginMemoryCache>();
             return services;
+        }
+
+        public static IHealthChecksBuilder AddInfrastructureHealthChecks(this IHealthChecksBuilder builder)
+        {
+            builder
+                .AddJiraHealthCheck()
+                .AddProcessAllocatedMemoryHealthCheck(
+                    maximumMegabytesAllocated: 200,
+                    tags: new[] { "system" });
+            return builder;
         }
     }
 }

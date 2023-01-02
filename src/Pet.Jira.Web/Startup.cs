@@ -1,7 +1,9 @@
 using Blazored.LocalStorage;
+using HealthChecks.UI.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,6 +81,18 @@ namespace Pet.Jira.Web
             // Clipboard
             services.AddAsyncClipboardService();
             services.AddTransient<IClipboard, Clipboard>();
+
+            // Health checks
+            services.AddHealthChecks()
+                .AddInfrastructureHealthChecks();
+            services
+                .AddHealthChecksUI(setupSettings: setup =>
+                {
+                    setup.AddHealthCheckEndpoint("Application health checks", "/health");
+                    setup.SetEvaluationTimeInSeconds(30);
+                    setup.SetApiMaxActiveRequests(1);
+                    setup.SetMinimumSecondsBetweenFailureNotifications(120);
+                }).AddInMemoryStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +122,15 @@ namespace Pet.Jira.Web
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecksUI(setup =>
+                {
+                    setup.AddCustomStylesheet("wwwroot\\css\\dotnet.css");
+                });
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

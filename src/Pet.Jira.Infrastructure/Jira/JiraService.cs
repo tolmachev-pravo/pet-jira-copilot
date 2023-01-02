@@ -9,6 +9,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -318,6 +320,13 @@ namespace Pet.Jira.Infrastructure.Jira
             }
 
             return result;
+        }
+
+        public async Task<HttpStatusCode> PingAsync(CancellationToken cancellationToken = default)
+        {
+            HttpClient httpClient = new();
+            var content = await httpClient.GetAsync(_config.Url, cancellationToken);
+            return content.StatusCode;
         }
     }
 }
