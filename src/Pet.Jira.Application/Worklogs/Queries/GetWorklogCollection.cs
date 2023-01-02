@@ -19,6 +19,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
             public TimeSpan DailyWorkingStartTime { get; set; }
             public TimeSpan DailyWorkingEndTime { get; set; }
             public string IssueStatusId { get; set; }
+            public TimeSpan CommentWorklogTime { get; set; }
         }
 
         public class Model
@@ -37,7 +38,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
             public async Task<Model> Handle(
                 Query query,
-                CancellationToken cancellationToken = default(CancellationToken))
+                CancellationToken cancellationToken = default)
             {
                 var worklogCollection = await CalculateWorklogCollection(query, cancellationToken);
                 return new Model { WorklogCollection = worklogCollection };
@@ -51,7 +52,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     {
                         StartDate = query.StartDate,
                         EndDate = query.EndDate,
-                        IssueStatusId = query.IssueStatusId
+                        IssueStatusId = query.IssueStatusId,
+                        CommentWorklogTime = query.CommentWorklogTime
                     }, cancellationToken);
 
                 var issueWorklogs = await _worklogDataSource.GetIssueWorklogsAsync(
@@ -70,7 +72,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 return new WorklogCollection() { Days = days.ToList() };
             }
 
-            private IEnumerable<WorklogCollectionDay> CalculateDays(
+            private static IEnumerable<WorklogCollectionDay> CalculateDays(
                 IEnumerable<IWorklog> issueWorklogs,
                 IEnumerable<IWorklog> rawIssueWorklogs,
                 Query query)

@@ -18,7 +18,8 @@ namespace Pet.Jira.Infrastructure.Mock
                 return new Issue
                 {
                     Key = key,
-                    Summary = summary
+                    Summary = summary,
+                    Link = "http://localhost"
                 };
             }
 

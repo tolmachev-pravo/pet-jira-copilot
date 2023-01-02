@@ -18,7 +18,7 @@ namespace Pet.Jira.Infrastructure.Jira.Query
                 { JiraQueryComparisonType.GreaterOrEqual, ">=" },
                 { JiraQueryComparisonType.Less, "<" },
                 { JiraQueryComparisonType.LessOrEqual, "<=" },
-                { JiraQueryComparisonType.NotEqual, "<>" },
+                { JiraQueryComparisonType.NotEqual, "!=" },
             };
 
         public static Dictionary<JiraQueryOrderType, string> OrderTypes =

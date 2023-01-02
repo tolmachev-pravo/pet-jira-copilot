@@ -37,6 +37,11 @@ namespace Pet.Jira.Infrastructure.Jira
             Func<IssueChangeLogItem, bool> changeLogItemFilter = null,
             CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<IssueCommentDto>> GetIssueCommentsAsync(
+            IEnumerable<IssueDto> issues,
+            Func<Comment, bool> filter = null,
+            CancellationToken cancellationToken = default);
+
         Task<UserDto> GetCurrentUserAsync(
             CancellationToken cancellationToken = default);
 

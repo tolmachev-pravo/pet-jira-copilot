@@ -295,6 +295,33 @@ namespace Pet.Jira.Infrastructure.Jira
             return (string)jsonNode[parameter];
         }
 
+        /// <summary>
+        /// Get issues comments
+        /// </summary>
+        /// <param name="issues"></param>
+        /// <param name="filter"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<IEnumerable<IssueCommentDto>> GetIssueCommentsAsync(
+            IEnumerable<IssueDto> issues, 
+            Func<Comment, bool> filter = null, 
+            CancellationToken cancellationToken = default)
+        {
+            var result = new List<IssueCommentDto> { };
+            foreach (var issue in issues)
+            {
+                var options = new CommentQueryOptions();
+                var comments = await _jiraClient.Issues.GetCommentsAsync(issue.Key, options,  cancellationToken);
+                comments = comments.WhereIfNotNull(filter);
+
+                result.AddRange(comments.Select(comment =>
+                    IssueCommentDto.Create(comment, issue)));
+            }
+
+            return result;
+        }
+
         public async Task<HttpStatusCode> PingAsync(CancellationToken cancellationToken = default)
         {
             HttpClient httpClient = new();

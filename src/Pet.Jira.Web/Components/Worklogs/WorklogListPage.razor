@@ -1,15 +1,31 @@
 ﻿@page "/"
 @page "/worklogs"
 
+<style>
+    .pet-filter-container {
+        width: 280px;
+    }
+
+    @@media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
+        .pet-filter-container {
+            width: 100%;
+        }
+    }
+
+    .pet-backgorund-container {
+        background-color: inherit;
+    }
+</style>
+
 <MudOverlay Visible="@Model.InProgress" DarkBackground="true" Absolute="true">
     <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
 </MudOverlay>
 
-<MudPaper Class="d-flex flex-wrap gap-4 border-none" Outlined="true">
-    <MudPaper Class="flex-none pa-4" Width="280px" Square="true" Outlined="true">
-        <WorklogFilter OnSearchPressed="SearchAsync"></WorklogFilter>
-    </MudPaper> 
-    <MudPaper Class="flex-1 d-flex" Outlined="true">
+<MudPaper Class="d-flex flex-wrap gap-4 border-none mb-4 pet-backgorund-container" Outlined="true">
+    <MudElement Class="pet-filter-container">
+        <WorklogFilter OnSearchPressed="SearchAsync" />
+    </MudElement>
+    <MudPaper Class="flex-1 pet-horizontal-center" Outlined="true">
         <WorklogList Items="@Model.Items"></WorklogList>
     </MudPaper>
 </MudPaper>

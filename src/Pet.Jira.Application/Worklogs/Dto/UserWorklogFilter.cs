@@ -10,6 +10,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public TimeSpan? DailyWorkingStartTime { get; set; }
         public TimeSpan? DailyWorkingEndTime { get; set; }
         public IssueStatus IssueStatus { get; set; }
+        public TimeSpan? CommentWorklogTime { get; set; } = TimeSpan.Zero;
 
         public string Key => Username;
     }

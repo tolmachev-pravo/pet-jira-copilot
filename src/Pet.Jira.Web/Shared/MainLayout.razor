@@ -5,50 +5,53 @@
 
 <MudThemeProvider @bind-IsDarkMode="@_model.Theme.IsDarkMode" />
 
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
-        <MudText Typo="Typo.h6" Class="ml-3 pet-not-display-on-mobile-480">Jira workflow</MudText>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/tolmachev-pravo/Pet.Jira" Target="_blank" />
-        <MudSwitch CheckedChanged="@ToggleThemeAsync" Checked="@_model.Theme.IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool">
-            <MudElement Class="pet-not-display-on-mobile-480">Light/Dark</MudElement>
-        </MudSwitch>
-        <MudSpacer></MudSpacer>
-        <AuthorizeView>
-            <Authorized>
-                <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@_model.Profile.Avatar">
-                    <MudIcon Icon="@Icons.Rounded.AccountCircle" />
-                </MudAvatar>
-                <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
-                <MudLink Href="/logout" Class="pet-white" Color="Color.Inherit">
-                    <MudIcon Icon="@Icons.Filled.Logout" />
-                </MudLink>
-            </Authorized>
-            <NotAuthorized>
-                <MudLink Href="/login" Class="pet-white" Color="Color.Inherit">
-                    <MudIcon Icon="@Icons.Filled.Login" />
-                </MudLink>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudAppBar>
-    <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent Style="height: 100vh" Class="pet-grid-container">
-        <AuthorizeView>
-            <Authorized>
-                <MudContainer Class="mt-3 pet-grid-container" MaxWidth="MaxWidth.ExtraLarge">
-                    @Body
-                </MudContainer>
-            </Authorized>
-            <NotAuthorized>
-                <MudContainer Class="mt-3" MaxWidth="MaxWidth.Medium">
-                    <Login></Login>
-                </MudContainer>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudMainContent>
-</MudLayout>
+<MudOverlay Visible="@_model.InProgress" DarkBackground="true" ZIndex="9999">
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Style="height:111px; width:111px;" />
+</MudOverlay>
+
+@if (_model.IsInitialized)
+{
+    <MudLayout>
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" OnClick="@ToggleDrawer" />
+            <MudText Typo="Typo.h6" Class="ml-3 pet-not-display-on-mobile-480">Jira workflow</MudText>
+            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/tolmachev-pravo/Pet.Jira" Target="_blank" />
+            <MudSwitch CheckedChanged="@ToggleThemeAsync" Checked="@_model.Theme.IsDarkMode" Color="Color.Primary" Class="ma-4" T="bool">
+                <MudElement Class="pet-not-display-on-mobile-480">Light/Dark</MudElement>
+            </MudSwitch>
+            <MudSpacer></MudSpacer>
+            <AuthorizeView>
+                <Authorized>
+                    <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@_model.Profile.Avatar">
+                        <MudIcon Icon="@Icons.Rounded.AccountCircle" />
+                    </MudAvatar>
+                    <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
+                    <MudIconButton Icon="@Icons.Filled.Logout" OnClick="Logout" Color="Color.Inherit" Href="/logout" Size="Size.Small" />
+                </Authorized>
+                <NotAuthorized>
+                    <MudIconButton Icon="@Icons.Filled.Login" Href="/login" Color="Color.Inherit" Size="Size.Small"/>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudAppBar>
+        <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+            <NavMenu />
+        </MudDrawer>
+        <MudMainContent Style="height: 100vh" Class="pet-grid-container">
+            <AuthorizeView>
+                <Authorized>
+                    <MudElement Class="ma-4 pet-grid-container">
+                        @Body
+                    </MudElement>
+                </Authorized>
+                <NotAuthorized>
+                    <MudContainer Class="mt-3" MaxWidth="MaxWidth.Medium">
+                        <Login></Login>
+                    </MudContainer>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudMainContent>
+    </MudLayout>
+}
 
 @code {
 

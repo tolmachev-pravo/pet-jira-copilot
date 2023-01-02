@@ -1,12 +1,15 @@
 ﻿@using Pet.Jira.Domain.Models.Issues
 
-<MudDateRangePicker Label="Date range" @bind-DateRange="_model.Filter.DateRange"/>
-<MudTimePicker Label="Daily working start time" @bind-Time="_model.Filter.DailyWorkingStartTime" Editable="true" />
-<MudTimePicker Label="Daily working end time" @bind-Time="_model.Filter.DailyWorkingEndTime" Editable="true" />
-<MudAutocomplete T="IssueStatus" Label="In work issue status" @bind-Value="_model.Filter.IssueStatus"
-                 SearchFunc="@SearchIssueStatuses" ToStringFunc="status => status?.Name" MaxItems="Int32.MaxValue"
-                 ResetValueOnEmptyText="true" Dense="true"/>
+<MudPaper Class="flex-none pa-4" Square="true" Outlined="true">
+    <MudDateRangePicker Label="Date range" @bind-DateRange="_model.Filter.DateRange" />
+    <MudTimePicker Label="Daily working start time" @bind-Time="_model.Filter.DailyWorkingStartTime" Editable="true" />
+    <MudTimePicker Label="Daily working end time" @bind-Time="_model.Filter.DailyWorkingEndTime" Editable="true" />
+    <MudAutocomplete T="IssueStatus" Label="In work issue status" @bind-Value="_model.Filter.IssueStatus"
+                     SearchFunc="@SearchIssueStatuses" ToStringFunc="status => status?.Name" MaxItems="Int32.MaxValue"
+                     ResetValueOnEmptyText="true" Dense="true" />
+    <MudTimePicker Label="Comment worklog time" @bind-Time="_model.Filter.CommentWorklogTime" Editable="true" />
+</MudPaper>
 
 <MudButton OnClick="Search" Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Material.Filled.Send" Class="mt-2">Search</MudButton>
-
-@code {}
+@code {
+    }

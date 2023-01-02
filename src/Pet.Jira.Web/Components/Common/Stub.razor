@@ -1,6 +1,20 @@
-﻿<MudContainer Class="pet-horizontal-center pet-vertical-center">
-    <MudIcon Icon="@Icon" Color="@Color" Style="font-size: 10rem;" />
-    <MudText Typo="Typo.h5" Color="@Color">@Message</MudText>
+﻿<style>
+    .pet-stub-logo {
+        width: 256px;
+        height: 256px;
+    }
+
+    @@media (max-width:1000px) {
+        .pet-stub-logo {
+            width: 200px;
+            height: 200px;
+        }
+    }
+</style>
+
+<MudContainer Class="pet-horizontal-center pet-vertical-center">
+    <MudIcon Icon="@Icon" ViewBox="@ViewBox" Class="pet-stub-logo" />
+    <MudText Typo="Typo.body2" Color="@Color" Class="mt-4">@Message</MudText>
 </MudContainer>
 
 @code {}

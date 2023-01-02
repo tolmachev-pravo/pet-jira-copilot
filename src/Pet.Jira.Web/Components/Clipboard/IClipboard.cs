@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Clipboard
 {
     public interface IClipboard
     {
-        ValueTask CopyToAsync(string text);
+        Task WriteAsync(ClipboardItemElementCollection clipboardItemElements);
+        Task<bool> IsSupportedAsync();
     }
 }
