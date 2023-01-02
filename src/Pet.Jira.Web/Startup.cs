@@ -127,7 +127,10 @@ namespace Pet.Jira.Web
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                endpoints.MapHealthChecksUI();
+                endpoints.MapHealthChecksUI(setup =>
+                {
+                    setup.AddCustomStylesheet("wwwroot\\css\\dotnet.css");
+                });
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
