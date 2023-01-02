@@ -71,6 +71,12 @@ namespace Pet.Jira.Application.Worklogs.Dto
                     var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
                     var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
                     estimatedWorklog.TimeSpent = TimeSpan.FromSeconds(Math.Round((estimatedTimeSpent - estimatedWorklog.ChildTimeSpent).TotalSeconds));
+
+                    if (estimatedWorklog.TimeSpent > TimeSpan.Zero
+                        && estimatedWorklog.TimeSpent < TimeSpan.FromMinutes(1))
+                    {
+                        estimatedWorklog.TimeSpent = TimeSpan.FromMinutes(1);
+                    }
                 }
                 else
                 {
