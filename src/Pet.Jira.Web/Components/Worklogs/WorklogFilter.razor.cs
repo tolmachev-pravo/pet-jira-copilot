@@ -30,16 +30,24 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         protected async Task Search()
         {
-            await SaveFilterAsync();
-            await OnSearchPressed.InvokeAsync(new GetWorklogCollection.Query()
+            try
             {
-                StartDate = _model.Filter.StartDate.Value,
-                EndDate = _model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),
-                DailyWorkingStartTime = _model.Filter.DailyWorkingStartTime.Value,
-                DailyWorkingEndTime = _model.Filter.DailyWorkingEndTime.Value,
-                IssueStatusId = _model.Filter.IssueStatus.Id,
-                CommentWorklogTime = _model.Filter.CommentWorklogTime.Value
-            });
+                await SaveFilterAsync();
+                await OnSearchPressed.InvokeAsync(new GetWorklogCollection.Query()
+                {
+                    StartDate = _model.Filter.StartDate.Value,
+                    EndDate = _model.Filter.EndDate.Value.AddDays(1).AddMinutes(-1),
+                    DailyWorkingStartTime = _model.Filter.DailyWorkingStartTime.Value,
+                    DailyWorkingEndTime = _model.Filter.DailyWorkingEndTime.Value,
+                    IssueStatusId = _model.Filter.IssueStatus.Id,
+                    CommentWorklogTime = _model.Filter.CommentWorklogTime.Value,
+                    LunchTime = _model.Filter.LunchTime.Value,
+                });
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.ProcessError(e);
+            }
         }
 
         protected override async Task OnInitializedAsync()
@@ -141,6 +149,9 @@ namespace Pet.Jira.Web.Components.Worklogs
             [Required]
             public TimeSpan? CommentWorklogTime { get; set; } = TimeSpan.Zero;
 
+            [Required]
+            public TimeSpan? LunchTime { get; set; } = TimeSpan.FromHours(1);
+
             public bool IsInitialized { get; set; }
 
             public void Initialize(UserWorklogFilter filter)
@@ -151,6 +162,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                     DailyWorkingEndTime = filter.DailyWorkingEndTime;
                     IssueStatus = filter.IssueStatus;
                     CommentWorklogTime = filter.CommentWorklogTime;
+                    LunchTime = filter.LunchTime;
                 }
             }
 
@@ -161,7 +173,8 @@ namespace Pet.Jira.Web.Components.Worklogs
                     DailyWorkingStartTime = DailyWorkingStartTime,
                     DailyWorkingEndTime = DailyWorkingEndTime,
                     IssueStatus = IssueStatus,
-                    CommentWorklogTime = CommentWorklogTime
+                    CommentWorklogTime = CommentWorklogTime,
+                    LunchTime = LunchTime
                 };
             }
         }

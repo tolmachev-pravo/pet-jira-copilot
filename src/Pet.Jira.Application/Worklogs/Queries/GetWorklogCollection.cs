@@ -20,6 +20,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
             public TimeSpan DailyWorkingEndTime { get; set; }
             public string IssueStatusId { get; set; }
             public TimeSpan CommentWorklogTime { get; set; }
+            public TimeSpan LunchTime { get; set; }
         }
 
         public class Model
@@ -104,7 +105,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
                             .ThenBy(record => record.CompleteDate)
                             .ToList(),
                         DailyWorkingStartTime = query.DailyWorkingStartTime,
-                        DailyWorkingEndTime = query.DailyWorkingEndTime
+                        DailyWorkingEndTime = query.DailyWorkingEndTime,
+                        LunchTime = query.LunchTime
                     };
                     day = day.AddDays(-1);
                 }

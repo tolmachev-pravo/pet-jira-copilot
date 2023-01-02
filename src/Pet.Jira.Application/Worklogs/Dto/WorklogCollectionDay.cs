@@ -26,6 +26,11 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// </summary>
         public IList<WorklogCollectionItem> Items { get; set; } = new List<WorklogCollectionItem>();
 
+        /// <summary>
+        /// Time for lunch
+        /// </summary>
+        public TimeSpan LunchTime { get; set; } = TimeSpan.FromHours(1);
+
         public IEnumerable<WorklogCollectionItem> ActualItems => Items.Where(item => item.Type == WorklogCollectionItemType.Actual);
         public IEnumerable<WorklogCollectionItem> EstimatedItems => Items.Where(item => item.Type == WorklogCollectionItemType.Estimated);
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
@@ -46,7 +51,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 item.Refresh(ActualItems);
             }
 
-            var workTime = DailyWorkingEndTime - DailyWorkingStartTime - TimeSpan.FromHours(1);
+            var workTime = DailyWorkingEndTime - DailyWorkingStartTime - LunchTime;
             // Время зафиксированное за день
             var dayTimeSpent = new TimeSpan(ActualItems.Sum(record => record.TimeSpent.Ticks));
             // Автоматические
