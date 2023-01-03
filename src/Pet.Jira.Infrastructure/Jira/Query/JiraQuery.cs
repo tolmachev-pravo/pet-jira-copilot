@@ -8,18 +8,18 @@ namespace Pet.Jira.Infrastructure.Jira.Query
 {
     public class JiraQuery
     {
-        private readonly List<JiraQueryCondition> conditions;
-        private readonly List<JiraQueryOrder> orders;
+        private readonly List<JiraQueryCondition> _conditions;
+        private readonly List<JiraQueryOrder> _orders;
 
         public JiraQuery()
         {
-            conditions = new List<JiraQueryCondition>();
-            orders = new List<JiraQueryOrder>();
+            _conditions = new List<JiraQueryCondition>();
+            _orders = new List<JiraQueryOrder>();
         }
 
         public JiraQuery Where(string left, JiraQueryComparisonType comparisonType, object right)
         {
-            conditions.Add(new JiraQueryCondition
+            _conditions.Add(new JiraQueryCondition
             {
                 Left = left,
                 ComparisonType = comparisonType,
@@ -30,7 +30,7 @@ namespace Pet.Jira.Infrastructure.Jira.Query
 
         public JiraQuery OrderBy(string parameter, JiraQueryOrderType orderType = JiraQueryOrderType.Asc)
         {
-            orders.Add(new JiraQueryOrder
+            _orders.Add(new JiraQueryOrder
             {
                 Parameter = parameter,
                 OrderType = orderType
@@ -55,16 +55,16 @@ namespace Pet.Jira.Infrastructure.Jira.Query
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            if (conditions.Any())
+            if (_conditions.Any())
             {
-                stringBuilder.Append(string.Join(" AND ", conditions));
-                stringBuilder.Append(" ");
+                stringBuilder.Append(string.Join(" AND ", _conditions));
+                stringBuilder.Append(' ');
             }
-            if (orders.Any())
+            if (_orders.Any())
             {
                 stringBuilder.Append("ORDER BY ");
-                stringBuilder.Append(string.Join(", ", orders));
-                stringBuilder.Append(" ");
+                stringBuilder.Append(string.Join(", ", _orders));
+                stringBuilder.Append(' ');
             }
 
             return stringBuilder.ToString();
