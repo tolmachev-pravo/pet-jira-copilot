@@ -6,12 +6,12 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
     [TestFixture]
     public class HtmlTextBuilderTests
     {
-		private HtmlTextBuilder _htmlTextBuilder;
+        private HtmlTextBuilder _htmlTextBuilder;
 
         [SetUp]
-		public void SetUp()
-		{
-			_htmlTextBuilder = new HtmlTextBuilder();
+        public void SetUp()
+        {
+            _htmlTextBuilder = new HtmlTextBuilder();
         }
 
         [TestCase("https://localhost.ru", "site url", $"<a href=\"https://localhost.ru\">site url</a> ")]
@@ -19,7 +19,7 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         [TestCase("https://localhost.ru", null, $"<a href=\"https://localhost.ru\"></a> ")]
         [TestCase(null, null, $"<a href=\"\"></a> ")]
         public void AddLink_Should_BeCorrect(string href, string value, string expected)
-		{
+        {
             // Arrange
             // Act
             _htmlTextBuilder.AddLink(href, value);

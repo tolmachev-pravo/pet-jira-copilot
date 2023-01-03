@@ -6,11 +6,11 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
     [TestFixture]
     public class MarkdownTextBuilderTests
     {
-		private MarkdownTextBuilder _textBuilder;
+        private MarkdownTextBuilder _textBuilder;
 
         [SetUp]
-		public void SetUp()
-		{
+        public void SetUp()
+        {
             _textBuilder = new MarkdownTextBuilder();
         }
 
@@ -19,7 +19,7 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         [TestCase("https://localhost.ru", null, $"[](https://localhost.ru) ")]
         [TestCase(null, null, $"[]() ")]
         public void AddLink_Should_BeCorrect(string href, string value, string expected)
-		{
+        {
             // Arrange
             // Act
             _textBuilder.AddLink(href, value);

@@ -1,7 +1,6 @@
 ﻿using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Application.Time;
-using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
