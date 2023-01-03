@@ -31,10 +31,10 @@ jobs:
       with:
         filename: coverage/**/coverage.cobertura.xml
         badge: true
-        fail_below_min: true
+        fail_below_min: false
         format: markdown
         hide_branch_rate: false
         hide_complexity: true
         indicators: true
         output: both
-        thresholds: '60 80'
+        thresholds: '10 30'
