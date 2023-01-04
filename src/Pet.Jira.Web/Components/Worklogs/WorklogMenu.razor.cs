@@ -72,6 +72,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
             if (!string.IsNullOrEmpty(PullRequestUrl))
             {
+                textBuilder.AddNewLine();
                 textBuilder.AddLink(PullRequestUrl, PullRequestUrl);
             }
                 

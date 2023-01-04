@@ -13,6 +13,12 @@ namespace Pet.Jira.Infrastructure.TextBuilder
             return this;
         }
 
+        public ITextBuilder AddNewLine()
+        {
+            _stringBuilder.Append("<br/>");
+            return this;
+        }
+
         public ITextBuilder AddText(string text, params TextOption[] options)
         {
             foreach (var option in options)
