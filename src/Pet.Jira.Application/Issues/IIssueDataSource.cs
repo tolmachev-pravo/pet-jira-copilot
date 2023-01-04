@@ -11,5 +11,9 @@ namespace Pet.Jira.Application.Issues
         Task<IEnumerable<IssueStatus>> GetIssueStatusesAsync(
             GetIssueStatuses.Query query,
             CancellationToken cancellationToken = default);
+
+        Task<string> GetIssueOpenPullRequestUrlAsync(
+            GetIssueOpenPullRequestUrl.Query query,
+            CancellationToken cancellationToken = default);
     }
 }

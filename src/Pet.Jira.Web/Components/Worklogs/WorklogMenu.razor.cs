@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using MediatR;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Pet.Jira.Application.Issues.Queries;
 using Pet.Jira.Application.TextBuilder;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Infrastructure.TextBuilder;
@@ -21,9 +23,13 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [Inject] private IClipboard _clipboard { get; set; }
         [Inject] private ISnackbar _snackbar { get; set; }
+        [Inject] private IMediator Mediator { get; set; }
+
+        private string PullRequestUrl { get; set; }
 
         private async Task CopyToClipboardInReviewAsync()
         {
+            await InitPullRequestUrl();
             var clipboardItemElements = BuildClipboardElementCollection(InReviewText);
             await CopyToClipboardAsync(clipboardItemElements);
         }
@@ -32,6 +38,12 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             var clipboardItemElements = BuildClipboardElementCollection(InProgressText);
             await CopyToClipboardAsync(clipboardItemElements);
+        }
+
+        private async Task InitPullRequestUrl()
+        {
+            var result = await Mediator.Send(new GetIssueOpenPullRequestUrl.Query { Identifier = Entity.Issue.Identifier });
+            PullRequestUrl = result.Url;
         }
 
         private static ClipboardItemElementCollection BuildClipboardElementCollection(Func<ITextBuilder, string> buildText)
@@ -53,11 +65,17 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private string InReviewText(ITextBuilder textBuilder)
         {
-            return textBuilder
-                .AddText("IN REVIEW", TextOption.Bold)
-                .AddLink(Entity.Issue.Link, Entity.Issue.Key)
-                .AddText(Entity.Issue.Summary)
-                .Build();
+            textBuilder
+               .AddText("IN REVIEW", TextOption.Bold)
+               .AddLink(Entity.Issue.Link, Entity.Issue.Key)
+               .AddText(Entity.Issue.Summary);
+
+            if (!string.IsNullOrEmpty(PullRequestUrl))
+            {
+                textBuilder.AddLink(PullRequestUrl, PullRequestUrl);
+            }
+                
+            return textBuilder.Build();
         }
 
         private string InProgressText(ITextBuilder textBuilder)

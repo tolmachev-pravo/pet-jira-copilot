@@ -7,5 +7,6 @@ namespace Pet.Jira.Domain.Models.Issues
         public string Key { get; set; }
         public string Summary { get; set; }
         public string Link { get; set; }
+        public string Identifier { get; set; }
     }
 }
