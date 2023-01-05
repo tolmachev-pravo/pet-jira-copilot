@@ -71,70 +71,7 @@ else
         <tbody>
             @foreach (var item in Items)
             {
-                <tr class="pet-table-summary-tr">
-                    <td>
-                        <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper" Elevation="0" Width="100%">
-                            <MudPaper Class="flex-none d-flex gap-4 py-2 align-center pet-paper" Width="196px" Elevation="0">
-                                <MudPaper Width="128px" Elevation="0">
-                                    <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@item.Progress" />
-                                </MudPaper>
-                                <MudPaper Class="pet-table-summary-date-container pet-paper" Width="128px" Elevation="0">
-                                    <b>@item.Date.ToString("dd-MM-yyyy")</b>
-                                </MudPaper>
-                            </MudPaper>
-                            <MudElement Class="flex-none d-flex gap-1 pet-worklog-day-chips-container">
-                                <MudChip Color="Color.Default" Size="Size.Small">
-                                    <b class="pet-not-display-on-480">Logged: </b> @item.ActualWorklogsSum.ToString(@"hh\:mm\:ss")
-                                </MudChip>
-                                <MudChip Color="Color.Default" Size="Size.Small">
-                                    <b class="pet-not-display-on-480">Estimated: </b> @item.CalculatedWorklogsSum.ToString(@"hh\:mm\:ss")
-                                </MudChip>
-                                @if (@item.Date.DayOfWeek == DayOfWeek.Saturday || @item.Date.DayOfWeek == DayOfWeek.Sunday)
-                                {
-                                    <MudChip Color="Color.Error" Size="Size.Small">
-                                        <b class="pet-not-display-on-480">Day: </b> @item.Date.DayOfWeek
-                                    </MudChip>
-                                }
-                                else
-                                {
-                                    <MudChip Color="Color.Default" Size="Size.Small">
-                                        <b class="pet-not-display-on-480">Day: </b> @item.Date.DayOfWeek
-                                    </MudChip>
-                                }
-                                @if (item.HasRawEstimatedWorklogs)
-                                {
-                                    <MudBadge Content="item.RawEstimatedWorklogCount" Color="Color.Info" Overlap="true" Class="pet-table-mud-badge-counter">
-                                        <MudIcon Icon="@Icons.Sharp.AddCircle" Color="Color.Primary" />
-                                    </MudBadge>
-                                }
-                                </MudElement>
-                        </MudPaper>
-                    </td>
-                </tr>
-                @foreach (var entity in item.EstimatedItems)
-                {
-                    <tr>
-                        <td>
-                            <WorklogItem Entity="@entity" OnAddPressed="AddWorklogAsync" />
-                        </td>
-                    </tr>
-                    @foreach (var child in entity.ChildItems)
-                    {
-                        <tr>
-                            <td>
-                                <EstimatedActualWorklogItem Entity="@child" />
-                            </td>
-                        </tr>
-                    }
-                }
-                @foreach (var entity in item.ActualItems.Where(item => item.ParentItem == null))
-                {
-                    <tr>
-                        <td>
-                            <ActualWorklogItem Entity="@entity" />
-                        </td>
-                    </tr>
-                }
+                <WorklogDay Entity="@item" />
             }
         </tbody>
     </MudSimpleTable>

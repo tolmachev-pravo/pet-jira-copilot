@@ -31,6 +31,11 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// </summary>
         public TimeSpan LunchTime { get; set; } = TimeSpan.FromHours(1);
 
+        /// <summary>
+        /// Determines that day is weekend
+        /// </summary>
+        public bool IsWeekend => Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Sunday;
+
         public IEnumerable<WorklogCollectionItem> ActualItems => Items.Where(item => item.Type == WorklogCollectionItemType.Actual);
         public IEnumerable<WorklogCollectionItem> EstimatedItems => Items.Where(item => item.Type == WorklogCollectionItemType.Estimated);
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
