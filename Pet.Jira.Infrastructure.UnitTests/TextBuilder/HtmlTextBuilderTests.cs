@@ -6,12 +6,12 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
     [TestFixture]
     public class HtmlTextBuilderTests
     {
-        private HtmlTextBuilder _htmlTextBuilder;
+        private HtmlTextBuilder _textBuilder;
 
         [SetUp]
         public void SetUp()
         {
-            _htmlTextBuilder = new HtmlTextBuilder();
+            _textBuilder = new HtmlTextBuilder();
         }
 
         [TestCase("https://localhost.ru", "site url", $"<a href=\"https://localhost.ru\">site url</a> ")]
@@ -22,10 +22,10 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         {
             // Arrange
             // Act
-            _htmlTextBuilder.AddLink(href, value);
+            _textBuilder.AddLink(href, value);
 
             // Assert
-            var result = _htmlTextBuilder.Build();
+            var result = _textBuilder.Build();
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -38,10 +38,10 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         {
             // Arrange
             // Act
-            _htmlTextBuilder.AddText(text, options);
+            _textBuilder.AddText(text, options);
 
             // Assert
-            var result = _htmlTextBuilder.Build();
+            var result = _textBuilder.Build();
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -50,10 +50,10 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         {
             // Arrange
             // Act
-            _htmlTextBuilder.BeginOption(option);
+            _textBuilder.BeginOption(option);
 
             // Assert
-            var result = _htmlTextBuilder.Build();
+            var result = _textBuilder.Build();
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -62,11 +62,23 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
         {
             // Arrange
             // Act
-            _htmlTextBuilder.EndOption(option);
+            _textBuilder.EndOption(option);
 
             // Assert
-            var result = _htmlTextBuilder.Build();
+            var result = _textBuilder.Build();
             Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void AddNewLine_Should_BeCorrect()
+        {
+            // Arrange
+            // Act
+            _textBuilder.AddNewLine();
+
+            // Assert
+            var result = _textBuilder.Build();
+            Assert.That(result, Is.EqualTo("<br/>"));
         }
     }
 }

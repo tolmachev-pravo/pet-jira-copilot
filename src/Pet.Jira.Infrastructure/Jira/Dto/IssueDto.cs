@@ -7,6 +7,7 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         public string Key { get; set; }
         public string Summary { get; set; }
         public string Link { get; set; }
+        public string Identifier { get; set; }
 
         public Issue Adapt()
         {
@@ -14,7 +15,8 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
             {
                 Key = Key,
                 Link = Link,
-                Summary = Summary
+                Summary = Summary,
+                Identifier = Identifier
             };
         }
 
@@ -24,7 +26,8 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
             {
                 Key = issue.Key.Value,
                 Summary = issue.Summary,
-                Link = linkGenerator?.Generate(issue.Key.Value)
+                Link = linkGenerator?.Generate(issue.Key.Value),
+                Identifier = issue.JiraIdentifier
             };
         }
     }

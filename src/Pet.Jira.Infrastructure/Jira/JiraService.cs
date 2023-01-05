@@ -8,6 +8,7 @@ using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -304,15 +305,15 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public async Task<IEnumerable<IssueCommentDto>> GetIssueCommentsAsync(
-            IEnumerable<IssueDto> issues, 
-            Func<Comment, bool> filter = null, 
+            IEnumerable<IssueDto> issues,
+            Func<Comment, bool> filter = null,
             CancellationToken cancellationToken = default)
         {
             var result = new List<IssueCommentDto> { };
             foreach (var issue in issues)
             {
                 var options = new CommentQueryOptions();
-                var comments = await _jiraClient.Issues.GetCommentsAsync(issue.Key, options,  cancellationToken);
+                var comments = await _jiraClient.Issues.GetCommentsAsync(issue.Key, options, cancellationToken);
                 comments = comments.WhereIfNotNull(filter);
 
                 result.AddRange(comments.Select(comment =>
@@ -327,6 +328,23 @@ namespace Pet.Jira.Infrastructure.Jira
             HttpClient httpClient = new();
             var content = await httpClient.GetAsync(_config.Url, cancellationToken);
             return content.StatusCode;
+        }
+
+        /// <summary>
+        /// /rest/dev-status/latest/issue/detail?issueId=<JIRA-IDENTIFIER>&applicationType=<APPLICATION-TYPE>&dataType=<DATA_TYPE>
+        /// </summary>
+        /// <param name="jiraIdentifier"></param>
+        /// <param name="applicationType"></param>
+        /// <param name="dataType"></param>
+        /// <returns></returns>
+        public async Task<DevStatusDetailDto> GetIssueDevStatusDetailAsync(string jiraIdentifier, string applicationType = "github",
+            string dataType = "pullrequest", CancellationToken cancellationToken = default)
+        {
+            return await _jiraClient.RestClient
+                .ExecuteRequestAsync<DevStatusDetailDto>(
+                method: RestSharp.Method.GET,
+                resource: $"/rest/dev-status/latest/issue/detail?issueId={jiraIdentifier}&applicationType={applicationType}&dataType={dataType}",
+                token: cancellationToken);
         }
     }
 }

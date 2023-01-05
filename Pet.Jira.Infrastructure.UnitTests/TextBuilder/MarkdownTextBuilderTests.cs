@@ -68,5 +68,17 @@ namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
             var result = _textBuilder.Build();
             Assert.That(result, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void AddNewLine_Should_BeCorrect()
+        {
+            // Arrange
+            // Act
+            _textBuilder.AddNewLine();
+
+            // Assert
+            var result = _textBuilder.Build();
+            Assert.That(result, Is.EqualTo(Environment.NewLine));
+        }
     }
 }

@@ -61,5 +61,8 @@ namespace Pet.Jira.Infrastructure.Jira
 
         Task<HttpStatusCode> PingAsync(
             CancellationToken cancellationToken = default);
+
+        Task<DevStatusDetailDto> GetIssueDevStatusDetailAsync(string jiraIdentifier, string applicationType = "github",
+           string dataType = "pullrequest", CancellationToken cancellationToken = default);
     }
 }

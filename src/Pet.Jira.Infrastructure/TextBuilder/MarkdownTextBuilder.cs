@@ -1,6 +1,7 @@
 ﻿using Pet.Jira.Application.TextBuilder;
 using System;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Pet.Jira.Infrastructure.TextBuilder
 {
@@ -10,6 +11,12 @@ namespace Pet.Jira.Infrastructure.TextBuilder
         {
             _stringBuilder.Append($"[{value}]({href})");
             _stringBuilder.Append(' ');
+            return this;
+        }
+
+        public ITextBuilder AddNewLine()
+        {
+            _stringBuilder.Append(Environment.NewLine);
             return this;
         }
 
