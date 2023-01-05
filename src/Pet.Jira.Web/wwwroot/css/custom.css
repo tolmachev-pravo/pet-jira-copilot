@@ -31,9 +31,6 @@
     --mud-drawer-width-left: 180px !important;
 }
 
-.pet-not-display-on-mobile-480 {
-}
-
 .pet-time-spent-container {
     width: 128px;
 }
@@ -52,10 +49,6 @@
 }
 
 @media (max-width:480px) { /* smartphones, Android phones, landscape iPhone */
-    .pet-not-display-on-mobile-480 {
-        display: none;
-    }
-
     .pet-not-display-on-480 {
         display: none;
     }
