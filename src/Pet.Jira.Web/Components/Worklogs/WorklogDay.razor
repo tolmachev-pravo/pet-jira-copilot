@@ -6,33 +6,18 @@
 <tr class="pet-table-summary-tr">
     <td>
         <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper" Elevation="0" Width="100%">
-            <MudPaper Class="flex-none d-flex gap-4 py-2 align-center pet-paper" Width="196px" Elevation="0">
-                <MudPaper Width="128px" Elevation="0">
+            <MudElement Class="flex-none d-flex gap-4 py-2 align-center" Style="width: 196px">
+                <MudElement Style="width: 128px">
                     <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@Entity.Progress" />
-                </MudPaper>
-                <MudPaper Class="pet-table-summary-date-container pet-paper" Width="128px" Elevation="0">
+                </MudElement>
+                <MudElement Class="align-center" Style="width: 128px">
                     <b>@Entity.Date.ToString(DateFormats.DateFormat)</b>
-                </MudPaper>
-            </MudPaper>
+                </MudElement>
+            </MudElement>
             <MudElement Class="flex-none d-flex gap-1 pet-worklog-day-chips-container">
-                <MudChip Color="Color.Default" Size="Size.Small">
-                    <b class="pet-not-display-on-480">Logged: </b> @Entity.ActualWorklogsSum.ToString(DateFormats.TimeFormat)
-                </MudChip>
-                <MudChip Color="Color.Default" Size="Size.Small">
-                    <b class="pet-not-display-on-480">Estimated: </b> @Entity.CalculatedWorklogsSum.ToString(DateFormats.TimeFormat)
-                </MudChip>
-                @if (@Entity.IsWeekend)
-                {
-                    <MudChip Color="Color.Error" Size="Size.Small">
-                        <b class="pet-not-display-on-480">Day: </b> @Entity.Date.DayOfWeek
-                    </MudChip>
-                }
-                else
-                {
-                    <MudChip Color="Color.Default" Size="Size.Small">
-                        <b class="pet-not-display-on-480">Day: </b> @Entity.Date.DayOfWeek
-                    </MudChip>
-                }
+                <WorklogDayChip Caption="Logged" Value="@Entity.ActualWorklogsSum.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Caption="Estimated" Value="@Entity.CalculatedWorklogsSum.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Caption="Day" Value="@Entity.Date.DayOfWeek.ToString()" Color="@Color" />
                 @if (Entity.HasRawEstimatedWorklogs)
                 {
                     <MudBadge Content="Entity.RawEstimatedWorklogCount" Color="Color.Info" Overlap="true" Class="pet-table-mud-badge-counter">

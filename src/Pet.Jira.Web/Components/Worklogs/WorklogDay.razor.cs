@@ -18,6 +18,8 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
+        public Color Color => Entity.IsWeekend ? Color.Error : Color.Default;
+
         private async Task AddWorklogAsync(WorklogCollectionItem entity)
         {
             try
