@@ -18,6 +18,7 @@ using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
 using Pet.Jira.Web.Components.Clipboard;
 using Pet.Jira.Web.Components.Markdown;
+using Pet.Jira.Web.Logging;
 using System;
 using Thinktecture.Blazor.AsyncClipboard;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
@@ -92,7 +93,7 @@ namespace Pet.Jira.Web
                     setup.SetEvaluationTimeInSeconds(30);
                     setup.SetApiMaxActiveRequests(1);
                     setup.SetMinimumSecondsBetweenFailureNotifications(120);
-                }).AddInMemoryStorage();
+                }).AddInMemoryStorage();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -119,6 +120,7 @@ namespace Pet.Jira.Web
             app.UseCookiePolicy();
 
             app.UseMiddleware<AuthenticationMiddleware>();
+            app.UseMiddleware<LogEnrichmentMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
