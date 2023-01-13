@@ -1,4 +1,5 @@
-﻿using Pet.Jira.Application.Worklogs;
+﻿using Microsoft.Extensions.Logging;
+using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
@@ -9,6 +10,13 @@ namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockWorklogRepository : IWorklogRepository
     {
+        private readonly ILogger<MockWorklogRepository> _logger;
+
+        public MockWorklogRepository(ILogger<MockWorklogRepository> logger)
+        {
+            _logger = logger;
+        }
+
         public Task AddAsync(AddedWorklogDto worklog, CancellationToken cancellationToken = default)
         {
             MockWorklogStorage.IssueWorklogs.Add(new IssueWorklog
@@ -18,6 +26,7 @@ namespace Pet.Jira.Infrastructure.Mock
                 TimeSpent = worklog.ElapsedTime,
                 CompleteDate = worklog.StartedAt.Add(worklog.ElapsedTime)
             });
+            _logger.LogInformation("Worklog added successfully. {@entity}", worklog);
             return Task.CompletedTask;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Atlassian.Jira;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions;
@@ -8,7 +9,6 @@ using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -21,6 +21,7 @@ namespace Pet.Jira.Infrastructure.Jira
     public class JiraService : IJiraService
     {
         private readonly IJiraLinkGenerator _linkGenerator;
+        private readonly ILogger<JiraService> _logger;
         private readonly Atlassian.Jira.Jira _jiraClient;
         private readonly IJiraConfiguration _config;
         private readonly User _user;
@@ -31,9 +32,11 @@ namespace Pet.Jira.Infrastructure.Jira
         public JiraService(
             IOptions<JiraConfiguration> jiraConfiguration,
             IJiraLinkGenerator linkGenerator,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            ILogger<JiraService> logger)
         {
             _linkGenerator = linkGenerator;
+            _logger = logger;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
             _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user?.Username, _user?.Password);
@@ -82,6 +85,7 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default)
         {
             var issues = await _jiraClient.Issues.GetIssuesFromJqlAsync(issueSearchOptions, cancellationToken);
+            _logger.LogInformation("GetIssuesAsync successfully. {@entity}", issueSearchOptions);
             return issues.Select(issue => IssueDto.Create(issue, _linkGenerator));
         }
 
@@ -237,7 +241,7 @@ namespace Pet.Jira.Infrastructure.Jira
         /// </summary>
         /// <param name="worklogDto"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns></returns>        
         public async Task AddWorklogAsync(
             AddedWorklogDto worklogDto,
             CancellationToken cancellationToken = default)
@@ -248,6 +252,7 @@ namespace Pet.Jira.Infrastructure.Jira
                 worklogDto.StartedAt,
                 worklogDto.Comment);
             await _jiraClient.Issues.AddWorklogAsync(worklogDto.IssueKey, worklog, token: cancellationToken);
+            _logger.LogInformation("Worklog added successfully. {@entity}", worklogDto);
         }
 
         /// <summary>
@@ -262,6 +267,7 @@ namespace Pet.Jira.Infrastructure.Jira
         {
             var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
             await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
+            _logger.LogInformation("Login successfully");
             return new LoginResponse(true);
         }
 
