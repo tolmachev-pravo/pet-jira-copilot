@@ -21,7 +21,6 @@ using Pet.Jira.Web.Components.Markdown;
 using Pet.Jira.Web.Logging;
 using System;
 using Thinktecture.Blazor.AsyncClipboard;
-using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace Pet.Jira.Web
 {
@@ -72,9 +71,6 @@ namespace Pet.Jira.Web
                 {
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
-
-            // Hotkeys
-            services.AddHotKeys();
 
             // Local storage
             services.AddBlazoredLocalStorage();
