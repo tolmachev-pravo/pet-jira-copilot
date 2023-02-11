@@ -3,14 +3,12 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Authentication.Dto;
+using Pet.Jira.Application.Storage;
+using Pet.Jira.Domain.Models.Users;
+using Pet.Jira.Web.Components.Common;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Threading.Tasks;
-using Pet.Jira.Web.Components.Common;
-using Pet.Jira.Infrastructure.Users;
-using Pet.Jira.Web.Authentication;
-using Pet.Jira.Application.Storage;
-using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Web.Components.Authentication
 {
