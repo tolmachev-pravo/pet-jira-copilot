@@ -1,28 +1,26 @@
-﻿##### Зачем?
-Автоматизация логирования времени по задачам Jira. Вычисления носят рекомендательный и приблизительный харакетр.
+﻿##### What is the purpose of this automation?
+Automation of time logging for Jira issues. Calculations are advisory and approximate
 
-##### Для кого?
-Разработка. Сейчас вычисления по большей части учитывают только dev-workflow и заточены под изменение статусов задач, где сотрудник является ответственным.
+##### Who is this for?
+This is for the development team. Currently, the calculations mostly take into account the dev-workflow and are tailored to changes in task statuses, where the employee is responsible
 
-##### Как вычисляется время?
-- Залогированное время делится на 2 категории
-	- Время, которое уже залогировали. Такое время считается статическим и не подлежит пересчету.
-	- Время, которое предлагается залогировать. Вычисляется пропорционально чистому времени, потраченному на задачу в рамках указанного рабочего промежутка (**Daily working start time** - **Daily working end time**) за вычетом времени перерывов (сейчас это статически 1 час) и времени уже залогированных задач. **In work issue status** - статус задачи, который считается для сотрудника рабочим по задаче (по умолчанию это In Progress).
+##### What time zone is used for time fields?
+The time zone of the employee from Jira is used for time fields
 
-##### Какой часовой пояс учитывается при работе со временем?
-Часовой пояс сотрудника из Jira.
+##### Is it possible to log arbitrary time?
+Yes, the time calculation is purely advisory
 
-##### Можно ли залогировать произвольное время?
-Да. Расчет времени носит исключительно рекомендательный характер.
+##### Where is the information I entered stored?
+The application does not have a centralized permanent database. The source of data is the local storage of the browser
 
-##### Где хранится введенная мною информация?
-У приложения нет централизованной постоянной базы. Источником данных является Jira.
+##### How is the logged time associated with a task?
+Currently, it is associated with time. The time of the status change is compared with the time of logging. If there is a mismatch, then the association does not occur
+##### How to remove worklog?
+By Jira UI
 
-##### Как привязывается залогированное время к задаче?
-Сейчас по времени. Время изменения статуса сверяется с временем логирования. Если есть несовпадение, то привязка не происходит.
+##### I enter the correct username and password, but I get an error. Why?
+Sometimes Jira after a certain number of errors may require a captcha. You need to login via Jira UI
 
-##### Как удалить залогированное время?
-Через Jira.
-
-##### Мне все-таки что-то непонятно. Куда я могу обратиться?
-https://github.com/tolmachev-pravo/Pet.Jira/issues
+##### Wishes, suggestions, comments, questions?
+- https://github.com/tolmachev-pravo/pet-jira-workflow/issues
+- https://github.com/tolmachev-pravo/pet-jira-workflow/discussions

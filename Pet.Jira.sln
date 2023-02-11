@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Application", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Infrastructure.UnitTests", "tests\Pet.Jira.Infrastructure.UnitTests\Pet.Jira.Infrastructure.UnitTests.csproj", "{6B68F22A-5F2A-4CAC-A704-661855B93576}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.Application.UnitTests", "tests\Pet.Jira.Application.UnitTests\Pet.Jira.Application.UnitTests.csproj", "{226C5409-42DD-4EB6-8E5A-D08AE310EC27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Application.UnitTests", "tests\Pet.Jira.Application.UnitTests\Pet.Jira.Application.UnitTests.csproj", "{226C5409-42DD-4EB6-8E5A-D08AE310EC27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

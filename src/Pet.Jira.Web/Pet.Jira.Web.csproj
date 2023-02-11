@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\documents\components\worklog-filter-comment-time.md" />
+    <Content Remove="wwwroot\documents\components\worklog-filter-daily-working-end-time.md" />
+    <Content Remove="wwwroot\documents\components\worklog-filter-daily-working-start-time.md" />
+    <Content Remove="wwwroot\documents\components\worklog-filter-date-range.md" />
+    <Content Remove="wwwroot\documents\components\worklog-filter-in-work-issue-status.md" />
+    <Content Remove="wwwroot\documents\components\worklog-filter-lunch-time.md" />
+    <Content Remove="wwwroot\documents\components\worklog-menu.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.5" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.5" />
@@ -13,7 +23,7 @@
     <PackageReference Include="MediatR" Version="11.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.17" />
+    <PackageReference Include="MudBlazor" Version="6.1.7" />
     <PackageReference Include="MudBlazor.Markdown" Version="0.0.12" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
@@ -41,6 +51,30 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Components\Worklogs\WorklogTimeRange.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\documents\components\worklog-filter-daily-working-end-time.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-filter-date-range.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-filter-daily-working-start-time.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-filter-in-work-issue-status.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-menu.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-filter-lunch-time.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\documents\components\worklog-filter-comment-time.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
