@@ -1,7 +1,7 @@
 ﻿using Pet.Jira.Application.TextBuilder;
 using Pet.Jira.Infrastructure.TextBuilder;
 
-namespace Pet.Jira.Infrastructure.UnitTests.TextBuilder
+namespace Pet.Jira.UnitTests.Infrastructure.TextBuilder
 {
     [TestFixture]
     public class MarkdownTextBuilderTests

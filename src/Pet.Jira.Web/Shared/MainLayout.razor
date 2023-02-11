@@ -23,13 +23,13 @@
             <AuthorizeView>
                 <Authorized>
                     <MudAvatar Size="Size.Small" Color="Color.Primary" Image="@_model.Profile.Avatar">
-                        <MudIcon Icon="@Icons.Rounded.AccountCircle" />
+                        <MudIcon Icon="@Icons.Material.Rounded.AccountCircle" />
                     </MudAvatar>
                     <MudElement Class="mr-2 ml-2">@context.User.Identity.Name</MudElement>
-                    <MudIconButton Icon="@Icons.Filled.Logout" OnClick="Logout" Color="Color.Inherit" Href="/logout" Size="Size.Small" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Logout" OnClick="Logout" Color="Color.Inherit" Href="/logout" Size="Size.Small" />
                 </Authorized>
                 <NotAuthorized>
-                    <MudIconButton Icon="@Icons.Filled.Login" Href="/login" Color="Color.Inherit" Size="Size.Small"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Login" Href="/login" Color="Color.Inherit" Size="Size.Small" />
                 </NotAuthorized>
             </AuthorizeView>
         </MudAppBar>

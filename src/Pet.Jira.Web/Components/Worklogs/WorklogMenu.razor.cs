@@ -16,7 +16,7 @@ namespace Pet.Jira.Web.Components.Worklogs
     {
         [Parameter] public WorklogCollectionItem Entity { get; set; }
         [Parameter] public Color Color { get; set; } = Color.Default;
-        [Parameter] public string Icon { get; set; } = Icons.Outlined.ArrowCircleDown;
+        [Parameter] public string Icon { get; set; } = Icons.Material.Outlined.ArrowCircleDown;
         [Parameter] public string Label { get; set; } = "Default";
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }

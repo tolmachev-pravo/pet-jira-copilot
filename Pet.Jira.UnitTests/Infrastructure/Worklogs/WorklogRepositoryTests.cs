@@ -5,8 +5,9 @@ using Pet.Jira.Application.Time;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira;
+using Pet.Jira.Infrastructure.Worklogs;
 
-namespace Pet.Jira.Infrastructure.Worklogs.Tests
+namespace Pet.Jira.UnitTests.Infrastructure.Worklogs
 {
     [TestFixture]
     public class WorklogRepositoryTests
