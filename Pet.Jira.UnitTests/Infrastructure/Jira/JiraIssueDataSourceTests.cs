@@ -2,7 +2,7 @@
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Dto;
 
-namespace Pet.Jira.Infrastructure.UnitTests.Jira
+namespace Pet.Jira.UnitTests.Infrastructure.Jira
 {
     [TestFixture]
     public class JiraIssueDataSourceTests
@@ -156,7 +156,7 @@ namespace Pet.Jira.Infrastructure.UnitTests.Jira
         public async Task GetIssueOpenPullRequestUrlAsync_Should_BeCorrect(string identifier, string expected)
         {
             // Arrange
-            var query = new Application.Issues.Queries.GetIssueOpenPullRequestUrl.Query
+            var query = new Pet.Jira.Application.Issues.Queries.GetIssueOpenPullRequestUrl.Query
             {
                 Identifier = identifier
             };

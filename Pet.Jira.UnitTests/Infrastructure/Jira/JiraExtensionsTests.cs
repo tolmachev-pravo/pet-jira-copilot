@@ -5,7 +5,7 @@ using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System.Collections;
 
-namespace Pet.Jira.Infrastructure.UnitTests.Jira
+namespace Pet.Jira.UnitTests.Infrastructure.Jira
 {
     [TestFixture]
     public class JiraExtensionsTests

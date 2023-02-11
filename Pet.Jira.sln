@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Infrastructure.Uni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pet.Jira.Application.UnitTests", "tests\Pet.Jira.Application.UnitTests\Pet.Jira.Application.UnitTests.csproj", "{226C5409-42DD-4EB6-8E5A-D08AE310EC27}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pet.Jira.UnitTests", "Pet.Jira.UnitTests\Pet.Jira.UnitTests.csproj", "{49620DD1-DB41-403B-8938-C9492B719B2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{226C5409-42DD-4EB6-8E5A-D08AE310EC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{226C5409-42DD-4EB6-8E5A-D08AE310EC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{226C5409-42DD-4EB6-8E5A-D08AE310EC27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49620DD1-DB41-403B-8938-C9492B719B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49620DD1-DB41-403B-8938-C9492B719B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49620DD1-DB41-403B-8938-C9492B719B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49620DD1-DB41-403B-8938-C9492B719B2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{926A2270-1683-46B5-9BCF-F9C99C3546F7} = {A3301072-9BBB-46FA-9C0E-FAAA46748F75}
 		{6B68F22A-5F2A-4CAC-A704-661855B93576} = {FF476EBA-37B4-4D40-AAF5-327FB3DECACC}
 		{226C5409-42DD-4EB6-8E5A-D08AE310EC27} = {FF476EBA-37B4-4D40-AAF5-327FB3DECACC}
+		{49620DD1-DB41-403B-8938-C9492B719B2E} = {FF476EBA-37B4-4D40-AAF5-327FB3DECACC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1C9717CA-143A-474C-989D-19E41422720C}
