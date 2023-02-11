@@ -45,7 +45,7 @@ namespace Pet.Jira.Application.Worklogs.Commands
                 }
                 catch (AuthenticationException e)
                 {
-                    throw new Exception($"Authentication exception [{command.Request.Username}]") { Source = e.Source };
+                    throw new Exception($"Authentication exception [{command?.Request?.Username}]") { Source = e.Source };
                 }
             }
         }
