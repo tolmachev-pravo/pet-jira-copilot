@@ -1,15 +1,11 @@
 ﻿@using Pet.Jira.Web.Components.Markdown
 
-<MarkdownTooltip Markdown="worklog-menu">
-    <MudMenu Icon="@Icon" Color="@Color" Size="Size.Small" Dense="true" Class="pet-vertical-align-middle"
-             AnchorOrigin=Origin.BottomLeft TransformOrigin=Origin.TopLeft Label="@Label">
-        <ChildContent>
-            <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync())">Copy as In review</MudMenuItem>
-            <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync())">Copy as In progress</MudMenuItem>
-        </ChildContent>
-    </MudMenu>
-</MarkdownTooltip>
+<MudMenu Icon="@Icon" Color="@Color" Size="Size.Small" Dense="true" Class="pet-vertical-align-middle"
+         AnchorOrigin=Origin.BottomLeft TransformOrigin=Origin.TopLeft Label="@Label">
+    <ChildContent>
+        <MudMenuItem OnClick="(async () => await CopyToClipboardInReviewAsync())">Copy as In review</MudMenuItem>
+        <MudMenuItem OnClick="(async () => await CopyToClipboardInProgressAsync())">Copy as In progress</MudMenuItem>
+    </ChildContent>
+</MudMenu>
 
-
-@code {
-    }
+@code {}
