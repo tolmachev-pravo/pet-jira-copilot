@@ -25,9 +25,9 @@ namespace Pet.Jira.Application.Worklogs.Dto
             switch (worklog.Source)
             {
                 case WorklogCollectionItemSource.Assignee:
-                    return "Working on a task";
+                    return $"Working on task {worklog.Issue?.Key}";
                 case WorklogCollectionItemSource.Comment:
-                    return "Task discussion";
+                    return $"Task discussion {worklog.Issue?.Key}";
                 default:
                     return "Default worklog";
             }
