@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pet.Jira.Application.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,17 +30,41 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// </summary>
         public bool IsWeekend => Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Sunday;
 
-        public IEnumerable<WorklogCollectionItem> ActualItems => Worklogs.Where(item => item.Type == WorklogCollectionItemType.Actual);
-        public IEnumerable<WorklogCollectionItem> EstimatedItems => Worklogs.Where(item => item.Type == WorklogCollectionItemType.Estimated);
-        public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
-        public TimeSpan EstimatedWorklogsSum => new TimeSpan(EstimatedItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
-        public TimeSpan CalculatedWorklogsSum => ActualWorklogsSum + EstimatedWorklogsSum;
+        /// <summary>
+        /// Actual worklogs
+        /// </summary>
+        public IEnumerable<WorklogCollectionItem> ActualIWorklogs => 
+            Worklogs.Where(item => item.Type == WorklogCollectionItemType.Actual);
 
-        public int Progress => CalculatedWorklogsSum > TimeSpan.Zero
-            ? Convert.ToInt32(ActualWorklogsSum * 100 / CalculatedWorklogsSum)
+        /// <summary>
+        /// Estimated worklogs
+        /// </summary>
+        public IEnumerable<WorklogCollectionItem> EstimatedWorklogs => 
+            Worklogs.Where(item => item.Type == WorklogCollectionItemType.Estimated);
+
+        /// <summary>
+        /// Actual worklog time spent
+        /// </summary>
+        public TimeSpan ActualWorklogTimeSpent => ActualIWorklogs.TimeSpent();
+
+        /// <summary>
+        /// Estimated remaining worklog time spent
+        /// </summary>
+        public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.TimeSpent();
+
+        /// <summary>
+        /// Worklog time spent
+        /// </summary>
+        public TimeSpan WorklogTimeSpent => ActualWorklogTimeSpent + EstimatedWorklogTimeSpent;
+
+        /// <summary>
+        /// Percent of progress time spent by day
+        /// </summary>
+        public int Progress => WorklogTimeSpent > TimeSpan.Zero
+            ? Convert.ToInt32(ActualWorklogTimeSpent * 100 / WorklogTimeSpent)
             : 0;
 
-        public int RawEstimatedWorklogCount => EstimatedItems.Count(item => item.TimeSpent > TimeSpan.Zero);
+        public int RawEstimatedWorklogCount => EstimatedWorklogs.Count(item => item.TimeSpent > TimeSpan.Zero);
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
         public WorkingDay(
@@ -56,27 +81,27 @@ namespace Pet.Jira.Application.Worklogs.Dto
         {
             foreach (var item in Worklogs)
             {
-                item.Refresh(ActualItems);
+                item.Refresh(ActualIWorklogs);
             }
 
             // Время зафиксированное за день
-            var dayTimeSpent = new TimeSpan(ActualItems.Sum(record => record.TimeSpent.Ticks));
+            var dayTimeSpent = new TimeSpan(ActualIWorklogs.Sum(record => record.TimeSpent.Ticks));
             // Автоматические
-            var autoActualWorklogs = EstimatedItems.SelectMany(record => record.ChildItems);
+            var autoActualWorklogs = EstimatedWorklogs.SelectMany(record => record.ChildItems);
             // Вручную внесенные таймлоги
-            var manualActualWorklogs = ActualItems.Except(autoActualWorklogs);
+            var manualActualWorklogs = ActualIWorklogs.Except(autoActualWorklogs);
             // Вручную списанное время
             var manualTimeSpent = manualActualWorklogs.Sum(record => record.TimeSpent.Ticks);
             // Автоматически списанное время
             var autoTimeSpent = autoActualWorklogs.Sum(record => record.TimeSpent.Ticks);
 
             // Чистое время выполнения всех незалогированных задач
-            var fullRawTimeSpent = EstimatedItems.Where(record => record.ChildTimeSpent == TimeSpan.Zero).Sum(record => record.RawTimeSpent.Ticks);
+            var fullRawTimeSpent = EstimatedWorklogs.Where(record => record.ChildTimeSpent == TimeSpan.Zero).Sum(record => record.RawTimeSpent.Ticks);
             // Предполагаемый остаток для автоматического списания времени
             var estimatedRestAutoTimeSpent = Convert.ToDecimal(Settings.WorkingTime.Ticks - manualTimeSpent - autoTimeSpent);
 
             // Заполняем предполагаемое время для каждой задачи в пропорциях
-            foreach (var estimatedWorklog in EstimatedItems)
+            foreach (var estimatedWorklog in EstimatedWorklogs)
             {
                 if (estimatedWorklog.ChildTimeSpent == TimeSpan.Zero 
                     && estimatedRestAutoTimeSpent > 0

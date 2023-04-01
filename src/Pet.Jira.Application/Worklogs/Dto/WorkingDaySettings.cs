@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Pet.Jira.Application.Worklogs.Dto
@@ -6,7 +7,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
     /// <summary>
     /// Settings of working day
     /// </summary>
-    public class WorkingDaySettings
+    public class WorkingDaySettings : IValidatableObject
     {
         /// <summary>
         /// Working start time
@@ -39,6 +40,16 @@ namespace Pet.Jira.Application.Worklogs.Dto
             WorkingStartTime = workingStartTime;
             WorkingEndTime = workingEndTime;
             LunchTime = lunchTime;
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (WorkingStartTime > WorkingEndTime)
+            {
+                yield return new ValidationResult(
+                    errorMessage: "End time must be greater than start time",
+                    memberNames: new List<string> { nameof(WorkingStartTime), nameof(WorkingEndTime) });
+            }
         }
     }
 }

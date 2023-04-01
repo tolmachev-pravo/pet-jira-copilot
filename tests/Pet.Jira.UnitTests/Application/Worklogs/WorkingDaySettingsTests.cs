@@ -5,7 +5,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 {
     public class WorkingDaySettingsTests
     {
-        public class TestCases : IEnumerable
+        public class WorkingTimeTestCases : IEnumerable
         {
             public IEnumerator GetEnumerator()
             {
@@ -16,7 +16,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             }
         }
 
-        [TestCaseSource(typeof(TestCases))]
+        [TestCaseSource(typeof(WorkingTimeTestCases))]
         public void WorkingTime_Should_BeCorrect(
             TimeSpan workingStartTime,
             TimeSpan workingEndTime,
@@ -34,6 +34,22 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 
             // Assert
             Assert.That(workingTime, Is.EqualTo(expectedWorkingTime));
+        }
+
+        [Test]
+        public void Validate_Should_ValidateThatEndTimeGreaterThanStartTime()
+        {
+            // Arrange
+            var settings = new WorkingDaySettings(
+                workingStartTime: TimeSpan.FromHours(9),
+                workingEndTime: TimeSpan.FromHours(8),
+                lunchTime: TimeSpan.FromHours(1));
+
+            // Act
+            var validationResults = settings.Validate(default);
+
+            // Assert
+            Assert.That(validationResults.Count(), Is.EqualTo(1));
         }
     }
 }

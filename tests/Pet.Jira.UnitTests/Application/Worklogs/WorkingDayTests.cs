@@ -39,7 +39,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             worklogCollectionDay.Refresh();
 
             // Assert
-            Assert.That(worklogCollectionDay.CalculatedWorklogsSum, Is.EqualTo(worklogCollectionDay.Settings.WorkingTime));
+            Assert.That(worklogCollectionDay.WorklogTimeSpent, Is.EqualTo(worklogCollectionDay.Settings.WorkingTime));
         }
 
         [Test]
@@ -77,8 +77,8 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             worklogCollectionDay.Refresh();
 
             // Assert
-            Assert.That(worklogCollectionDay.ActualWorklogsSum, Is.EqualTo(TimeSpan.FromHours(5)));
-            Assert.That(worklogCollectionDay.CalculatedWorklogsSum, Is.EqualTo(TimeSpan.FromHours(5)));
+            Assert.That(worklogCollectionDay.ActualWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(5)));
+            Assert.That(worklogCollectionDay.WorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(5)));
         }
 
         [Test]
@@ -121,9 +121,9 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             workingDay.Refresh();
 
             // Assert
-            Assert.That(workingDay.ActualWorklogsSum, Is.EqualTo(TimeSpan.FromHours(1)));
-            Assert.That(workingDay.EstimatedWorklogsSum, Is.EqualTo(TimeSpan.FromHours(7)));
-            Assert.That(workingDay.CalculatedWorklogsSum, Is.EqualTo(TimeSpan.FromHours(8)));
+            Assert.That(workingDay.ActualWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(1)));
+            Assert.That(workingDay.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(7)));
+            Assert.That(workingDay.WorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(8)));
             Assert.That(workingDay.Progress, Is.EqualTo(12));
         }
 
@@ -158,9 +158,9 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             workingDay.Refresh();
 
             // Assert
-            Assert.That(workingDay.ActualWorklogsSum, Is.EqualTo(TimeSpan.FromHours(1)));
-            Assert.That(workingDay.EstimatedWorklogsSum, Is.EqualTo(TimeSpan.Zero));
-            Assert.That(workingDay.CalculatedWorklogsSum, Is.EqualTo(TimeSpan.FromHours(1)));
+            Assert.That(workingDay.ActualWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(1)));
+            Assert.That(workingDay.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(workingDay.WorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(1)));
             Assert.That(workingDay.Progress, Is.EqualTo(100));
         }
     }

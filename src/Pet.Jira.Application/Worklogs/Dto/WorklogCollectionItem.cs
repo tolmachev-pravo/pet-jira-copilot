@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
-    public class WorklogCollectionItem
+    public class WorklogCollectionItem : IHasTimeSpent
     {
         public DateTime StartDate { get; set; }
         public DateTime CompleteDate { get; set; }
