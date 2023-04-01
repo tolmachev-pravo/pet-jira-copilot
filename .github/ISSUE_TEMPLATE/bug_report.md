@@ -7,21 +7,17 @@ assignees: tolmachev-pravo
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the bug** 🐛
+_A clear and concise description of what the bug is._
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**To Reproduce** 📀
+_Steps to reproduce the behavior:_
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Expected behavior** ⚽
+_A clear and concise description of what you expected to happen._
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Screenshots** 📷
+_If applicable, add screenshots to help explain your problem._
 
-**Additional context**
-Add any other context about the problem here.
+**Additional context** 📃
+_Add any other context about the problem here._
