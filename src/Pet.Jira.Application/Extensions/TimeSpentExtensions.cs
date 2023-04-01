@@ -9,9 +9,14 @@ namespace Pet.Jira.Application.Extensions
     {
         public static TimeSpan TimeSpent(this IEnumerable<IHasTimeSpent> worklogs)
         {
-            return worklogs?
+            if (worklogs.IsEmpty())
+            {
+                return TimeSpan.Zero;
+            }
+
+            return worklogs
                 .Select(worklog => worklog.TimeSpent)
-                .Aggregate((time1, time2) => time1 + time2) ?? TimeSpan.Zero;
+                .Aggregate((time1, time2) => time1 + time2);
         }
     }
 }

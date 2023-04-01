@@ -84,9 +84,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 item.Refresh(ActualIWorklogs);
             }
 
-            // Время зафиксированное за день
-            var dayTimeSpent = new TimeSpan(ActualIWorklogs.Sum(record => record.TimeSpent.Ticks));
-            // Автоматические
+            // Автоматические таймлоги
             var autoActualWorklogs = EstimatedWorklogs.SelectMany(record => record.ChildItems);
             // Вручную внесенные таймлоги
             var manualActualWorklogs = ActualIWorklogs.Except(autoActualWorklogs);
