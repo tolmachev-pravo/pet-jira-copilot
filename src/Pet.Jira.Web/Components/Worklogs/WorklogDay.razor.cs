@@ -11,7 +11,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogDay : ComponentBase
     {
-        [Parameter] public WorklogCollectionDay Entity { get; set; }
+        [Parameter] public WorkingDay Entity { get; set; }
 
         [Inject] private IMediator Mediator { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }

@@ -42,7 +42,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 return new ComponentModel();
             }
 
-            public IEnumerable<WorklogCollectionDay> Items { get; set; }
+            public IEnumerable<WorkingDay> Items { get; set; }
         }
     }
 }

@@ -1,43 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
-    public class WorklogCollectionDay
+    public class WorkingDay
     {
         /// <summary>
         /// Date of day without time
         /// </summary>
+        [Required]
         public DateTime Date { get; set; }
 
         /// <summary>
-        /// Working start time
+        /// Settings of working day
         /// </summary>
-        public TimeSpan DailyWorkingStartTime { get; set; }
-
-        /// <summary>
-        /// Working end time
-        /// </summary>
-        public TimeSpan DailyWorkingEndTime { get; set; }
+        [Required]
+        public WorkingDaySettings Settings { get; set; }
 
         /// <summary>
         /// Worklog items
         /// </summary>
-        public IList<WorklogCollectionItem> Items { get; set; } = new List<WorklogCollectionItem>();
-
-        /// <summary>
-        /// Time for lunch
-        /// </summary>
-        public TimeSpan LunchTime { get; set; } = TimeSpan.FromHours(1);
+        public IList<WorklogCollectionItem> Worklogs { get; set; }
 
         /// <summary>
         /// Determines that day is weekend
         /// </summary>
         public bool IsWeekend => Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Sunday;
 
-        public IEnumerable<WorklogCollectionItem> ActualItems => Items.Where(item => item.Type == WorklogCollectionItemType.Actual);
-        public IEnumerable<WorklogCollectionItem> EstimatedItems => Items.Where(item => item.Type == WorklogCollectionItemType.Estimated);
+        public IEnumerable<WorklogCollectionItem> ActualItems => Worklogs.Where(item => item.Type == WorklogCollectionItemType.Actual);
+        public IEnumerable<WorklogCollectionItem> EstimatedItems => Worklogs.Where(item => item.Type == WorklogCollectionItemType.Estimated);
         public TimeSpan ActualWorklogsSum => new TimeSpan(ActualItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
         public TimeSpan EstimatedWorklogsSum => new TimeSpan(EstimatedItems?.Sum(item => item.TimeSpent.Ticks) ?? 0);
         public TimeSpan CalculatedWorklogsSum => ActualWorklogsSum + EstimatedWorklogsSum;
@@ -49,14 +42,23 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public int RawEstimatedWorklogCount => EstimatedItems.Count(item => item.TimeSpent > TimeSpan.Zero);
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
+        public WorkingDay(
+            DateTime date,
+            WorkingDaySettings settings,
+            IList<WorklogCollectionItem> worklogs = null)
+        {
+            Date = date;
+            Settings = settings;
+            Worklogs = worklogs ?? new List<WorklogCollectionItem>();
+        }
+
         public void Refresh()
         {
-            foreach (var item in Items)
+            foreach (var item in Worklogs)
             {
                 item.Refresh(ActualItems);
             }
 
-            var workTime = DailyWorkingEndTime - DailyWorkingStartTime - LunchTime;
             // Время зафиксированное за день
             var dayTimeSpent = new TimeSpan(ActualItems.Sum(record => record.TimeSpent.Ticks));
             // Автоматические
@@ -71,7 +73,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             // Чистое время выполнения всех незалогированных задач
             var fullRawTimeSpent = EstimatedItems.Where(record => record.ChildTimeSpent == TimeSpan.Zero).Sum(record => record.RawTimeSpent.Ticks);
             // Предполагаемый остаток для автоматического списания времени
-            var estimatedRestAutoTimeSpent = Convert.ToDecimal(workTime.Ticks - manualTimeSpent - autoTimeSpent);
+            var estimatedRestAutoTimeSpent = Convert.ToDecimal(Settings.WorkingTime.Ticks - manualTimeSpent - autoTimeSpent);
 
             // Заполняем предполагаемое время для каждой задачи в пропорциях
             foreach (var estimatedWorklog in EstimatedItems)
@@ -99,7 +101,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
 
         public void AddActualItem(WorklogCollectionItem actualItem)
         {
-            Items.Add(actualItem);
+            Worklogs.Add(actualItem);
             Refresh();
         }
     }

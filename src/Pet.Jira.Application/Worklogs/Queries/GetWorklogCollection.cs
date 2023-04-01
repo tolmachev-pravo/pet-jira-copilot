@@ -73,7 +73,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 return new WorklogCollection() { Days = days.ToList() };
             }
 
-            private static IEnumerable<WorklogCollectionDay> CalculateDays(
+            private static IEnumerable<WorkingDay> CalculateDays(
                 IEnumerable<IWorklog> issueWorklogs,
                 IEnumerable<IWorklog> rawIssueWorklogs,
                 Query query)
@@ -97,17 +97,19 @@ namespace Pet.Jira.Application.Worklogs.Queries
                             WorklogCollectionItem.Create(worklog, WorklogCollectionItemType.Estimated,
                                 dailyIssueWorklogs));
 
-                    yield return new WorklogCollectionDay
-                    {
-                        Date = day,
-                        Items = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)
+                    var dailyWorklogs = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)
                             .OrderBy(record => record.StartDate)
                             .ThenBy(record => record.CompleteDate)
-                            .ToList(),
-                        DailyWorkingStartTime = query.DailyWorkingStartTime,
-                        DailyWorkingEndTime = query.DailyWorkingEndTime,
-                        LunchTime = query.LunchTime
-                    };
+                            .ToList();
+
+                    yield return new WorkingDay(
+                        date: day,
+                        settings: new WorkingDaySettings(
+                            workingStartTime: query.DailyWorkingStartTime,
+                            workingEndTime: query.DailyWorkingEndTime,
+                            lunchTime: query.LunchTime),
+                        worklogs: dailyWorklogs);
+
                     day = day.AddDays(-1);
                 }
             }
