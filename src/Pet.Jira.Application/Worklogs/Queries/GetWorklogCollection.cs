@@ -25,7 +25,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
         public class Model
         {
-            public WorklogCollection WorklogCollection { get; set; }
+            public IEnumerable<WorkingDay> WorkingDays { get; set; }
         }
 
         public class QueryHandler : IRequestHandler<Query, Model>
@@ -42,10 +42,10 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 CancellationToken cancellationToken = default)
             {
                 var worklogCollection = await CalculateWorklogCollection(query, cancellationToken);
-                return new Model { WorklogCollection = worklogCollection };
+                return new Model { WorkingDays = worklogCollection };
             }
 
-            private async Task<WorklogCollection> CalculateWorklogCollection(Query query,
+            private async Task<IEnumerable<WorkingDay>> CalculateWorklogCollection(Query query,
                 CancellationToken cancellationToken)
             {
                 var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(
@@ -70,7 +70,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     day.Refresh();
                 }
 
-                return new WorklogCollection() { Days = days.ToList() };
+                return days;
             }
 
             private static IEnumerable<WorkingDay> CalculateDays(
@@ -89,12 +89,12 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 {
                     var dailyIssueWorklogs = issueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
-                        .Select(worklog => WorklogCollectionItem.Create(worklog, WorklogCollectionItemType.Actual));
+                        .Select(worklog => WorkingDayWorklog.Create(worklog, WorklogType.Actual));
 
                     var dailyRawIssueWorklogs = splitedRawIssueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
                         .Select(worklog =>
-                            WorklogCollectionItem.Create(worklog, WorklogCollectionItemType.Estimated,
+                            WorkingDayWorklog.Create(worklog, WorklogType.Estimated,
                                 dailyIssueWorklogs));
 
                     var dailyWorklogs = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)

@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
-    public class WorklogCollectionItem : IHasTimeSpent
+    public class WorkingDayWorklog : IHasTimeSpent
     {
         public DateTime StartDate { get; set; }
         public DateTime CompleteDate { get; set; }
@@ -20,19 +20,19 @@ namespace Pet.Jira.Application.Worklogs.Dto
         [Required]
         public IIssue Issue { get; set; }
 
-        public WorklogCollectionItemType Type { get; set; }
-        public WorklogCollectionItemSource Source { get; set; }
+        public WorklogType Type { get; set; }
+        public WorklogSource Source { get; set; }
 
-        public IList<WorklogCollectionItem> Children { get; set; }
-        public WorklogCollectionItem Parent { get; set; }
+        public IList<WorkingDayWorklog> Children { get; set; }
+        public WorkingDayWorklog Parent { get; set; }
 
         public TimeSpan ChildrenTimeSpent => Children.TimeSpent();
         public bool IsEmpty => TimeSpent == TimeSpan.Zero;
         public TimeSpan RawTimeSpent => CompleteDate - StartDate;
 
-        public WorklogCollectionItem()
+        public WorkingDayWorklog()
         {
-            Children = new List<WorklogCollectionItem>();
+            Children = new List<WorkingDayWorklog>();
         }
 
         /// <summary>
@@ -50,28 +50,19 @@ namespace Pet.Jira.Application.Worklogs.Dto
             TimeSpent = timeSpan;
         }
 
-        public static WorklogCollectionItem Create(
+        public static WorkingDayWorklog Create(
             IWorklog worklog,
-            WorklogCollectionItemType type,
-            IEnumerable<WorklogCollectionItem> dailyItems = null)
+            WorklogType type,
+            IEnumerable<WorkingDayWorklog> dailyItems = null)
         {
-            var result = new WorklogCollectionItem
+            var result = new WorkingDayWorklog
             {
                 StartDate = worklog.StartDate,
                 CompleteDate = worklog.CompleteDate,
                 Issue = worklog.Issue,
-                Type = type
+                Type = type,
+                Source = worklog.Source
             };
-
-            switch (worklog.Source)
-            {
-                case WorklogSource.Assignee:
-                    result.Source = WorklogCollectionItemSource.Assignee;
-                    break;
-                case WorklogSource.Comment:
-                    result.Source = WorklogCollectionItemSource.Comment;
-                    break;
-            }
 
             result.UpdateTimeSpent(worklog.TimeSpent);
             result.AttachSuitableChildren(dailyItems);
@@ -79,9 +70,9 @@ namespace Pet.Jira.Application.Worklogs.Dto
             return result;
         }
 
-        public WorklogCollectionItem Clone(WorklogCollectionItemType type)
+        public WorkingDayWorklog Clone(WorklogType type)
         {
-            return new WorklogCollectionItem
+            return new WorkingDayWorklog
             {
                 StartDate = CompleteDate,
                 CompleteDate = CompleteDate.Add(TimeSpent),
@@ -96,7 +87,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// Attach suitable children worklogs to current worklog
         /// </summary>
         /// <param name="applicants"></param>
-        public void AttachSuitableChildren(IEnumerable<WorklogCollectionItem> applicants)
+        public void AttachSuitableChildren(IEnumerable<WorkingDayWorklog> applicants)
         {
             if (!applicants.IsEmpty())
             {

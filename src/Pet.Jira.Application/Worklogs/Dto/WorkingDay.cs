@@ -1,4 +1,5 @@
 ﻿using Pet.Jira.Application.Extensions;
+using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,16 +24,16 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// <summary>
         /// Worklog items
         /// </summary>
-        public IList<WorklogCollectionItem> Worklogs { get; set; }
+        public IList<WorkingDayWorklog> Worklogs { get; set; }
 
         public WorkingDay(
             DateTime date,
             WorkingDaySettings settings,
-            IList<WorklogCollectionItem> worklogs = null)
+            IList<WorkingDayWorklog> worklogs = null)
         {
             Date = date;
             Settings = settings;
-            Worklogs = worklogs ?? new List<WorklogCollectionItem>();
+            Worklogs = worklogs ?? new List<WorkingDayWorklog>();
         }
 
         /// <summary>
@@ -44,14 +45,14 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// Actual worklogs.
         /// Include manual and auto worklogs
         /// </summary>
-        public IEnumerable<WorklogCollectionItem> ActualWorklogs => 
-            Worklogs.Where(item => item.Type == WorklogCollectionItemType.Actual);
+        public IEnumerable<WorkingDayWorklog> ActualWorklogs => 
+            Worklogs.Where(item => item.Type == WorklogType.Actual);
 
         /// <summary>
         /// Estimated worklogs
         /// </summary>
-        public IEnumerable<WorklogCollectionItem> EstimatedWorklogs => 
-            Worklogs.Where(item => item.Type == WorklogCollectionItemType.Estimated);
+        public IEnumerable<WorkingDayWorklog> EstimatedWorklogs => 
+            Worklogs.Where(item => item.Type == WorklogType.Estimated);
 
         /// <summary>
         /// Actual worklog time spent
@@ -112,7 +113,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             }
         }
 
-        public void AddWorklog(WorklogCollectionItem worklog)
+        public void AddWorklog(WorkingDayWorklog worklog)
         {
             Worklogs.Add(worklog);
             Refresh();

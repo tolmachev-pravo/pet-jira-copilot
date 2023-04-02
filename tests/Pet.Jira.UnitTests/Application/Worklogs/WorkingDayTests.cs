@@ -1,5 +1,6 @@
 ﻿using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Issues;
+using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.UnitTests.Application.Mock;
 
 namespace Pet.Jira.UnitTests.Application.Worklogs
@@ -32,20 +33,20 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_WithActualAndEstimatedItems_Should_CalculateWorklogsSum()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(3),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(12),
                     Issue = _issues[0]
                 },
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(4),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(17),
                     Issue = _issues[1]
@@ -67,20 +68,20 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_WithActualItems_Should_CalculateTimeSpent()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(3),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(12),
                     Issue = _issues[0]
                 },
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(2),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(15),
                     Issue = _issues[1]
@@ -106,26 +107,26 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_Should_SetTimeSpentForEstimatedItems()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(1),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     Issue = _issues[0]
                 },
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(2),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(11),
                     Issue = _issues[1]
                 },
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(0),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(12),
                     CompleteDate = _date.AddHours(12),
                     Issue = _issues[2]
@@ -153,18 +154,18 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_Should_SetTimeSpentToZero_ForEmptyEstimatedItems()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(1),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     Issue = _issues[0]
                 },
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(0),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     Issue = _issues[1]
                 },
             };
@@ -190,22 +191,22 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_Should_SetTimeSpentToZero_ForEstimatedWorklog_IfItHasAtLeastOneChild()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
                 // 10:00 - 13:00 | issue_0 | estimated
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(3),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13),
                     Issue = _issues[0]
                 },
                 // 13:00 - ..:.. | issue_0 | actual
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(2),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
                     Issue = _issues[0]
                 },
@@ -232,30 +233,30 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_Should_SetRemainingTimeSpent_ForEstimatedWorklogs_WithoutChildren()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
                 // 10:00 - 13:00 | issue_0 | estimated
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(3),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13),
                     Issue = _issues[0]
                 },
                 // 13:00 - ..:.. | issue_0 | actual
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(2),
-                    Type = WorklogCollectionItemType.Actual,
+                    Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
                     Issue = _issues[0]
                 },
                 // 13:00 - 17:00 | issue_1 | estimated
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = TimeSpan.FromHours(4),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(17),
                     Issue = _issues[1]
@@ -289,22 +290,22 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         public void Refresh_Should_SetTimeSpentInProportions()
         {
             // Arrange
-            var worklogs = new List<WorklogCollectionItem>
+            var worklogs = new List<WorkingDayWorklog>
             {
                 // 10:00 - 13:45 | issue_0 | estimated
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent =  new TimeSpan(3, 45, 0),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13).AddMinutes(45),
                     Issue = _issues[0]
                 },
                 // 14:00 - 16:15 | issue_1 | estimated
-                new WorklogCollectionItem
+                new WorkingDayWorklog
                 {
                     TimeSpent = new TimeSpan(2, 15, 0),
-                    Type = WorklogCollectionItemType.Estimated,
+                    Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(14),
                     CompleteDate = _date.AddHours(16).AddMinutes(15),
                     Issue = _issues[1]

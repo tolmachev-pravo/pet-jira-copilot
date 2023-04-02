@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Web.Shared;
 using System.Threading.Tasks;
 
@@ -8,8 +9,8 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogItem : ComponentBase
     {
-        [Parameter] public WorklogCollectionItem Entity { get; set; }        
-        [Parameter] public EventCallback<WorklogCollectionItem> OnAddPressed { get; set; }
+        [Parameter] public WorkingDayWorklog Entity { get; set; }        
+        [Parameter] public EventCallback<WorkingDayWorklog> OnAddPressed { get; set; }
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
@@ -18,6 +19,6 @@ namespace Pet.Jira.Web.Components.Worklogs
             await OnAddPressed.InvokeAsync(Entity);
         }
 
-        public Color Color => Entity.Source == WorklogCollectionItemSource.Assignee ? Color.Primary : Color.Info;
+        public Color Color => Entity.Source == WorklogSource.Assignee ? Color.Primary : Color.Info;
     }
 }

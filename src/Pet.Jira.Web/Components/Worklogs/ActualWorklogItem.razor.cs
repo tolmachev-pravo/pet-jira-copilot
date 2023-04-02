@@ -5,6 +5,6 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class ActualWorklogItem : ComponentBase
     {
-        [Parameter] public WorklogCollectionItem Entity { get; set; }
+        [Parameter] public WorkingDayWorklog Entity { get; set; }
     }
 }
