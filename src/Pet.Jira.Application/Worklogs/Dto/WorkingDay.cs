@@ -25,15 +25,26 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// </summary>
         public IList<WorklogCollectionItem> Worklogs { get; set; }
 
+        public WorkingDay(
+            DateTime date,
+            WorkingDaySettings settings,
+            IList<WorklogCollectionItem> worklogs = null)
+        {
+            Date = date;
+            Settings = settings;
+            Worklogs = worklogs ?? new List<WorklogCollectionItem>();
+        }
+
         /// <summary>
         /// Determines that day is weekend
         /// </summary>
         public bool IsWeekend => Date.DayOfWeek == DayOfWeek.Saturday || Date.DayOfWeek == DayOfWeek.Sunday;
 
         /// <summary>
-        /// Actual worklogs
+        /// Actual worklogs.
+        /// Include manual and auto worklogs
         /// </summary>
-        public IEnumerable<WorklogCollectionItem> ActualIWorklogs => 
+        public IEnumerable<WorklogCollectionItem> ActualWorklogs => 
             Worklogs.Where(item => item.Type == WorklogCollectionItemType.Actual);
 
         /// <summary>
@@ -45,10 +56,10 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// <summary>
         /// Actual worklog time spent
         /// </summary>
-        public TimeSpan ActualWorklogTimeSpent => ActualIWorklogs.TimeSpent();
+        public TimeSpan ActualWorklogTimeSpent => ActualWorklogs.TimeSpent();
 
         /// <summary>
-        /// Estimated remaining worklog time spent
+        /// Estimated worklog time spent
         /// </summary>
         public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.TimeSpent();
 
@@ -67,64 +78,43 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public int RawEstimatedWorklogCount => EstimatedWorklogs.Count(item => item.TimeSpent > TimeSpan.Zero);
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
-        public WorkingDay(
-            DateTime date,
-            WorkingDaySettings settings,
-            IList<WorklogCollectionItem> worklogs = null)
-        {
-            Date = date;
-            Settings = settings;
-            Worklogs = worklogs ?? new List<WorklogCollectionItem>();
-        }
-
         public void Refresh()
         {
             foreach (var item in Worklogs)
             {
-                item.Refresh(ActualIWorklogs);
+                item.AttachSuitableChildren(ActualWorklogs);
             }
 
-            // Автоматические таймлоги
-            var autoActualWorklogs = EstimatedWorklogs.SelectMany(record => record.ChildItems);
-            // Вручную внесенные таймлоги
-            var manualActualWorklogs = ActualIWorklogs.Except(autoActualWorklogs);
-            // Вручную списанное время
-            var manualTimeSpent = manualActualWorklogs.Sum(record => record.TimeSpent.Ticks);
-            // Автоматически списанное время
-            var autoTimeSpent = autoActualWorklogs.Sum(record => record.TimeSpent.Ticks);
+            // Remaining raw write-off time spent for unlogged worklogs
+            var remainingRawTimeSpent = EstimatedWorklogs
+                .Where(worklog => worklog.ChildrenTimeSpent == TimeSpan.Zero)
+                .Select(worklog => worklog.RawTimeSpent)
+                .Sum();
 
-            // Чистое время выполнения всех незалогированных задач
-            var fullRawTimeSpent = EstimatedWorklogs.Where(record => record.ChildTimeSpent == TimeSpan.Zero).Sum(record => record.RawTimeSpent.Ticks);
-            // Предполагаемый остаток для автоматического списания времени
-            var estimatedRestAutoTimeSpent = Convert.ToDecimal(Settings.WorkingTime.Ticks - manualTimeSpent - autoTimeSpent);
+            // Remaining time spent for logging
+            var remainingTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent();
 
-            // Заполняем предполагаемое время для каждой задачи в пропорциях
+            // Fill estimated remaining time spent for each estimated worklog in proportions
             foreach (var estimatedWorklog in EstimatedWorklogs)
             {
-                if (estimatedWorklog.ChildTimeSpent == TimeSpan.Zero 
-                    && estimatedRestAutoTimeSpent > 0
-                    && fullRawTimeSpent > 0)
+                if (remainingRawTimeSpent > TimeSpan.Zero
+                    && remainingTimeSpent > TimeSpan.Zero
+                    && estimatedWorklog.ChildrenTimeSpent == TimeSpan.Zero)
                 {
-                    var percent = Convert.ToDecimal(estimatedWorklog.RawTimeSpent.Ticks) / fullRawTimeSpent;
-                    var estimatedTimeSpent = new TimeSpan(Convert.ToInt64(percent * estimatedRestAutoTimeSpent));
-                    estimatedWorklog.TimeSpent = TimeSpan.FromSeconds(Math.Round((estimatedTimeSpent - estimatedWorklog.ChildTimeSpent).TotalSeconds));
-
-                    if (estimatedWorklog.TimeSpent > TimeSpan.Zero
-                        && estimatedWorklog.TimeSpent < TimeSpan.FromMinutes(1))
-                    {
-                        estimatedWorklog.TimeSpent = TimeSpan.FromMinutes(1);
-                    }
+                    var percent = estimatedWorklog.RawTimeSpent / remainingRawTimeSpent;
+                    var estimatedTimeSpent = percent * remainingTimeSpent;
+                    estimatedWorklog.UpdateTimeSpent(estimatedTimeSpent);
                 }
                 else
                 {
-                    estimatedWorklog.TimeSpent = TimeSpan.Zero;
+                    estimatedWorklog.UpdateTimeSpent(TimeSpan.Zero);
                 }
             }
         }
 
-        public void AddActualItem(WorklogCollectionItem actualItem)
+        public void AddWorklog(WorklogCollectionItem worklog)
         {
-            Worklogs.Add(actualItem);
+            Worklogs.Add(worklog);
             Refresh();
         }
     }

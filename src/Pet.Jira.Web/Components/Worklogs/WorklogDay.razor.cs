@@ -26,7 +26,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             {
                 var actualEntityClone = entity.Clone(WorklogCollectionItemType.Actual);
                 await Mediator.Send(new AddWorklog.Command(AddedWorklogDto.Create(actualEntityClone)));
-                Entity.AddActualItem(actualEntityClone);
+                Entity.AddWorklog(actualEntityClone);
                 Snackbar.Add(
                     $"Worklog {entity.Issue.Key} added successfully!",
                     Severity.Success,

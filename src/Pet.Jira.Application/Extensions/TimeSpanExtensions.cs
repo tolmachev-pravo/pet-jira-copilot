@@ -8,7 +8,12 @@ namespace Pet.Jira.Application.Extensions
     {
         public static TimeSpan Sum(this IEnumerable<TimeSpan> timeSpans)
         {
-            return timeSpans?.Aggregate((time1, time2) => time1 + time2) ?? TimeSpan.Zero;
+            if (timeSpans.IsEmpty())
+            {
+                return TimeSpan.Zero;
+            }
+
+            return timeSpans.Aggregate((time1, time2) => time1 + time2);
         }
     }
 }

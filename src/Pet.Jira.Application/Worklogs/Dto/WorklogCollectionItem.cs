@@ -1,7 +1,9 @@
-﻿using Pet.Jira.Domain.Models.Issues;
+﻿using Pet.Jira.Application.Extensions;
+using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Pet.Jira.Application.Worklogs.Dto
@@ -11,20 +13,41 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public DateTime StartDate { get; set; }
         public DateTime CompleteDate { get; set; }
         public TimeSpan TimeSpent { get; set; }
+
+        /// <summary>
+        /// Issue
+        /// </summary>
+        [Required]
         public IIssue Issue { get; set; }
 
         public WorklogCollectionItemType Type { get; set; }
         public WorklogCollectionItemSource Source { get; set; }
 
-        public IList<WorklogCollectionItem> ChildItems { get; set; }
-        public TimeSpan ChildTimeSpent => new TimeSpan(ChildItems.Sum(item => item.TimeSpent.Ticks));
-        public WorklogCollectionItem ParentItem { get; set; }
+        public IList<WorklogCollectionItem> Children { get; set; }
+        public WorklogCollectionItem Parent { get; set; }
+
+        public TimeSpan ChildrenTimeSpent => Children.TimeSpent();
         public bool IsEmpty => TimeSpent == TimeSpan.Zero;
         public TimeSpan RawTimeSpent => CompleteDate - StartDate;
 
         public WorklogCollectionItem()
         {
-            ChildItems = new List<WorklogCollectionItem>();
+            Children = new List<WorklogCollectionItem>();
+        }
+
+        /// <summary>
+        /// Update time spent
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        public void UpdateTimeSpent(TimeSpan timeSpan)
+        {
+            if (timeSpan > TimeSpan.Zero
+                && timeSpan < TimeSpan.FromMinutes(1))
+            {
+                timeSpan = TimeSpan.FromMinutes(1);
+            }
+
+            TimeSpent = timeSpan;
         }
 
         public static WorklogCollectionItem Create(
@@ -36,7 +59,6 @@ namespace Pet.Jira.Application.Worklogs.Dto
             {
                 StartDate = worklog.StartDate,
                 CompleteDate = worklog.CompleteDate,
-                TimeSpent = worklog.TimeSpent,
                 Issue = worklog.Issue,
                 Type = type
             };
@@ -51,13 +73,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
                     break;
             }
 
-            if (dailyItems != null)
-            {
-                result.ChildItems = dailyItems
-                    .Where(item => item.Issue.Key == result.Issue.Key
-                                   && item.StartDate == result.CompleteDate)
-                    .ToList();
-            }
+            result.UpdateTimeSpent(worklog.TimeSpent);
+            result.AttachSuitableChildren(dailyItems);
 
             return result;
         }
@@ -75,17 +92,22 @@ namespace Pet.Jira.Application.Worklogs.Dto
             };
         }
 
-        public void Refresh(IEnumerable<WorklogCollectionItem> dailyItems = null)
+        /// <summary>
+        /// Attach suitable children worklogs to current worklog
+        /// </summary>
+        /// <param name="applicants"></param>
+        public void AttachSuitableChildren(IEnumerable<WorklogCollectionItem> applicants)
         {
-            if (dailyItems != null)
+            if (!applicants.IsEmpty())
             {
-                ChildItems = dailyItems
-                    .Where(item => item.Issue?.Key == Issue?.Key
-                                   && item.StartDate == CompleteDate)
+                Children = applicants
+                    .Where(applicant =>
+                        applicant.Issue.Key == this.Issue.Key
+                        && applicant.StartDate == this.CompleteDate)
                     .ToList();
-                foreach (var item in ChildItems)
+                foreach (var child in Children)
                 {
-                    item.ParentItem = this;
+                    child.Parent = this;
                 }
             }
         }
