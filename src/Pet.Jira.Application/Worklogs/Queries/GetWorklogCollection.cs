@@ -81,23 +81,25 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 var day = query.EndDate.Date;
                 var splitedRawIssueWorklogs = rawIssueWorklogs.SplitByDays(
                     firstDate: query.StartDate,
-                    lastDate: query.EndDate,
-                    dailyWorkingStartTime: query.DailyWorkingStartTime,
-                    dailyWorkingEndTime: query.DailyWorkingEndTime);
+                    lastDate: query.EndDate);
 
                 while (day >= query.StartDate.Date)
                 {
-                    var dailyIssueWorklogs = issueWorklogs
+                    var dailyActualWorklogs = issueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
-                        .Select(worklog => WorkingDayWorklog.Create(worklog, WorklogType.Actual));
+                        .Select(worklog => WorkingDayWorklog.CreateActual(worklog));
 
-                    var dailyRawIssueWorklogs = splitedRawIssueWorklogs
+                    var dailyEstimatedWorklogs = splitedRawIssueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
                         .Select(worklog =>
-                            WorkingDayWorklog.Create(worklog, WorklogType.Estimated,
-                                dailyIssueWorklogs));
+                            WorkingDayWorklog.CreateEstimated(
+                                worklog: worklog,
+                                day: day,
+                                dailyWorkingStartTime: query.DailyWorkingStartTime,
+                                dailyWorkingEndTime: query.DailyWorkingEndTime,
+                                dailyActualWorklogs));
 
-                    var dailyWorklogs = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)
+                    var dailyWorklogs = dailyActualWorklogs.Union(dailyEstimatedWorklogs)
                             .OrderBy(record => record.StartDate)
                             .ThenBy(record => record.CompleteDate)
                             .ToList();

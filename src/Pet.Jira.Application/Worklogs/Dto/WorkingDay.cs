@@ -62,7 +62,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// <summary>
         /// Estimated worklog time spent
         /// </summary>
-        public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.TimeSpent();
+        public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.RemainingTimeSpent();
 
         /// <summary>
         /// Worklog time spent
@@ -76,7 +76,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             ? Convert.ToInt32(ActualWorklogTimeSpent * 100 / WorklogTimeSpent)
             : 0;
 
-        public int RawEstimatedWorklogCount => EstimatedWorklogs.Count(item => item.TimeSpent > TimeSpan.Zero);
+        public int RawEstimatedWorklogCount => EstimatedWorklogs.Count(item => item.RemainingTimeSpent > TimeSpan.Zero);
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
         public void Refresh()
@@ -86,29 +86,29 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 item.AttachSuitableChildren(ActualWorklogs);
             }
 
-            // Remaining raw write-off time spent for unlogged worklogs
-            var remainingRawTimeSpent = EstimatedWorklogs
+            // Remaining estimated worklog time spent for logging
+            var remainingWorklogTimeSpent = EstimatedWorklogs
                 .Where(worklog => worklog.ChildrenTimeSpent == TimeSpan.Zero)
-                .Select(worklog => worklog.RawTimeSpent)
+                .Select(worklog => worklog.TimeSpent)
                 .Sum();
 
-            // Remaining time spent for logging
-            var remainingTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent();
+            // Remaining day time spent for logging
+            var remainingDayTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent();
 
             // Fill estimated remaining time spent for each estimated worklog in proportions
             foreach (var estimatedWorklog in EstimatedWorklogs)
             {
-                if (remainingRawTimeSpent > TimeSpan.Zero
-                    && remainingTimeSpent > TimeSpan.Zero
+                if (remainingWorklogTimeSpent > TimeSpan.Zero
+                    && remainingDayTimeSpent > TimeSpan.Zero
                     && estimatedWorklog.ChildrenTimeSpent == TimeSpan.Zero)
                 {
-                    var percent = estimatedWorklog.RawTimeSpent / remainingRawTimeSpent;
-                    var estimatedTimeSpent = percent * remainingTimeSpent;
-                    estimatedWorklog.UpdateTimeSpent(estimatedTimeSpent);
+                    var percent = estimatedWorklog.TimeSpent / remainingWorklogTimeSpent;
+                    var estimatedTimeSpent = percent * remainingDayTimeSpent;
+                    estimatedWorklog.UpdateRemainingTimeSpent(estimatedTimeSpent);
                 }
                 else
                 {
-                    estimatedWorklog.UpdateTimeSpent(TimeSpan.Zero);
+                    estimatedWorklog.UpdateRemainingTimeSpent(TimeSpan.Zero);
                 }
             }
         }

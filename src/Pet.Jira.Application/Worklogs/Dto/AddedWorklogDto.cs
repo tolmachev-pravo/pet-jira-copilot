@@ -16,7 +16,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             {
                 StartedAt = worklog.StartDate,
                 IssueKey = worklog.Issue.Key,
-                ElapsedTime = worklog.TimeSpent,
+                ElapsedTime = worklog.RemainingTimeSpent,
                 Comment = WorklogComment(worklog)
             };
         }

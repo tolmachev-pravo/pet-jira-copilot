@@ -37,7 +37,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             {
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(3),
+                    RemainingTimeSpent = TimeSpan.FromHours(3),
                     Type = WorklogType.Actual,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(12),
@@ -45,7 +45,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 },
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(4),
+                    RemainingTimeSpent = TimeSpan.FromHours(4),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(17),
@@ -72,7 +72,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             {
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(3),
+                    RemainingTimeSpent = TimeSpan.FromHours(3),
                     Type = WorklogType.Actual,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(12),
@@ -80,7 +80,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 },
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(2),
+                    RemainingTimeSpent = TimeSpan.FromHours(2),
                     Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(15),
@@ -111,13 +111,14 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             {
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(1),
+                    StartDate = _date.AddHours(10),
+                    CompleteDate = _date.AddHours(11),
                     Type = WorklogType.Actual,
                     Issue = _issues[0]
                 },
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(2),
+                    RemainingTimeSpent = TimeSpan.FromHours(2),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(9),
                     CompleteDate = _date.AddHours(11),
@@ -125,7 +126,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 },
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(0),
+                    RemainingTimeSpent = TimeSpan.FromHours(0),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(12),
                     CompleteDate = _date.AddHours(12),
@@ -158,13 +159,14 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
             {
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(1),
+                    StartDate = _date.AddHours(10),
+                    CompleteDate = _date.AddHours(11),
                     Type = WorklogType.Actual,
                     Issue = _issues[0]
                 },
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(0),
+                    RemainingTimeSpent = TimeSpan.FromHours(0),
                     Type = WorklogType.Estimated,
                     Issue = _issues[1]
                 },
@@ -196,7 +198,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 10:00 - 13:00 | issue_0 | estimated
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(3),
+                    RemainingTimeSpent = TimeSpan.FromHours(3),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13),
@@ -205,9 +207,9 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 13:00 - ..:.. | issue_0 | actual
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(2),
                     Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
+                    CompleteDate = _date.AddHours(15),
                     Issue = _issues[0]
                 },
             };
@@ -238,7 +240,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 10:00 - 13:00 | issue_0 | estimated
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(3),
+                    RemainingTimeSpent = TimeSpan.FromHours(3),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13),
@@ -247,15 +249,15 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 13:00 - ..:.. | issue_0 | actual
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(2),
                     Type = WorklogType.Actual,
                     StartDate = _date.AddHours(13),
+                    CompleteDate = _date.AddHours(15),
                     Issue = _issues[0]
                 },
                 // 13:00 - 17:00 | issue_1 | estimated
                 new WorkingDayWorklog
                 {
-                    TimeSpent = TimeSpan.FromHours(4),
+                    RemainingTimeSpent = TimeSpan.FromHours(4),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(13),
                     CompleteDate = _date.AddHours(17),
@@ -279,9 +281,9 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 Assert.That(workingDay.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(6)));
                 Assert.That(workingDay.WorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(8)));
                 Assert.That(workingDay.Progress, Is.EqualTo(25));
-                Assert.That(issue0EstimatedWorklog.TimeSpent, Is.EqualTo(TimeSpan.Zero));
+                Assert.That(issue0EstimatedWorklog.RemainingTimeSpent, Is.EqualTo(TimeSpan.Zero));
                 Assert.That(issue0EstimatedWorklog.ChildrenTimeSpent, Is.EqualTo(TimeSpan.FromHours(2)));
-                Assert.That(issue1EstimatedWorklog.TimeSpent, Is.EqualTo(TimeSpan.FromHours(6)));
+                Assert.That(issue1EstimatedWorklog.RemainingTimeSpent, Is.EqualTo(TimeSpan.FromHours(6)));
                 Assert.That(issue1EstimatedWorklog.ChildrenTimeSpent, Is.EqualTo(TimeSpan.Zero));
             });            
         }
@@ -295,7 +297,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 10:00 - 13:45 | issue_0 | estimated
                 new WorkingDayWorklog
                 {
-                    TimeSpent =  new TimeSpan(3, 45, 0),
+                    RemainingTimeSpent =  new TimeSpan(3, 45, 0),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(10),
                     CompleteDate = _date.AddHours(13).AddMinutes(45),
@@ -304,7 +306,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 // 14:00 - 16:15 | issue_1 | estimated
                 new WorkingDayWorklog
                 {
-                    TimeSpent = new TimeSpan(2, 15, 0),
+                    RemainingTimeSpent = new TimeSpan(2, 15, 0),
                     Type = WorklogType.Estimated,
                     StartDate = _date.AddHours(14),
                     CompleteDate = _date.AddHours(16).AddMinutes(15),
@@ -328,8 +330,8 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
                 Assert.That(workingDay.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(8)));
                 Assert.That(workingDay.WorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(8)));
                 Assert.That(workingDay.Progress, Is.EqualTo(0));
-                Assert.That(issue0EstimatedWorklog.TimeSpent, Is.EqualTo(TimeSpan.FromHours(5)));
-                Assert.That(issue1EstimatedWorklog.TimeSpent, Is.EqualTo(TimeSpan.FromHours(3)));
+                Assert.That(issue0EstimatedWorklog.RemainingTimeSpent, Is.EqualTo(TimeSpan.FromHours(5)));
+                Assert.That(issue1EstimatedWorklog.RemainingTimeSpent, Is.EqualTo(TimeSpan.FromHours(3)));
             });
         }
     }
