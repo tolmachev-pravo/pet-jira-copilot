@@ -1,23 +1,22 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Security.Authentication;
-using MediatR;
-using Pet.Jira.Application.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.Application.Worklogs.Commands
+namespace Pet.Jira.Application.Authentication.Commands
 {
-    public class Login
+    public class BearerLogin
     {
         public class Command : IRequest<Model>
         {
-            public Command(LoginRequest request)
+            public Command(BearerLoginRequest request)
             {
                 _request = request;
             }
 
-            private readonly LoginRequest _request;
-            public LoginRequest Request => _request;
+            private readonly BearerLoginRequest _request;
+            public BearerLoginRequest Request => _request;
         }
 
         public class Model
@@ -45,7 +44,7 @@ namespace Pet.Jira.Application.Worklogs.Commands
                 }
                 catch (AuthenticationException e)
                 {
-                    throw new Exception($"Authentication exception [{command?.Request?.Username}]") { Source = e.Source };
+                    throw new Exception($"Authentication exception [{command?.Request?.Token}]") { Source = e.Source };
                 }
             }
         }

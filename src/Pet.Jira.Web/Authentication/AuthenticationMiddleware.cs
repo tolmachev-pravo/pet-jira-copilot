@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Authentication.Dto;
 using Pet.Jira.Web.Common;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -33,11 +35,18 @@ namespace Pet.Jira.Web.Authentication
                     return;
                 }
 
-                var claims = new Claim[]
+                var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, login.Username),
-                    new Claim(ClaimTypes.UserData, login.Password)
+                    new Claim(ClaimTypes.Name, login.Username)
                 };
+                if (login.Password != null)
+                {
+                    claims.Add(new Claim(ClaimTypes.UserData, login.Password));
+                }
+                if (login.PersonalAccessToken != null)
+                {
+                    claims.Add(new Claim(nameof(LoginDto.PersonalAccessToken), login.PersonalAccessToken));
+                }
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 

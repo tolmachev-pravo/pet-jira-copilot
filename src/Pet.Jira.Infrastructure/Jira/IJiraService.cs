@@ -46,7 +46,11 @@ namespace Pet.Jira.Infrastructure.Jira
             CancellationToken cancellationToken = default);
 
         Task<LoginResponse> LoginAsync(
-            LoginRequest request,
+            BasicLoginRequest request,
+            CancellationToken cancellationToken = default);
+
+        Task<LoginResponse> LoginAsync(
+            BearerLoginRequest request,
             CancellationToken cancellationToken = default);
 
         Task AddWorklogAsync(

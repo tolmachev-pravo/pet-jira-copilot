@@ -2,7 +2,7 @@
 
 namespace Pet.Jira.Application.Authentication
 {
-    public class LoginRequest
+    public class BasicLoginRequest
     {
         [Required]
         public string Username { get; set; }
