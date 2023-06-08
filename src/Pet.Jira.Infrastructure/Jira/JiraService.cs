@@ -1,4 +1,5 @@
 ﻿using Atlassian.Jira;
+using Atlassian.Jira.Remote;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
@@ -6,6 +7,7 @@ using Pet.Jira.Application.Extensions;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -39,7 +41,9 @@ namespace Pet.Jira.Infrastructure.Jira
             _logger = logger;
             _config = jiraConfiguration.Value;
             _user = identityService.CurrentUser;
-            _jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user?.Username, _user?.Password);
+            _jiraClient = _user?.PersonalAccessToken != null
+                ? CreateBearerRestClient(_config.Url, _user.PersonalAccessToken)
+                : Atlassian.Jira.Jira.CreateRestClient(_config.Url, _user?.Username, _user?.Password);
         }
 
         /// <summary>
@@ -256,19 +260,48 @@ namespace Pet.Jira.Infrastructure.Jira
         }
 
         /// <summary>
-        /// Login
+        /// Login by basic auth
         /// </summary>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<LoginResponse> LoginAsync(
-            LoginRequest request,
+            BasicLoginRequest request,
             CancellationToken cancellationToken = default)
         {
             var jiraClient = Atlassian.Jira.Jira.CreateRestClient(_config.Url, request.Username, request.Password);
-            await jiraClient.ServerInfo.GetServerInfoAsync(token: cancellationToken);
-            _logger.LogInformation("Login successfully");
-            return new LoginResponse(true);
+            return await LoginAsync(jiraClient, cancellationToken);
+        }
+
+        /// <summary>
+        /// Login by personal access token
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<LoginResponse> LoginAsync(
+            BearerLoginRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            var jiraClient = CreateBearerRestClient(_config.Url, request.Token);
+            return await LoginAsync(jiraClient, cancellationToken);
+        }
+
+        private async Task<LoginResponse> LoginAsync(
+            Atlassian.Jira.Jira jiraClient,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var myself = await jiraClient.Users.GetMyselfAsync(token: cancellationToken);
+                _logger.LogInformation("Login successfully");
+                return new LoginResponse(true) { Username = myself.Username };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Login failed");
+                throw;
+            }
         }
 
         public async Task<string> GetCurrentUserAvatarAsync(CancellationToken cancellationToken = default)
@@ -351,6 +384,15 @@ namespace Pet.Jira.Infrastructure.Jira
                 method: RestSharp.Method.GET,
                 resource: $"/rest/dev-status/latest/issue/detail?issueId={jiraIdentifier}&applicationType={applicationType}&dataType={dataType}",
                 token: cancellationToken);
+        }
+
+        private static Atlassian.Jira.Jira CreateBearerRestClient(string url, string bearerToken)
+        {
+            var authenticator = new JwtAuthenticator(bearerToken);
+            var jiraRestClient = new JiraRestClient(url);
+            jiraRestClient.RestSharpClient.Authenticator = authenticator;
+            var jiraClient = Atlassian.Jira.Jira.CreateRestClient(jiraRestClient);
+            return jiraClient;
         }
     }
 }

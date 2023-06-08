@@ -6,6 +6,7 @@ namespace Pet.Jira.Domain.Models.Users
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public string PersonalAccessToken { get; set; }
 
         public string Key => Username;
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Authentication.Dto;
 using Pet.Jira.Domain.Models.Users;
 using System.Linq;
 using System.Security.Claims;
@@ -28,6 +29,9 @@ namespace Pet.Jira.Web.Authentication
                     Username = user.Identity.Name,
                     Password = user.Claims
                         .FirstOrDefault(claim => claim.Type == ClaimTypes.UserData)?
+                        .Value,
+                    PersonalAccessToken = user.Claims
+                        .FirstOrDefault(claim => claim.Type == nameof(LoginDto.PersonalAccessToken))?
                         .Value
                 }
                 : null;

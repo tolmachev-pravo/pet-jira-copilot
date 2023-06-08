@@ -4,6 +4,7 @@ namespace Pet.Jira.Application.Authentication
 {
     public interface IAuthenticationService
     {
-        Task<LoginResponse> LoginAsync(LoginRequest request);
+        Task<LoginResponse> LoginAsync(BasicLoginRequest request);
+        Task<LoginResponse> LoginAsync(BearerLoginRequest request);
     }
 }

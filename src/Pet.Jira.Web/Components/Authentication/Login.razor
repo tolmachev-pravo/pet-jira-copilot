@@ -5,14 +5,31 @@
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 </MudOverlay>
 
-<MudCard Outlined="true" @onkeyup="@OnKeyUp">
-    <MudCardContent>
-        <MudTextField @bind-Value="Model.LoginRequest.Username" Label="Username" Variant="Variant.Text"/>
-        <MudTextField @bind-Value="Model.LoginRequest.Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password"/>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton OnClick="LoginUser" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
-    </MudCardActions>
-</MudCard>
+<MudTabs Elevation="2" Rounded="true" Color="@Color.Primary">
+    <MudTabPanel Text="Basic">
+        <MudCard Outlined="true" @onkeyup="@BasicOnKeyUp">
+            <MudCardContent>
+                <MudTextField @bind-Value="Model.BasicLoginRequest.Username" Label="Username" Variant="Variant.Text" />
+                <MudTextField @bind-Value="Model.BasicLoginRequest.Password" Label="Password" Variant="Variant.Text" InputType="InputType.Password" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton OnClick="BasicLogin" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudTabPanel>
+    <MudTabPanel Text="Bearer">
+        <MudCard Outlined="true" @onkeyup="@BearerOnKeyUp">
+            <MudCardContent>
+                <MudTextField @bind-Value="Model.BearerLoginRequest.Token" Label="Personal access token" Variant="Variant.Text" />
+                <MudLink Typo=Typo.overline Color=Color.Default Href="https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html#UsingPersonalAccessTokens-CreatingPATsintheapplication">How to create personal access token?</MudLink>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton OnClick="BearerLogin" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudTabPanel>
+</MudTabs>
 
-@code {}
+
+@code {
+    }
