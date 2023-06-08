@@ -21,6 +21,7 @@
         <MudCard Outlined="true" @onkeyup="@BearerOnKeyUp">
             <MudCardContent>
                 <MudTextField @bind-Value="Model.BearerLoginRequest.Token" Label="Personal access token" Variant="Variant.Text" />
+                <MudLink Typo=Typo.overline Color=Color.Default Href="https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html#UsingPersonalAccessTokens-CreatingPATsintheapplication">How to create personal access token?</MudLink>
             </MudCardContent>
             <MudCardActions>
                 <MudButton OnClick="BearerLogin" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
