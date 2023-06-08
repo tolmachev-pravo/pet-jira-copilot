@@ -15,8 +15,8 @@
                 </MudElement>
             </MudElement>
             <MudElement Class="flex-none d-flex gap-1 pet-worklog-day-chips-container">
-                <WorklogDayChip Caption="Logged" Value="@Entity.ActualWorklogsSum.ToString(DateFormats.TimeFormat)" />
-                <WorklogDayChip Caption="Estimated" Value="@Entity.CalculatedWorklogsSum.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Caption="Logged" Value="@Entity.ActualWorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Caption="Estimated" Value="@Entity.WorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
                 <WorklogDayChip Caption="Day" Value="@Entity.Date.DayOfWeek.ToString()" Color="@Color" />
                 @if (Entity.HasRawEstimatedWorklogs)
                 {
@@ -28,14 +28,14 @@
         </MudPaper>
     </td>
 </tr>
-@foreach (var entity in Entity.EstimatedItems)
+@foreach (var entity in Entity.EstimatedWorklogs)
 {
     <tr>
         <td>
             <WorklogItem Entity="@entity" OnAddPressed="AddWorklogAsync" />
         </td>
     </tr>
-    @foreach (var child in entity.ChildItems)
+    @foreach (var child in entity.Children)
     {
         <tr>
             <td>
@@ -44,7 +44,7 @@
         </tr>
     }
 }
-@foreach (var entity in Entity.ActualItems.Where(item => item.ParentItem == null))
+@foreach (var entity in Entity.ActualWorklogs.Where(item => item.Parent == null))
 {
     <tr>
         <td>

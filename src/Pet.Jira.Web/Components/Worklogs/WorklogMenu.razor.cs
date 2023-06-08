@@ -14,7 +14,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogMenu : ComponentBase
     {
-        [Parameter] public WorklogCollectionItem Entity { get; set; }
+        [Parameter] public WorkingDayWorklog Entity { get; set; }
         [Parameter] public Color Color { get; set; } = Color.Default;
         [Parameter] public string Icon { get; set; } = Icons.Material.Filled.MoreVert;
         [Parameter] public string Label { get; set; } = "Default";

@@ -13,10 +13,9 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         public TimeSpan TimeSpent => TimeSpan.FromSeconds(TimeSpentInSeconds);
         public DateTime? EndDate => StartDate != null ? StartDate.Value.AddSeconds(TimeSpentInSeconds) : default;
         
-        public T Adapt<T>(ITimeProvider timeProvider, TimeZoneInfo userTimeZone)
-            where T: IWorklog, new()
+        public IssueWorklog Adapt(ITimeProvider timeProvider, TimeZoneInfo userTimeZone)
         {
-            return new T
+            return new IssueWorklog
             {
                 StartDate = timeProvider.ConvertToUserTimezone(StartDate.Value, userTimeZone),
                 TimeSpent = TimeSpent,
@@ -26,7 +25,7 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         }
 
         public static IssueWorklogDto Create(
-        Atlassian.Jira.Worklog worklog,
+            Atlassian.Jira.Worklog worklog,
             IssueDto issue)
         {
             return new IssueWorklogDto

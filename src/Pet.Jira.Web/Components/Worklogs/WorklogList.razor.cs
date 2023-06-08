@@ -8,7 +8,7 @@ namespace Pet.Jira.Web.Components.Worklogs
     {
         private readonly ComponentModel Model = ComponentModel.Create();
 
-        [Parameter] public IEnumerable<WorklogCollectionDay> Items { get; set; }
+        [Parameter] public IEnumerable<WorkingDay> Items { get; set; }
 
         private class ComponentModel
         {

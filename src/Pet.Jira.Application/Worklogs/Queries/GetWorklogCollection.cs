@@ -25,7 +25,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
 
         public class Model
         {
-            public WorklogCollection WorklogCollection { get; set; }
+            public IEnumerable<WorkingDay> WorkingDays { get; set; }
         }
 
         public class QueryHandler : IRequestHandler<Query, Model>
@@ -42,10 +42,10 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 CancellationToken cancellationToken = default)
             {
                 var worklogCollection = await CalculateWorklogCollection(query, cancellationToken);
-                return new Model { WorklogCollection = worklogCollection };
+                return new Model { WorkingDays = worklogCollection };
             }
 
-            private async Task<WorklogCollection> CalculateWorklogCollection(Query query,
+            private async Task<IEnumerable<WorkingDay>> CalculateWorklogCollection(Query query,
                 CancellationToken cancellationToken)
             {
                 var rawIssueWorklogs = await _worklogDataSource.GetRawIssueWorklogsAsync(
@@ -70,10 +70,10 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     day.Refresh();
                 }
 
-                return new WorklogCollection() { Days = days.ToList() };
+                return days;
             }
 
-            private static IEnumerable<WorklogCollectionDay> CalculateDays(
+            private static IEnumerable<WorkingDay> CalculateDays(
                 IEnumerable<IWorklog> issueWorklogs,
                 IEnumerable<IWorklog> rawIssueWorklogs,
                 Query query)
@@ -81,33 +81,37 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 var day = query.EndDate.Date;
                 var splitedRawIssueWorklogs = rawIssueWorklogs.SplitByDays(
                     firstDate: query.StartDate,
-                    lastDate: query.EndDate,
-                    dailyWorkingStartTime: query.DailyWorkingStartTime,
-                    dailyWorkingEndTime: query.DailyWorkingEndTime);
+                    lastDate: query.EndDate);
 
                 while (day >= query.StartDate.Date)
                 {
-                    var dailyIssueWorklogs = issueWorklogs
+                    var dailyActualWorklogs = issueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
-                        .Select(worklog => WorklogCollectionItem.Create(worklog, WorklogCollectionItemType.Actual));
+                        .Select(worklog => WorkingDayWorklog.CreateActual(worklog));
 
-                    var dailyRawIssueWorklogs = splitedRawIssueWorklogs
+                    var dailyEstimatedWorklogs = splitedRawIssueWorklogs
                         .Where(worklog => worklog.StartDate.Date == day)
                         .Select(worklog =>
-                            WorklogCollectionItem.Create(worklog, WorklogCollectionItemType.Estimated,
-                                dailyIssueWorklogs));
+                            WorkingDayWorklog.CreateEstimated(
+                                worklog: worklog,
+                                day: day,
+                                dailyWorkingStartTime: query.DailyWorkingStartTime,
+                                dailyWorkingEndTime: query.DailyWorkingEndTime,
+                                dailyActualWorklogs));
 
-                    yield return new WorklogCollectionDay
-                    {
-                        Date = day,
-                        Items = dailyIssueWorklogs.Union(dailyRawIssueWorklogs)
+                    var dailyWorklogs = dailyActualWorklogs.Union(dailyEstimatedWorklogs)
                             .OrderBy(record => record.StartDate)
                             .ThenBy(record => record.CompleteDate)
-                            .ToList(),
-                        DailyWorkingStartTime = query.DailyWorkingStartTime,
-                        DailyWorkingEndTime = query.DailyWorkingEndTime,
-                        LunchTime = query.LunchTime
-                    };
+                            .ToList();
+
+                    yield return new WorkingDay(
+                        date: day,
+                        settings: new WorkingDaySettings(
+                            workingStartTime: query.DailyWorkingStartTime,
+                            workingEndTime: query.DailyWorkingEndTime,
+                            lunchTime: query.LunchTime),
+                        worklogs: dailyWorklogs);
+
                     day = day.AddDays(-1);
                 }
             }

@@ -68,7 +68,7 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var issueWorklogs = await _jiraService.GetIssueWorklogsAsync(issueSearchOptions, worklogFilter, cancellationToken);
 
-            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt<IssueWorklog>(_timeProvider, userProfile.TimeZoneInfo));
+            return issueWorklogs.Select(issueWorklog => issueWorklog.Adapt(_timeProvider, userProfile.TimeZoneInfo));
         }
 
         /// <summary>

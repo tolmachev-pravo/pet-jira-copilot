@@ -11,16 +11,13 @@ namespace Pet.Jira.Application.Extensions
         public static IEnumerable<IWorklog> SplitByDays(
             this IEnumerable<IWorklog> worklogs, 
             DateTime firstDate,
-            DateTime lastDate,
-            TimeSpan dailyWorkingStartTime,
-            TimeSpan dailyWorkingEndTime
-            )
+            DateTime lastDate)
         {
             var day = lastDate.Date;
             while (day >= firstDate.Date)
             {
-                var startOfDay = day.Add(dailyWorkingStartTime);
-                var endOfDay = day.Add(dailyWorkingEndTime);
+                var startOfDay = day;
+                var endOfDay = day.AddDays(1).AddMilliseconds(-1);
 
                 var dateWorklogs = worklogs
                     .Where(worklog => worklog.CompleteDate > startOfDay
@@ -41,7 +38,6 @@ namespace Pet.Jira.Application.Extensions
                         Issue = dateWorklog.Issue,
                         StartDate = estimatedStartDate,
                         CompleteDate = estimatedEndDate,
-                        TimeSpent = estimatedEndDate - estimatedStartDate,
                         Source = dateWorklog.Source
                     };
                 }

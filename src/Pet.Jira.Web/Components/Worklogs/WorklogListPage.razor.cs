@@ -23,7 +23,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             {
                 Model.StateTo(ComponentModelState.InProgress);
                 var filterResult = await Mediator.Send(filter);
-                Model.Items = filterResult.WorklogCollection.Days;
+                Model.Items = filterResult.WorkingDays;
             }
             catch (Exception e)
             {
@@ -42,7 +42,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 return new ComponentModel();
             }
 
-            public IEnumerable<WorklogCollectionDay> Items { get; set; }
+            public IEnumerable<WorkingDay> Items { get; set; }
         }
     }
 }

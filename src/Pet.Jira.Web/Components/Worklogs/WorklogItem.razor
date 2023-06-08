@@ -3,13 +3,13 @@
 
 <MudElement Class="gap-1 d-flex flex-wrap border-none align-center">
     <MudElement Class="flex-auto gap-1 align-center" Style="width: 300px">
-        <WorklogTimeRange StartDate="@Entity.StartDate" CompleteDate="@Entity.CompleteDate" Color="@Color" />
+        <WorklogTimeRange StartDate="@Entity.RawStartDate" CompleteDate="@Entity.RawCompleteDate" Color="@Color" />
         <WorklogMenu Entity="@Entity" Color="@Color" />
         <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
     </MudElement>
     <MudElement Class="flex-none d-flex justify-end pet-time-spent-container align-center">
         <MudElement Class="flex-none d-flex gap-4" Style="width: 128px">
-            <MudTextField @bind-Value="@Entity.TimeSpent" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
+            <MudTextField @bind-Value="@Entity.RemainingTimeSpent" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
             <MudElement Style="width: 40px">
                 <MudFab Size="Size.Small"
                         Icon="@Icons.Material.Filled.Add"

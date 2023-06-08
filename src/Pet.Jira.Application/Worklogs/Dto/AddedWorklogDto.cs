@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pet.Jira.Domain.Models.Worklogs;
+using System;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
@@ -9,24 +10,24 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public string IssueKey { get; set; }
         public string Comment { get; set; }
 
-        public static AddedWorklogDto Create(WorklogCollectionItem worklog)
+        public static AddedWorklogDto Create(WorkingDayWorklog worklog)
         {
             return new AddedWorklogDto
             {
                 StartedAt = worklog.StartDate,
                 IssueKey = worklog.Issue.Key,
-                ElapsedTime = worklog.TimeSpent,
+                ElapsedTime = worklog.RemainingTimeSpent,
                 Comment = WorklogComment(worklog)
             };
         }
 
-        private static string WorklogComment(WorklogCollectionItem worklog)
+        private static string WorklogComment(WorkingDayWorklog worklog)
         {
             switch (worklog.Source)
             {
-                case WorklogCollectionItemSource.Assignee:
+                case WorklogSource.Assignee:
                     return $"Working on task {worklog.Issue?.Key}";
-                case WorklogCollectionItemSource.Comment:
+                case WorklogSource.Comment:
                     return $"Task discussion {worklog.Issue?.Key}";
                 default:
                     return "Default worklog";
