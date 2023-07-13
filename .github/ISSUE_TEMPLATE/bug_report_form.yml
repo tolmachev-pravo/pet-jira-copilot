@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report
+description: Create a report to help us improve
 title: "[Bug]: "
 labels: ["bug"]
 assignees:
@@ -9,6 +9,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+        Please complete the below template to ensure we have the necessary details.
         
   - type: textarea
     id: actual-behavior
