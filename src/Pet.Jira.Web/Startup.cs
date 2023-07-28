@@ -127,7 +127,7 @@ namespace Pet.Jira.Web
                 });
                 endpoints.MapHealthChecksUI(setup =>
                 {
-                    setup.AddCustomStylesheet("wwwroot\\css\\dotnet.css");
+                    setup.AddCustomStylesheet("wwwroot/css/dotnet.css");
                 });
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
