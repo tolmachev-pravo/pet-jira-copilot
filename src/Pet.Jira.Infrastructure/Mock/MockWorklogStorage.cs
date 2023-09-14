@@ -2,59 +2,11 @@
 using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Pet.Jira.Infrastructure.Mock
 {
     internal static class MockWorklogStorage
     {
-        private static class IssueGenerator
-        {
-            public static Issue Create()
-            {
-                var key = $"CASEM-{new Random().Next(1000, 10000)}";
-                var summary = TextGenerator.Create();
-                return new Issue
-                {
-                    Key = key,
-                    Summary = summary,
-                    Link = "http://localhost"
-                };
-            }
-
-            public static string Text = "";
-        }
-
-        private static class TextGenerator
-        {
-            public static string Create()
-            {
-                Random random = new Random();
-                var builder = new StringBuilder();
-                var wordsCount = random.Next(5, 15);
-                char[] lowers = Enumerable.Range(0, 32).Select((x, i) => (char)('а' + i)).ToArray();
-                char[] uppers = Enumerable.Range(0, 32).Select((x, i) => (char)('А' + i)).ToArray();
-                for (int i = 0; i < wordsCount; i++)
-                {
-                    string word = string.Empty;
-                    var lettersCount = random.Next(5, 15);
-                    for (int j = 0; j < lettersCount; j++)
-                    {
-                        int letterPosition = random.Next(0, lowers.Length - 1);
-                        word += lowers[letterPosition];
-                    }
-
-                    builder.Append(word);
-                    builder.Append(" ");
-                }
-
-                return builder.ToString();
-            }
-
-            public static string Text = "";
-        }
-
         public static IList<Issue> Issues = new List<Issue>
         {
             IssueGenerator.Create(),
@@ -68,32 +20,38 @@ namespace Pet.Jira.Infrastructure.Mock
             IssueGenerator.Create()
         };
 
+        public static IssueWorklog CreateIssueWorklog(
+            DateTime startTime,
+            TimeSpan duration,
+            Issue issue)
+        {
+            return new IssueWorklog
+            {
+                StartDate = startTime,
+                CompleteDate = startTime.Add(duration),
+                TimeSpent = duration,
+                Issue = issue
+            };
+        }
+
         public static IList<IWorklog> IssueWorklogs = new List<IWorklog>
         {
-            new IssueWorklog
-            {
-                StartDate = DateTime.Now.Date.AddHours(11),
-                TimeSpent = TimeSpan.FromHours(1),
-                Issue = Issues[0]
-            },
-            new IssueWorklog
-            {
-                StartDate = DateTime.Now.Date.AddHours(13),
-                TimeSpent = TimeSpan.FromHours(2),
-                Issue = Issues[7]
-            },
-            new IssueWorklog
-            {
-                StartDate = DateTime.Now.Date.AddDays(-1).AddHours(16),
-                TimeSpent = TimeSpan.FromHours(5),
-                Issue = Issues[1]
-            },
-            new IssueWorklog
-            {
-                StartDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                TimeSpent = TimeSpan.FromHours(8),
-                Issue = Issues[4]
-            }
+            CreateIssueWorklog(
+                startTime: DateTime.Now.Date.AddHours(11),
+                duration: TimeSpan.FromHours(1),
+                issue: Issues[0]),
+            CreateIssueWorklog(
+                startTime: DateTime.Now.Date.AddHours(13),
+                duration: TimeSpan.FromHours(2),
+                issue: Issues[7]),
+            CreateIssueWorklog(
+                startTime: DateTime.Now.Date.AddDays(-1).AddHours(16),
+                duration: TimeSpan.FromHours(5),
+                issue: Issues[1]),
+            CreateIssueWorklog(
+                startTime: DateTime.Now.Date.AddDays(-2).AddHours(19),
+                duration: TimeSpan.FromHours(8),
+                issue: Issues[4])
         };
 
         public static IList<IWorklog> RawIssueWorklogs = new List<IWorklog>

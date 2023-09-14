@@ -12,7 +12,15 @@ namespace Pet.Jira.Infrastructure.Jira
 {
     public interface IJiraService
     {
-        Task<IEnumerable<IssueDto>> GetIssuesAsync(
+        Task<Dictionary<string, IssueDto>> GetIssuesAsync(
+            string[] issueKeys,
+            CancellationToken cancellationToken = default);
+
+		Task<IssueDto> GetIssueAsync(
+            string issueKey,
+            CancellationToken cancellationToken = default);
+
+		Task<IEnumerable<IssueDto>> GetIssuesAsync(
             IssueSearchOptions issueSearchOptions,
             CancellationToken cancellationToken = default);
 

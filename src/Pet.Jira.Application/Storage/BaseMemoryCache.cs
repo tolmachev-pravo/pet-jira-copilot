@@ -1,5 +1,6 @@
 ﻿using Pet.Jira.Domain.Models.Abstract;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Storage
 {
@@ -21,5 +22,8 @@ namespace Pet.Jira.Application.Storage
             _storage.TryGetValue(key, out TEntity oldEntity)
                 ? _storage.TryUpdate(key, newEntity, oldEntity)
                 : _storage.TryAdd(key, newEntity);
+
+        public virtual Task<ConcurrentDictionary<TKey, TEntity>> GetValuesAsync() =>
+            Task.FromResult(_storage);
     }
 }

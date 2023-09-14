@@ -9,7 +9,12 @@ namespace Pet.Jira.Infrastructure.Mock
 {
     internal class MockIssueDataSource : IIssueDataSource
     {
-        public async Task<string> GetIssueOpenPullRequestUrlAsync(GetIssueOpenPullRequestUrl.Query query, CancellationToken cancellationToken = default)
+		public async Task<Issue> GetIssueAsync(string issueKey, CancellationToken cancellationToken = default)
+		{
+			return await Task.FromResult(IssueGenerator.Create(issueKey));
+		}
+
+		public async Task<string> GetIssueOpenPullRequestUrlAsync(GetIssueOpenPullRequestUrl.Query query, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult("https://github.com");
         }

@@ -23,12 +23,19 @@ namespace Pet.Jira.Application.Worklogs.Dto
 
         private static string WorklogComment(WorkingDayWorklog worklog)
         {
+            if (!string.IsNullOrEmpty(worklog.Comment))
+            {
+                return worklog.Comment;
+            }
+
             switch (worklog.Source)
             {
                 case WorklogSource.Assignee:
                     return $"Working on task {worklog.Issue?.Key}";
                 case WorklogSource.Comment:
                     return $"Task discussion {worklog.Issue?.Key}";
+                case WorklogSource.Calendar:
+                    return $"Discussion {worklog.Issue?.Key}";
                 default:
                     return "Default worklog";
             }

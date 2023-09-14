@@ -1,13 +1,15 @@
-﻿using Pet.Jira.Domain.Models.Issues;
+﻿using Pet.Jira.Domain.Models.Abstract;
+using Pet.Jira.Domain.Models.Issues;
 
 namespace Pet.Jira.Infrastructure.Jira.Dto
 {
-    public class IssueDto
+    public class IssueDto : IEntity<string>
     {
         public string Key { get; set; }
         public string Summary { get; set; }
         public string Link { get; set; }
         public string Identifier { get; set; }
+        public string Name => $"{Key}. {Summary}";
 
         public Issue Adapt()
         {

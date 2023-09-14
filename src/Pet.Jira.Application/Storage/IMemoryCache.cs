@@ -1,4 +1,7 @@
-﻿namespace Pet.Jira.Application.Storage
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
+
+namespace Pet.Jira.Application.Storage
 {
     public interface IMemoryCache<TKey, TEntity>
     {
@@ -6,5 +9,6 @@
         bool TryGetValue(TKey key, out TEntity entity);
         bool TryRemove(TKey key, out TEntity entity);
         bool TryUpdate(TKey key, TEntity entity);
+        Task<ConcurrentDictionary<TKey, TEntity>> GetValuesAsync();
     }
 }

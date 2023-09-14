@@ -46,6 +46,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public TimeSpan ChildrenTimeSpent => Children.TimeSpent();
         public bool IsEmpty => RemainingTimeSpent == TimeSpan.Zero;
 
+        public string Comment { get; set; }
+
         public WorkingDayWorklog()
         {
             Children = new List<WorkingDayWorklog>();
@@ -139,7 +141,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 RemainingTimeSpent = RemainingTimeSpent,
                 Issue = Issue,
                 Type = type,
-                Source = Source
+                Source = Source,
+                Comment = Comment
             };
         }
 

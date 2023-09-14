@@ -6,6 +6,7 @@ using Pet.Jira.Application.Storage;
 using Pet.Jira.Application.Users;
 using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Jira;
@@ -41,6 +42,7 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IStorage<string, UserWorklogFilter>, UserWorklogFilterStorage>();
 
             services.AddSingleton<ILoginMemoryCache, LoginMemoryCache>();
+            services.AddTransient<IMemoryCache<string, Issue>, IssueMemoryCache>();
             return services;
         }
 

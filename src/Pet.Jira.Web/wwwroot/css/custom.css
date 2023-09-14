@@ -45,6 +45,10 @@
     width: 375px
 }
 
+.pet-worklog-day-item-dialog {
+    width: 475px
+}
+
 @media (max-width:320px) { /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
 }
 
@@ -54,6 +58,10 @@
     }
 
     .pet-worklog-day-chips-container {
+        width: 300px
+    }
+
+    .pet-worklog-day-item-dialog {
         width: 300px
     }
 }

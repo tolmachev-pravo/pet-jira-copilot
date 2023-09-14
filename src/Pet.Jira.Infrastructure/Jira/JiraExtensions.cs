@@ -3,11 +3,20 @@ using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Pet.Jira.Infrastructure.Jira
 {
     public static class JiraExtensions
     {
+        public static bool IsJiraKey(this string input)
+        {
+            var pattern = "^[A-Z][A-Z0-9]+-[0-9]+$";
+			var regex = new Regex(pattern);
+			var match = regex.Match(input);
+            return match.Success;
+		}
+
         public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems,
             string issueStatusId,
             ITimeProvider timeProvider,
