@@ -39,5 +39,23 @@ namespace Pet.Jira.Web.Components.Worklogs
                 ErrorHandler.ProcessError(e);
             }
         }
+
+        private async Task AddCustomWorklogAsync(WorkingDayWorklog entity)
+        {
+            try
+            {
+                await Mediator.Send(new AddWorklog.Command(AddedWorklogDto.Create(entity)));
+                Entity.AddWorklog(entity);
+                Snackbar.Add(
+                    $"Worklog {entity.Issue.Key} added successfully!",
+                    Severity.Success,
+                    config => { config.ActionColor = Color.Success; });
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.ProcessError(e);
+            }
+        }
     }
 }

@@ -81,10 +81,42 @@ namespace Pet.Jira.Infrastructure.Jira
         /// <summary>
         /// Get issues
         /// </summary>
-        /// <param name="issueSearchOptions"></param>
+        /// <param name="issueKeys"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<IssueDto>> GetIssuesAsync(
+        public async Task<Dictionary<string, IssueDto>> GetIssuesAsync(
+            string[] issueKeys,
+            CancellationToken cancellationToken = default)
+        {
+            var issues = await _jiraClient.Issues.GetIssuesAsync(issueKeys);
+            return issues.ToDictionary(
+                issue => issue.Key,
+                issue => IssueDto.Create(issue.Value, _linkGenerator));
+        }
+
+		/// <summary>
+		/// Get issue
+		/// </summary>
+		/// <param name="issueKey"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		public async Task<IssueDto> GetIssueAsync(
+			string issueKey,
+			CancellationToken cancellationToken = default)
+		{
+			var issue = await _jiraClient.Issues.GetIssueAsync(issueKey);
+            return issue is null 
+                ? default
+                : IssueDto.Create(issue, _linkGenerator);
+		}
+
+		/// <summary>
+		/// Get issues
+		/// </summary>
+		/// <param name="issueSearchOptions"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		public async Task<IEnumerable<IssueDto>> GetIssuesAsync(
             IssueSearchOptions issueSearchOptions,
             CancellationToken cancellationToken = default)
         {

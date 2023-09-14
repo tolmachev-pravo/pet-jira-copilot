@@ -3,6 +3,7 @@ using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Issues;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Application.Worklogs;
+using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Users;
 
 namespace Pet.Jira.Infrastructure.Mock
@@ -16,6 +17,7 @@ namespace Pet.Jira.Infrastructure.Mock
             services.AddTransient<IAuthenticationService, MockAuthenticationService>();
             services.AddTransient<IIssueDataSource, MockIssueDataSource>();
             services.AddTransient<IStorage<string, UserProfile>, MockUserProfileStorage>();
+            services.AddTransient<IMemoryCache<string, Issue>, MockIssueMemoryCache>();
             return services;
         }
     }

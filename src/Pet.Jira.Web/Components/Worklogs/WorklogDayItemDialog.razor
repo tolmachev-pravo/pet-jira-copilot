@@ -1,0 +1,25 @@
+﻿@using Pet.Jira.Domain.Models.Issues;
+@using Pet.Jira.Infrastructure.Jira.Dto;
+@using Pet.Jira.Web.Components.Markdown
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Elevation="0" Class="pet-worklog-day-item-dialog">
+            <MudDatePicker Label="Date" @bind-Date="_model.Worklog.Date" />
+            <MudTimePicker Label="Start time" @bind-Time="_model.Worklog.StartTime" Editable="true" />
+            <MudTimePicker Label="Complete time" @bind-Time="_model.Worklog.CompleteTime" Editable="true" />
+            <MudAutocomplete T="Issue" Label="Issue" @bind-Value="_model.Worklog.Issue"
+                             SearchFunc="@SearchIssuesAsync"
+                             ToStringFunc="issue => issue?.Name"
+                             MaxItems="Int32.MaxValue"
+                             ResetValueOnEmptyText="true" Dense="true" />
+            <MudTextField Label="Comment" @bind-Value="_model.Worklog.Comment" />
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {}

@@ -3,6 +3,7 @@
     public enum WorklogSource
     {
         Assignee,
-        Comment
+        Comment,
+        Calendar
     }
 }

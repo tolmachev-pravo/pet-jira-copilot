@@ -12,11 +12,11 @@ namespace Pet.Jira.Infrastructure.Jira
     {
         private readonly IJiraService _jiraService;
 
-        public JiraIssueDataSource(
+		public JiraIssueDataSource(
             IJiraService jiraService)
         {
             _jiraService = jiraService;
-        }
+		}
 
         public async Task<string> GetIssueOpenPullRequestUrlAsync(
             GetIssueOpenPullRequestUrl.Query query, CancellationToken cancellationToken = default)
@@ -58,5 +58,13 @@ namespace Pet.Jira.Infrastructure.Jira
                 Name = issueStatus.Name
             });
         }
-    }
+
+		public async Task<Issue> GetIssueAsync(
+            string issueKey,
+            CancellationToken cancellationToken = default)
+		{
+			var issue = await _jiraService.GetIssueAsync(issueKey, cancellationToken);
+            return issue?.Adapt();
+		}
+	}
 }
