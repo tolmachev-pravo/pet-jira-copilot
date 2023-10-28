@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Common.Extensions;
 
 namespace Pet.Jira.Infrastructure.Jira
 {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Pet.Jira.Application.Extensions
+namespace Pet.Jira.Application.Common.Extensions
 {
     public static class EnumExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Pet.Jira.Application.Extensions
+namespace Pet.Jira.Application.Common.Extensions
 {
     public static class UrlExtensions
     {

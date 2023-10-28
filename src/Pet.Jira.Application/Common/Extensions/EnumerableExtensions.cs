@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.Application.Extensions
+namespace Pet.Jira.Application.Common.Extensions
 {
     public static class EnumerableExtensions
     {

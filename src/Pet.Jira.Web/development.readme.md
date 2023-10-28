@@ -21,3 +21,14 @@
 - Нужно завести ILocalStorage<UserProfile> - доступ к записи в LocalStorage браузера
 - Нужно завести IDataSource<string, UserProfile> - получение данных из Jira для синхронизации с другими хранилищами
 - Нужно завести IStorage<string, UserProfile> - единая точка входа в хранилище
+- 
+
+Создание миграции
+```
+dotnet ef migrations add Migration_Name --startup-project ../Pet.Jira.Web --context ApplicationDbContext
+```
+
+Применение миграции
+```
+dotnet ef database update --startup-project ../Pet.Jira.Web --context ApplicationDbContext
+```

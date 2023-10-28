@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Common.Extensions;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Infrastructure.Jira;

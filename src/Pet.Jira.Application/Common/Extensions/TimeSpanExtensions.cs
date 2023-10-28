@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pet.Jira.Application.Extensions
+namespace Pet.Jira.Application.Common.Extensions
 {
     public static class TimeSpanExtensions
     {
@@ -18,8 +18,8 @@ namespace Pet.Jira.Application.Extensions
         }
 
         public static TimeSpan Round(
-            this TimeSpan span, 
-            TimeSpanRoundingType type = TimeSpanRoundingType.Minute, 
+            this TimeSpan span,
+            TimeSpanRoundingType type = TimeSpanRoundingType.Minute,
             MidpointRounding mode = MidpointRounding.ToEven) =>
             type switch
             {
