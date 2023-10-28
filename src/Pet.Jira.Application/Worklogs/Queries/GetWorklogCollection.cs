@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Common.Extensions;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Worklogs;
 using System;

@@ -1,0 +1,28 @@
+﻿<MudPaper Width="350px" Elevation="2" Height="300">
+    <MudCard Elevation="0">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Secondary" Size="Size.Small">A</MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body2">d.tolmachev</MudText>
+                <MudText Typo="Typo.body2"><i>@Entity.CreatedAt.ToLongDateString()</i></MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardMedia Image="@Entity.ImageUrl" Height="250" />
+        <MudCardContent Class="pb-0">
+            <MudText Typo="Typo.h5">@Entity.Title</MudText>
+            <MudText Typo="Typo.body2">@Entity.Content</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Primary"
+                       Href="@Entity.Link"
+                       Target="_blank">Learn More</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudPaper>
+
+@code {
+
+}

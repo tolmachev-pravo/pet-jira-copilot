@@ -7,24 +7,26 @@
     <td>
         <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper" Elevation="0" Width="100%">
             <MudElement Class="flex-none d-flex gap-2 py-2 align-center">
+                <WorklogDayMenu Entity=@Entity OnCreatedPressed="AddCustomWorklogAsync" />
                 <MudElement Style="width: 102px">
                     <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@Entity.Progress" />
                 </MudElement>
-                <WorklogDayMenu Entity=@Entity OnCreatedPressed="AddCustomWorklogAsync" />
-                <MudElement>
-                    <b>@Entity.Date.ToString(DateFormats.DateFormat)</b>
-                </MudElement>
-            </MudElement>
-            <MudElement Class="flex-none d-flex gap-1 pet-worklog-day-chips-container">
-                <WorklogDayChip Caption="Logged" Value="@Entity.ActualWorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
-                <WorklogDayChip Caption="Estimated" Value="@Entity.WorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
-                <WorklogDayChip Caption="Day" Value="@Entity.Date.DayOfWeek.ToString()" Color="@Color" />
+                
                 @if (Entity.HasRawEstimatedWorklogs)
                 {
-                    <MudBadge Content="Entity.RawEstimatedWorklogCount" Color="Color.Info" Overlap="true" Class="pet-table-mud-badge-counter">
-                        <MudIcon Icon="@Icons.Material.Sharp.AddCircle" Color="Color.Primary" />
+                    <MudBadge Content="Entity.RawEstimatedWorklogCount" Color="Color.Info" Overlap="true">
+                        <WorklogDayChip Value="@Entity.Date.ToString(DateFormats.DateFormat)"/>
                     </MudBadge>
                 }
+                else
+                {
+                    <WorklogDayChip Value="@Entity.Date.ToString(DateFormats.DateFormat)" />
+                }
+            </MudElement>
+            <MudElement Class="flex-none d-flex gap-1 pet-worklog-day-chips-container pl-3">
+                <WorklogDayChip Caption="Logged" Value="@Entity.ActualWorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Caption="Estimated" Value="@Entity.WorklogTimeSpent.ToString(DateFormats.TimeFormat)" />
+                <WorklogDayChip Value="@Entity.Date.DayOfWeek.ToString()" Color="@Color" />
             </MudElement>
         </MudPaper>
     </td>

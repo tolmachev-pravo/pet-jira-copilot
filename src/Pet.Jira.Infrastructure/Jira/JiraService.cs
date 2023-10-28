@@ -3,7 +3,7 @@ using Atlassian.Jira.Remote;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pet.Jira.Application.Authentication;
-using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Common.Extensions;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira.Dto;

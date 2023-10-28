@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pet.Jira.Application.Articles;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Issues;
 using Pet.Jira.Application.Storage;
@@ -8,7 +10,9 @@ using Pet.Jira.Application.Worklogs;
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Users;
+using Pet.Jira.Infrastructure.Articles;
 using Pet.Jira.Infrastructure.Authentication;
+using Pet.Jira.Infrastructure.Data.Contexts;
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Jira.Query;
@@ -43,7 +47,14 @@ namespace Pet.Jira.Infrastructure
 
             services.AddSingleton<ILoginMemoryCache, LoginMemoryCache>();
             services.AddTransient<IMemoryCache<string, Issue>, IssueMemoryCache>();
-            return services;
+
+			services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite("Data Source = JiraWorkflow.sqlite3"));
+
+			services.AddTransient<IArticleRepository, ArticleRepository>();
+			services.AddTransient<IArticleDataSource, ArticleDataSource>();
+
+			return services;
         }
 
         public static IHealthChecksBuilder AddInfrastructureHealthChecks(this IHealthChecksBuilder builder)
@@ -51,7 +62,7 @@ namespace Pet.Jira.Infrastructure
             builder
                 .AddJiraHealthCheck()
                 .AddProcessAllocatedMemoryHealthCheck(
-                    maximumMegabytesAllocated: 200,
+                    maximumMegabytesAllocated: 300,
                     tags: new[] { "system" });
             return builder;
         }

@@ -1,10 +1,10 @@
 using Blazored.LocalStorage;
 using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +13,7 @@ using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Infrastructure;
+using Pet.Jira.Infrastructure.Data.Contexts;
 using Pet.Jira.Infrastructure.Mock;
 using Pet.Jira.Web.Authentication;
 using Pet.Jira.Web.Common;
@@ -24,7 +25,7 @@ using Thinktecture.Blazor.AsyncClipboard;
 
 namespace Pet.Jira.Web
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -39,8 +40,8 @@ namespace Pet.Jira.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddMediatR(typeof(Startup));
-            services.AddMudServices(config =>
+
+			services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
                 config.SnackbarConfiguration.PreventDuplicates = false;
@@ -89,8 +90,12 @@ namespace Pet.Jira.Web
                     setup.SetEvaluationTimeInSeconds(30);
                     setup.SetApiMaxActiveRequests(1);
                     setup.SetMinimumSecondsBetweenFailureNotifications(120);
-                }).AddInMemoryStorage();            
-        }
+                }).AddInMemoryStorage();
+
+			services.AddControllers();
+			services.AddEndpointsApiExplorer();
+			services.AddSwaggerGen();
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -118,7 +123,10 @@ namespace Pet.Jira.Web
             app.UseMiddleware<AuthenticationMiddleware>();
             app.UseMiddleware<LogEnrichmentMiddleware>();
 
-            app.UseEndpoints(endpoints =>
+			app.UseSwagger();
+			app.UseSwaggerUI();
+
+			app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions()
                 {
@@ -127,11 +135,17 @@ namespace Pet.Jira.Web
                 });
                 endpoints.MapHealthChecksUI(setup =>
                 {
-                    setup.AddCustomStylesheet("wwwroot\\css\\dotnet.css");
+                    setup.AddCustomStylesheet("wwwroot/css/dotnet.css");
                 });
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-            });
-        }
+                endpoints.MapControllers();
+			});
+
+			using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+			{
+				scope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+			}
+		}
     }
 }

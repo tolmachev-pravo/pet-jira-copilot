@@ -1,4 +1,4 @@
-﻿using Pet.Jira.Application.Extensions;
+﻿using Pet.Jira.Application.Common.Extensions;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
 using System;

@@ -1,0 +1,12 @@
+﻿@page "/articles"
+
+<MudPaper Class="d-flex flex-wrap gap-4" Elevation="0" Width="100%">
+    @foreach (var entity in _model.Entities)
+    {
+        <Article Entity=entity />
+    }
+</MudPaper>
+
+@code {
+
+}
