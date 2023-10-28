@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Pet.Jira.Application.Blog.Commands.CreateArticle
+namespace Pet.Jira.Application.Articles.Commands.CreateArticle
 {
 	public class CreateArticleCommandValidator : AbstractValidator<CreateArticleCommand>
 	{

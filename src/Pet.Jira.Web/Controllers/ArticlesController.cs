@@ -1,14 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Pet.Jira.Application.Blog.Commands.CreateArticle;
-using Pet.Jira.Application.Blog.Queries.GetArticles;
+using Pet.Jira.Application.Articles.Commands.CreateArticle;
+using Pet.Jira.Application.Articles.Queries.GetArticles;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("api/[controller]")]
 	public class ArticlesController : ControllerBase
 	{

@@ -1,10 +1,16 @@
 ﻿<MudElement Class="gap-1 d-flex flex-wrap border-none align-center">
     <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 150px">
-        <MudPaper Class="flex-none" Width="105px" Elevation="0">
-        </MudPaper>
         <WorklogMenu Entity="@Entity" Color="Color.Tertiary" />
-        <MudElement Class="pet-not-display-on-600">
-            <MudLink Href="@Entity.Issue.Link" Typo="Typo.body2">@Entity.Issue.Key</MudLink> @Entity.Issue.Summary
+        <MudPaper Class="flex-none" Width="105px" Elevation="0" />
+        <MudElement Class="pl-2 pet-not-display-on-600">
+            <MudButton Href="@Entity.Issue.Link"
+                       Size="Size.Small"
+                       Target="_blank"
+                       Variant="Variant.Text"
+                       Color="Color.Primary">
+                @Entity.Issue.Key
+            </MudButton>
+            @Entity.Issue.Summary
         </MudElement>
     </MudElement>
     <MudElement Class="flex-none d-flex justify-end align-center" Style="width: 128px">
@@ -12,7 +18,7 @@
             <MudTextField @bind-Value="@Entity.RemainingTimeSpent" Disabled="true" Class="pet-input-control" Variant="Variant.Text" IconSize="Size.Small"></MudTextField>
             <MudElement Style="width: 40px">
                 <MudFab Size="Size.Small"
-                        Icon="@Icons.Material.Filled.Check"
+                        StartIcon="@Icons.Material.Filled.Check"
                         Color="Color.Tertiary" />
             </MudElement>
         </MudElement>

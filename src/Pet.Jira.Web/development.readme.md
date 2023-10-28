@@ -32,3 +32,11 @@ dotnet ef migrations add Migration_Name --startup-project ../Pet.Jira.Web --cont
 ```
 dotnet ef database update --startup-project ../Pet.Jira.Web --context ApplicationDbContext
 ```
+
+Prompts
+```
+Translate the text into English
+format it as an article for publication on the website
+Come up with a short title for this text to be published on the website
+Summarize the article in 1-2 sentences for publication on the website
+```

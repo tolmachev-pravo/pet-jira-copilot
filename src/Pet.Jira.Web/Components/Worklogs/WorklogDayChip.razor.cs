@@ -8,5 +8,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public Color Color { get; set; } = Color.Default;
         [Parameter] public string Caption { get; set; }
         [Parameter] public string Value { get; set; }
+        [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+        [Parameter] public Size Size { get; set; } = Size.Small;
     }
 }

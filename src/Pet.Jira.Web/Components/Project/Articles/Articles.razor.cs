@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Components;
-using Pet.Jira.Application.Blog.Dto;
-using Pet.Jira.Application.Blog.Queries.GetArticles;
+using Pet.Jira.Application.Articles.Dto;
+using Pet.Jira.Application.Articles.Queries.GetArticles;
 using Pet.Jira.Web.Components.Common;
 using Pet.Jira.Web.Shared;
 using System.Collections.Generic;
