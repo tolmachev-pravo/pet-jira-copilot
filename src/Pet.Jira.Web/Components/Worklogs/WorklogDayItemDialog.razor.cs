@@ -19,6 +19,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private readonly ComponentModel _model = ComponentModel.Create();
 
         [Parameter] public WorkingDay WorkingDay { get; set; }
+        [Parameter] public AddedWorklogDto Worklog { get; set; }
         [Parameter] public Color Color { get; set; } = Color.Default;
         [Parameter] public string Icon { get; set; } = Icons.Material.Filled.MoreVert;
         [Parameter] public string Label { get; set; } = "Default";
@@ -58,9 +59,17 @@ namespace Pet.Jira.Web.Components.Worklogs
 
             public bool IsInitialized { get; set; }
 
-            public void Initialize(WorkingDay workingDay)
+            public void Initialize(WorkingDay workingDay, AddedWorklogDto worklog)
             {
-                if (workingDay != null)
+                if (worklog != null)
+                {
+                    Date = worklog.StartedAt.Date;
+                    StartTime = worklog.StartedAt.TimeOfDay;
+                    CompleteTime = worklog.StartedAt.TimeOfDay.Add(worklog.ElapsedTime);
+                    Comment = worklog.Comment;
+                    Issue = (Issue)worklog.Issue;
+                }
+                else if (workingDay != null)
                 {
                     Date = workingDay.Date;
                     StartTime = workingDay.Settings.WorkingStartTime;
@@ -87,7 +96,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         protected override void OnInitialized()
         {
-            _model.Worklog.Initialize(WorkingDay);
+            _model.Worklog.Initialize(WorkingDay, Worklog);
         }
 
         private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value)

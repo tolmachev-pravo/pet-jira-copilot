@@ -81,10 +81,9 @@ namespace Pet.Jira.Application.Worklogs.Dto
 
         public void Refresh()
         {
-            foreach (var item in Worklogs)
-            {
-                item.AttachSuitableChildren(ActualWorklogs);
-            }
+            WorklogMatching.Match(
+                parents: EstimatedWorklogs, 
+                children: ActualWorklogs);
 
             // Remaining estimated worklog time spent for logging
             var remainingWorklogTimeSpent = EstimatedWorklogs

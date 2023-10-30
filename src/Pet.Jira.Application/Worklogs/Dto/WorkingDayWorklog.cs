@@ -4,7 +4,6 @@ using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Pet.Jira.Application.Worklogs.Dto
 {
@@ -58,14 +57,16 @@ namespace Pet.Jira.Application.Worklogs.Dto
             DateTime completeDate,
             IIssue issue,
             WorklogType type,
-            WorklogSource source)
+            WorklogSource source) : this()
         {
             RawStartDate = startDate;
             RawCompleteDate = completeDate;
+            StartDate = startDate;
+            CompleteDate = completeDate;
             Issue = issue;
             Type = type;
             Source = source;
-            Children = new List<WorkingDayWorklog>();
+            UpdateRemainingTimeSpent(TimeSpent);
         }
 
         /// <summary>
@@ -106,8 +107,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             IWorklog worklog,
             DateTime day,
             TimeSpan dailyWorkingStartTime,
-            TimeSpan dailyWorkingEndTime,
-            IEnumerable<WorkingDayWorklog> dailyActualWorklogs = null)
+            TimeSpan dailyWorkingEndTime)
         {
             var startOfWorkingDay = day.Add(dailyWorkingStartTime);
             var endOfWorkingDay = day.Add(dailyWorkingEndTime);
@@ -127,23 +127,24 @@ namespace Pet.Jira.Application.Worklogs.Dto
             };
 
             result.UpdateRemainingTimeSpent(result.TimeSpent);
-            result.AttachSuitableChildren(dailyActualWorklogs);
 
             return result;
-        }        
+        }
 
-        public WorkingDayWorklog Clone(WorklogType type)
+        public static WorkingDayWorklog CreateActualByEstimated(
+            WorkingDayWorklog source)
         {
-            return new WorkingDayWorklog
-            {
-                StartDate = CompleteDate,
-                CompleteDate = CompleteDate.Add(RemainingTimeSpent),
-                RemainingTimeSpent = RemainingTimeSpent,
-                Issue = Issue,
-                Type = type,
-                Source = Source,
-                Comment = Comment
-            };
+            var timeSpent = source.RemainingTimeSpent;
+            var completeDate = source.RawCompleteDate != source.RawCompleteDate.EndOfDay()
+                ? source.RawCompleteDate
+                : source.CompleteDate;
+            var startDate = completeDate.Add(-timeSpent);
+            return new WorkingDayWorklog(
+                startDate: startDate,
+                completeDate: completeDate,
+                issue: source.Issue,
+                type: WorklogType.Actual,
+                source: source.Source);
         }
 
         private static DateTime AdaptWorkingTime(
@@ -162,26 +163,6 @@ namespace Pet.Jira.Application.Worklogs.Dto
             else
             {
                 return value;
-            }
-        }
-
-        /// <summary>
-        /// Attach suitable children worklogs to current worklog
-        /// </summary>
-        /// <param name="dailyActualWorklogs"></param>
-        public void AttachSuitableChildren(IEnumerable<WorkingDayWorklog> dailyActualWorklogs)
-        {
-            if (!dailyActualWorklogs.IsEmpty())
-            {
-                Children = dailyActualWorklogs
-                    .Where(applicant =>
-                        applicant.Issue.Key == this.Issue.Key
-                        && applicant.StartDate == this.CompleteDate)
-                    .ToList();
-                foreach (var child in Children)
-                {
-                    child.Parent = this;
-                }
             }
         }
     }

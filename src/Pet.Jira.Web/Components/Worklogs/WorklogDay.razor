@@ -7,7 +7,7 @@
     <td>
         <MudPaper Class="gap-1 d-flex flex-wrap border-none align-center pet-paper" Elevation="0" Width="100%">
             <MudElement Class="flex-none d-flex gap-2 py-2 align-center">
-                <WorklogDayMenu Entity=@Entity OnCreatedPressed="AddCustomWorklogAsync" />
+                <WorklogDayMenu Entity=@Entity OnCreatedPressed="AddWorklogAsync" />
                 <MudElement Style="width: 102px">
                     <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@Entity.Progress" />
                 </MudElement>

@@ -17,7 +17,7 @@ namespace Pet.Jira.Application.Common.Extensions
 			while (day >= firstDate.Date)
 			{
 				var startOfDay = day;
-				var endOfDay = day.AddDays(1).AddMilliseconds(-1);
+				var endOfDay = day.EndOfDay();
 
 				var dateWorklogs = worklogs
 					.Where(worklog => worklog.CompleteDate > startOfDay
