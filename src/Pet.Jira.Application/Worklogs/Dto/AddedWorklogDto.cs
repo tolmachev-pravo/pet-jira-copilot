@@ -31,17 +31,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 return worklog.Comment;
             }
 
-            switch (worklog.Source)
-            {
-                case WorklogSource.Assignee:
-                    return $"Working on task {worklog.Issue?.Key}";
-                case WorklogSource.Comment:
-                    return $"Task discussion {worklog.Issue?.Key}";
-                case WorklogSource.Calendar:
-                    return $"Discussion {worklog.Issue?.Key}";
-                default:
-                    return "Default worklog";
-            }
+            return worklog.DefaultComment();
         }
     }
 }

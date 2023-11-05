@@ -66,6 +66,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
             Issue = issue;
             Type = type;
             Source = source;
+            Comment = DefaultComment();
             UpdateRemainingTimeSpent(TimeSpent);
         }
 
@@ -164,6 +165,17 @@ namespace Pet.Jira.Application.Worklogs.Dto
             {
                 return value;
             }
+        }
+
+        public string DefaultComment()
+        {
+            return Source switch
+            {
+                WorklogSource.Assignee => $"Working on task {Issue?.Key}",
+                WorklogSource.Comment => $"Task discussion {Issue?.Key}",
+                WorklogSource.Calendar => $"Discussion {Issue?.Key}",
+                _ => "Default worklog",
+            };
         }
     }
 }

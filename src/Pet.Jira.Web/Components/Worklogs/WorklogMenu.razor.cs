@@ -116,11 +116,11 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task AddCustomWorklogAsync()
         {
-            var addedWorklog = AddedWorklogDto.Create(Entity);
+            var worklogTemplate = WorkingDayWorklog.CreateActualByEstimated(Entity);
             var options = new DialogOptions { };
             var parameters = new DialogParameters
             {
-                { "WorklogTemplate", addedWorklog }
+                { "WorklogTemplate", worklogTemplate }
             };
             var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("New worklog", parameters, options);
             var result = await dialog.Result;
