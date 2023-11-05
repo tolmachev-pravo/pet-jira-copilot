@@ -14,6 +14,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 {
     public partial class WorklogMenu : ComponentBase
     {
+        [Parameter] public EventCallback<WorkingDayWorklog> OnCreatedPressed { get; set; }
         [Parameter] public WorkingDayWorklog Entity { get; set; }
         [Parameter] public Color Color { get; set; } = Color.Default;
         [Parameter] public string Icon { get; set; } = Icons.Material.Filled.MoreVert;
@@ -24,6 +25,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private IClipboard _clipboard { get; set; }
         [Inject] private ISnackbar _snackbar { get; set; }
         [Inject] private IMediator Mediator { get; set; }
+        [Inject] IDialogService DialogService { get; set; }
 
         private string PullRequestUrl { get; set; }
 
@@ -109,6 +111,22 @@ namespace Pet.Jira.Web.Components.Worklogs
             catch (Exception e)
             {
                 ErrorHandler.ProcessError(e);
+            }
+        }
+
+        private async Task AddCustomWorklogAsync()
+        {
+            var worklogTemplate = WorkingDayWorklog.CreateActualByEstimated(Entity);
+            var options = new DialogOptions { };
+            var parameters = new DialogParameters
+            {
+                { "WorklogTemplate", worklogTemplate }
+            };
+            var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("New worklog", parameters, options);
+            var result = await dialog.Result;
+            if (result.Data is WorkingDayWorklog worklog)
+            {
+                await OnCreatedPressed.InvokeAsync(worklog);
             }
         }
     }

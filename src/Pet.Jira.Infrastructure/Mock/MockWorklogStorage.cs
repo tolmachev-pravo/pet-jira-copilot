@@ -37,19 +37,23 @@ namespace Pet.Jira.Infrastructure.Mock
         public static IList<IWorklog> IssueWorklogs = new List<IWorklog>
         {
             CreateIssueWorklog(
-                startTime: DateTime.Now.Date.AddHours(11),
+                startTime: DateTime.Now.Date.AddHours(10),
                 duration: TimeSpan.FromHours(1),
+                issue: Issues[0]),
+            CreateIssueWorklog(
+                startTime: DateTime.Now.Date.AddHours(9).AddMinutes(30),
+                duration: TimeSpan.FromMinutes(30),
                 issue: Issues[0]),
             CreateIssueWorklog(
                 startTime: DateTime.Now.Date.AddHours(13),
                 duration: TimeSpan.FromHours(2),
                 issue: Issues[7]),
             CreateIssueWorklog(
-                startTime: DateTime.Now.Date.AddDays(-1).AddHours(16),
+                startTime: DateTime.Now.Date.AddDays(-1).AddHours(11),
                 duration: TimeSpan.FromHours(5),
                 issue: Issues[1]),
             CreateIssueWorklog(
-                startTime: DateTime.Now.Date.AddDays(-2).AddHours(19),
+                startTime: DateTime.Now.Date.AddDays(-2).AddHours(11),
                 duration: TimeSpan.FromHours(8),
                 issue: Issues[4])
         };
@@ -90,8 +94,14 @@ namespace Pet.Jira.Infrastructure.Mock
             {
                 StartDate = DateTime.Now.Date.AddDays(-5).AddHours(19),
                 CompleteDate = DateTime.Now.Date.AddDays(-2).AddHours(19),
-                TimeSpent = TimeSpan.FromHours(72),
                 Issue = Issues[4]
+            },            
+            new RawIssueWorklog
+            {
+                StartDate = DateTime.Now.Date.AddDays(-3).AddHours(11),
+                CompleteDate = DateTime.Now.Date.AddDays(-3).AddHours(12),
+                Issue = Issues[5],
+                Source = WorklogSource.Comment
             }
         };
     }

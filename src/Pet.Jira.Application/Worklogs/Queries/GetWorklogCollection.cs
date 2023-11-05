@@ -96,8 +96,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                                 worklog: worklog,
                                 day: day,
                                 dailyWorkingStartTime: query.DailyWorkingStartTime,
-                                dailyWorkingEndTime: query.DailyWorkingEndTime,
-                                dailyActualWorklogs));
+                                dailyWorkingEndTime: query.DailyWorkingEndTime));
 
                     var dailyWorklogs = dailyActualWorklogs.Union(dailyEstimatedWorklogs)
                             .OrderBy(record => record.StartDate)

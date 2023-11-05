@@ -1,4 +1,5 @@
-﻿using Pet.Jira.Domain.Models.Worklogs;
+﻿using Pet.Jira.Domain.Models.Issues;
+using Pet.Jira.Domain.Models.Worklogs;
 using System;
 
 namespace Pet.Jira.Application.Worklogs.Dto
@@ -9,6 +10,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public TimeSpan ElapsedTime { get; set; }
         public string IssueKey { get; set; }
         public string Comment { get; set; }
+        public IIssue Issue { get; set; }
 
         public static AddedWorklogDto Create(WorkingDayWorklog worklog)
         {
@@ -17,6 +19,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 StartedAt = worklog.StartDate,
                 IssueKey = worklog.Issue.Key,
                 ElapsedTime = worklog.RemainingTimeSpent,
+                Issue = worklog.Issue,
                 Comment = WorklogComment(worklog)
             };
         }
@@ -28,17 +31,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 return worklog.Comment;
             }
 
-            switch (worklog.Source)
-            {
-                case WorklogSource.Assignee:
-                    return $"Working on task {worklog.Issue?.Key}";
-                case WorklogSource.Comment:
-                    return $"Task discussion {worklog.Issue?.Key}";
-                case WorklogSource.Calendar:
-                    return $"Discussion {worklog.Issue?.Key}";
-                default:
-                    return "Default worklog";
-            }
+            return worklog.DefaultComment();
         }
     }
 }

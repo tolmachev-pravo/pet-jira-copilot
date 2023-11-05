@@ -16,7 +16,13 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task AddAsync()
         {
-            await OnAddPressed.InvokeAsync(Entity);
+            var worklog = WorkingDayWorklog.CreateActualByEstimated(Entity);
+            await OnAddPressed.InvokeAsync(worklog);
+        }
+
+        private async Task AddCustomAsync(WorkingDayWorklog worklog)
+        {
+            await OnAddPressed.InvokeAsync(worklog);
         }
 
         public Color Color => Entity.Source == WorklogSource.Assignee ? Color.Primary : Color.Info;
