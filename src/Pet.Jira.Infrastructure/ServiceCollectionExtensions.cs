@@ -49,7 +49,7 @@ namespace Pet.Jira.Infrastructure
             services.AddTransient<IMemoryCache<string, Issue>, IssueMemoryCache>();
 
 			services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite("Data Source = JiraWorkflow.sqlite3"));
+                options.UseSqlite("Data Source = JiraCopilot.sqlite3"));
 
 			services.AddTransient<IArticleRepository, ArticleRepository>();
 			services.AddTransient<IArticleDataSource, ArticleDataSource>();
