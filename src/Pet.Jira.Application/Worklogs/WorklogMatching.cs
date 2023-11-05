@@ -35,9 +35,33 @@ namespace Pet.Jira.Application.Worklogs
                     continue;
                 }
 
-                // Find all suggested parents by "start date".
-                // Start date of child should be between start date and complete date of parent.
-                var suggestedParents = issueParents
+                // Find all suggested parents by "start date" and "complete date".
+                // Start date and complete date of child should be between start date and complete date of parent.
+				var suggestedParents = issueParents
+                    .Where(worklog => worklog.RawStartDate <= child.RawStartDate
+                        && worklog.RawCompleteDate >= child.RawCompleteDate)
+                    .ToList();
+
+				if (TrySetParent(child, suggestedParents))
+				{
+					continue;
+				}
+
+				// Find all suggested parents by "complete date".
+				// Complete date of child should be between start date and complete date of parent.
+				suggestedParents = issueParents
+					.Where(worklog => worklog.RawStartDate <= child.RawCompleteDate
+						&& worklog.RawCompleteDate >= child.RawCompleteDate)
+					.ToList();
+
+				if (TrySetParent(child, suggestedParents))
+				{
+					continue;
+				}
+
+				// Find all suggested parents by "start date".
+				// Start date of child should be between start date and complete date of parent.
+				suggestedParents = issueParents
                     .Where(worklog => worklog.RawStartDate <= child.RawStartDate
                         && worklog.RawCompleteDate >= child.RawStartDate)
                     .ToList();
@@ -47,11 +71,11 @@ namespace Pet.Jira.Application.Worklogs
                     continue;
                 }
 
-                // Find all suggested parents by "complete date".
-                // Complete date of child should be between start date and complete date of parent.
-                suggestedParents = issueParents
-                    .Where(worklog => worklog.RawStartDate <= child.RawCompleteDate
-                        && worklog.RawCompleteDate >= child.RawCompleteDate)
+				// Find all suggested parents by date range nesting.
+				// The case when child date range include parent date range. 
+				suggestedParents = issueParents
+                    .Where(worklog => worklog.RawStartDate >= child.RawStartDate
+						&& worklog.RawCompleteDate <= child.RawCompleteDate)
                     .ToList();
 
                 if (TrySetParent(child, suggestedParents))
@@ -59,7 +83,7 @@ namespace Pet.Jira.Application.Worklogs
                     continue;
                 }
 
-                child.Parent = issueParents.First();
+				child.Parent = issueParents.First();
             }
 
             foreach (var parent in parents)

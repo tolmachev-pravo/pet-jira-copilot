@@ -120,7 +120,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             var options = new DialogOptions { };
             var parameters = new DialogParameters
             {
-                { "Worklog", addedWorklog }
+                { "WorklogTemplate", addedWorklog }
             };
             var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("New worklog", parameters, options);
             var result = await dialog.Result;
