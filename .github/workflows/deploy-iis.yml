@@ -1,0 +1,28 @@
+name: Deploy to IIS
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+    
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Stop example.com
+      run: appcmd stop sites "_jira.copilot"
+    - name: Publish Release
+      run: dotnet publish example.com --configuration Release -o F:\inetpub\sites\jira.copilot
+    - name: Start example.com
+      run: appcmd start sites "_jira.copilot"
