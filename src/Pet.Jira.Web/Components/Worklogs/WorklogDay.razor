@@ -11,11 +11,11 @@
                 <MudElement Style="width: 102px">
                     <MudProgressLinear Color="Color.Success" Size="Size.Small" Value="@Entity.Progress" />
                 </MudElement>
-                
+
                 @if (Entity.HasRawEstimatedWorklogs)
                 {
                     <MudBadge Content="Entity.RawEstimatedWorklogCount" Color="Color.Info" Overlap="true">
-                        <WorklogDayChip Value="@Entity.Date.ToString(DateFormats.DateFormat)"/>
+                        <WorklogDayChip Value="@Entity.Date.ToString(DateFormats.DateFormat)" />
                     </MudBadge>
                 }
                 else

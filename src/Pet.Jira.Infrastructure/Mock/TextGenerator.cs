@@ -8,7 +8,7 @@ namespace Pet.Jira.Infrastructure.Mock
     {
         public static string Create(
             int minWords = 5,
-            int maxWords = 15,
+            int maxWords = 10,
             int minLetters = 5,
             int maxLetters = 15)
         {

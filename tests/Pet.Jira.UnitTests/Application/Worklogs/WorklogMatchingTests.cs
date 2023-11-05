@@ -2,6 +2,7 @@
 using Pet.Jira.Application.Worklogs.Dto;
 using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.UnitTests.Application.Mock;
+using Pet.Jira.UnitTests.Application.Extensions;
 
 namespace Pet.Jira.UnitTests.Application.Worklogs
 {
@@ -90,27 +91,12 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 			// Arrange
 			var parents = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(9),
-					RawCompleteDate = _date.AddHours(12)
-				},
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(9), TimeSpan.FromHours(12)),
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 			var children = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(15),
-					RawCompleteDate = _date.AddHours(17)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(15), TimeSpan.FromHours(17))
 			};
 
 			// Act
@@ -126,27 +112,12 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 			// Arrange
 			var parents = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(9),
-					RawCompleteDate = _date.AddHours(12)
-				},
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(9), TimeSpan.FromHours(12)),
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 			var children = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(13),
-					RawCompleteDate = _date.AddHours(15)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(13), TimeSpan.FromHours(15))
 			};
 
 			// Act
@@ -162,27 +133,12 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 			// Arrange
 			var parents = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[1],
-					RawStartDate = _date.AddHours(9),
-					RawCompleteDate = _date.AddHours(12)
-				},
-				new WorkingDayWorklog
-				{
-					Issue = _issues[1],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(9), TimeSpan.FromHours(12)),
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 			var children = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[1].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 
 			// Act
@@ -198,27 +154,12 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 			// Arrange
 			var parents = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(9),
-					RawCompleteDate = _date.AddHours(12)
-				},
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(9), TimeSpan.FromHours(12)),
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 			var children = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(13),
-					RawCompleteDate = _date.AddHours(17)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(13), TimeSpan.FromHours(17))
 			};
 
 			// Act
@@ -234,27 +175,12 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 			// Arrange
 			var parents = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(9),
-					RawCompleteDate = _date.AddHours(12)
-				},
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(14),
-					RawCompleteDate = _date.AddHours(16)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(9), TimeSpan.FromHours(12)),
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(14), TimeSpan.FromHours(16))
 			};
 			var children = new List<WorkingDayWorklog>
 			{
-				new WorkingDayWorklog
-				{
-					Issue = _issues[0],
-					RawStartDate = _date.AddHours(8),
-					RawCompleteDate = _date.AddHours(10)
-				}
+				_issues[0].CreateWorkingDayWorklog(_date, TimeSpan.FromHours(8), TimeSpan.FromHours(10)),
 			};
 
 			// Act

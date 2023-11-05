@@ -1,4 +1,13 @@
-﻿.pet-vertical-align-middle {
+﻿.scalable-time-spent-container
+{
+    width: 140px;
+}
+
+.static-time-spent-container {
+    width: 140px;
+}
+
+.pet-vertical-align-middle {
     vertical-align: middle
 }
 
@@ -29,10 +38,6 @@
 
 :root {
     --mud-drawer-width-left: 180px !important;
-}
-
-.pet-time-spent-container {
-    width: 128px;
 }
 
 .pet-not-display-on-600 {
@@ -73,7 +78,7 @@
 }
 
 @media (max-width:801px) { /* tablet, landscape iPad, lo-res laptops ands desktops */
-    .pet-time-spent-container {
+    .scalable-time-spent-container {
         width: 100%;
     }
 }
