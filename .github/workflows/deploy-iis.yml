@@ -21,8 +21,8 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Stop site
-      run: inetsrv\appcmd stop sites "_jira.copilot"
+      run: C:\Windows\system32\inetsrv\appcmd stop sites "_jira.copilot"
     - name: Publish Release
       run: dotnet publish example.com --configuration Release -o F:\inetpub\sites\jira.copilot
     - name: Start site
-      run: inetsrv\appcmd start sites "_jira.copilot"
+      run: C:\Windows\system32\inetsrv\appcmd start sites "_jira.copilot"
