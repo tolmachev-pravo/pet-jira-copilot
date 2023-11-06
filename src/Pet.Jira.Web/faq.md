@@ -14,7 +14,7 @@ Yes, it is possible to log arbitrary time. However, please note that the time ca
 The information you enter is not stored in a centralized permanent database. Instead, it is stored locally in your browser's storage.
 
 ##### How is the logged time associated with a task?
-Currently, the logged time is associated with the time of status change. If there is a mismatch between the time of status change and the time of logging, the association does not occur.
+Currently, the logged time is associated with the time of status change. If there is a mismatch between the time of status change and the time of logging, the association does not occur
 
 ##### How do I remove worklog?
 You can remove worklog through the Jira user interface (UI).
