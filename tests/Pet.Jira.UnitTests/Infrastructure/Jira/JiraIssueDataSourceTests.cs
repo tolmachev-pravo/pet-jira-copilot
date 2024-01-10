@@ -13,9 +13,10 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            var applicationType = "gitlabselfmanaged";
             var jiraServiceMock = new Mock<IJiraService>();
             jiraServiceMock
-                .Setup(mock => mock.GetIssueDevStatusDetailAsync(It.IsAny<string>(), "github", "pullrequest", default))
+                .Setup(mock => mock.GetIssueDevStatusDetailAsync(It.IsAny<string>(), applicationType, "pullrequest", default))
                 .Returns((string jiraIdentifier, string applicationType,
                     string dataType, CancellationToken cancellationToken) =>
                 {
@@ -49,7 +50,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
                                     {
                                         Instance = new Instance
                                         {
-                                            Id = "github"
+                                            Id = applicationType
                                         },
                                         PullRequests = new []
                                         {
@@ -70,7 +71,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
                                     {
                                         Instance = new Instance
                                         {
-                                            Id = "github"
+                                            Id = applicationType
                                         },
                                         PullRequests = new []
                                         {
@@ -96,7 +97,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
                                     {
                                         Instance = new Instance
                                         {
-                                            Id = "github"
+                                            Id = applicationType
                                         },
                                         PullRequests = new []
                                         {
@@ -117,7 +118,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
                                     {
                                         Instance = new Instance
                                         {
-                                            Id = "github"
+                                            Id = applicationType
                                         },
                                         PullRequests = new []
                                         {
