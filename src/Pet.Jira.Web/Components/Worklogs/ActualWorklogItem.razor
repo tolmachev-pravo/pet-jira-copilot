@@ -20,7 +20,10 @@
                           Class="pet-input-control"
                           Variant="Variant.Text"
                           IconSize="Size.Small" />
-            <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Tertiary" Style="min-width:64px" />
+            <MudIconButton Size="Size.Small"
+                           Icon="@Icons.Material.Filled.Check"
+                           Color="Color.Tertiary"
+                           Disabled="@Entity.IsEmpty" />
         </MudElement>
     </MudElement>
 </MudElement>

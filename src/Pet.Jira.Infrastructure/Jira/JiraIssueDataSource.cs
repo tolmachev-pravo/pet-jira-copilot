@@ -21,7 +21,13 @@ namespace Pet.Jira.Infrastructure.Jira
         public async Task<string> GetIssueOpenPullRequestUrlAsync(
             GetIssueOpenPullRequestUrl.Query query, CancellationToken cancellationToken = default)
         {
-            var devStatusDetail = await _jiraService.GetIssueDevStatusDetailAsync(query.Identifier, cancellationToken: cancellationToken);
+            var applicationType = "gitlabselfmanaged";
+
+            var devStatusDetail = await _jiraService.GetIssueDevStatusDetailAsync(
+                jiraIdentifier: query.Identifier,
+                applicationType: applicationType,
+                dataType: "pullrequest",
+                cancellationToken: cancellationToken);
             if (devStatusDetail?.Detail == null)
             {
                 return null;
@@ -29,7 +35,7 @@ namespace Pet.Jira.Infrastructure.Jira
 
             var detail = devStatusDetail.Detail;
             var githubApplication = devStatusDetail.Detail
-                .FirstOrDefault(application => string.Equals(application.Instance.Id, "github", System.StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(application => string.Equals(application.Instance.Id, applicationType, System.StringComparison.OrdinalIgnoreCase));
             if (githubApplication == null)
             {
                 return null;
