@@ -84,7 +84,8 @@ namespace Pet.Jira.Infrastructure.Jira
             var issueQuery = _queryFactory.Create()
                 .Where("updatedDate", JiraQueryComparisonType.GreaterOrEqual, query.StartDate)
                 .Where("assignee", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
-                .OrderBy("updatedDate", JiraQueryOrderType.Desc)
+				.Where("type", JiraQueryComparisonType.NotEqual, "Story")
+				.OrderBy("updatedDate", JiraQueryOrderType.Desc)
                 .ToString();
             var issueSearchOptions = new IssueSearchOptions(issueQuery)
             {
