@@ -20,12 +20,12 @@
                           Class="pet-input-control"
                           Variant="Variant.Text"
                           IconSize="Size.Small" />
-            <MudButton Size="Size.Small"
+            <MudIconButton Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Add"
                        Variant="Variant.Filled"
                        Color="@Color"
                        OnClick="AddAsync"
-                       Disabled="@Entity.IsEmpty"
-                       FullWidth="true">Add</MudButton>
+                       Disabled="@Entity.IsEmpty"></MudIconButton>
         </MudElement>
     </MudElement>
 </MudElement>
