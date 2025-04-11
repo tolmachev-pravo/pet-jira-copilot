@@ -174,7 +174,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 WorklogSource.Assignee => $"Working on task {Issue?.Key}",
                 WorklogSource.Comment => $"Task discussion {Issue?.Key}",
                 WorklogSource.Calendar => $"Discussion {Issue?.Key}",
-                _ => "Default worklog",
+				WorklogSource.Tester => $"Testing task {Issue?.Key}",
+				_ => "Default worklog",
             };
         }
     }

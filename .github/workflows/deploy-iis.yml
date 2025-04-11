@@ -1,28 +1,44 @@
-name: Deploy to IIS
+name: Deploy to IIS (Self-Hosted)
 
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: self-hosted
     
-    defaults:
-      run:
-        shell: cmd
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Stop site
-      run: C:\Windows\system32\inetsrv\appcmd stop sites "_jira.copilot"
-    - name: Publish Release
-      run: dotnet publish example.com --configuration Release -o F:\inetpub\sites\jira.copilot
-    - name: Start site
-      run: C:\Windows\system32\inetsrv\appcmd start sites "_jira.copilot"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Stop AppPool (if running)
+      run: |
+        Import-Module WebAdministration
+        $poolName = "_jira.copilot"
+        $pool = Get-WebAppPoolState -Name $poolName
+        if ($pool.Value -eq "Started") {
+            Stop-WebAppPool -Name $poolName
+        }
+      shell: powershell
+    
+    - name: Publish .NET App
+      run: |
+        dotnet restore
+        dotnet build --configuration Release
+        dotnet publish -c Release -o ./publish
+
+    - name: Copy files (exclude appsettings.json)
+      run: |
+        $source = "./publish"
+        $destination = "F:\inetpub\sites\jira.copilot"
+        robocopy $source $destination /E /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log;
+        if ($lastexitcode -lt 8) { $global:LASTEXITCODE = $null }
+      shell: powershell
+    
+    - name: Start AppPool
+      run: |
+        Import-Module WebAdministration
+        Start-WebAppPool -Name "_jira.copilot"
+      shell: powershell

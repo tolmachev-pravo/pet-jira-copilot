@@ -20,7 +20,8 @@ namespace Pet.Jira.Infrastructure.Jira
         public static IEnumerable<T> ConvertTo<T>(this IList<IssueChangeLogItemDto> issueChangeLogItems,
             string issueStatusId,
             ITimeProvider timeProvider,
-            TimeZoneInfo timeZoneInfo)
+            TimeZoneInfo timeZoneInfo,
+			WorklogSource worklogSource)
             where T : IWorklog, new()
         {
             var i = 0;
@@ -36,8 +37,8 @@ namespace Pet.Jira.Infrastructure.Jira
                         StartDate = DateTime.MinValue,
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author,
-                        Source = WorklogSource.Assignee
-                    };
+                        Source = worklogSource
+					};
                 }
                 // 2. Это последний элемент и он не завершается
                 else if (i == (issueChangeLogItems.Count - 1))
@@ -48,8 +49,8 @@ namespace Pet.Jira.Infrastructure.Jira
                         StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author,
-                        Source = WorklogSource.Assignee
-                    };
+                        Source = worklogSource
+					};
                 }
                 // 3. Обычный случай когда после FromInProgress следует ToInProgress
                 else
@@ -60,8 +61,8 @@ namespace Pet.Jira.Infrastructure.Jira
                         StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
                         Issue = item.ChangeLog.Issue.Adapt(),
                         Author = item.Author,
-                        Source = WorklogSource.Assignee
-                    };
+                        Source = worklogSource
+					};
                 }
 
                 i += 2;

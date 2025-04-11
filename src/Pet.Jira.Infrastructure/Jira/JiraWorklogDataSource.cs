@@ -114,13 +114,15 @@ namespace Pet.Jira.Infrastructure.Jira
 					.Where(item => item.ChangeLog.Issue.Key == issue.Key)
 					.OrderBy(item => item.ChangeLog.CreatedDate)
 					.ToList()
-					.ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, userProfile.TimeZoneInfo)
+					.ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, userProfile.TimeZoneInfo, WorklogSource.Assignee)
 					.Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
 				result.AddRange(rawIssueWorklogs);
 			}
 
 			var commentWorklogs = await GetCommentRawIssueWorklogsAsync(query, cancellationToken);
+			var testerWorklogs = await GetTesterRawIssueWorklogsAsync(query, cancellationToken);
 			result.AddRange(commentWorklogs);
+			result.AddRange(testerWorklogs);
 			return result.Where(item => item.Author == userProfile.Username);
 		}
 
@@ -165,6 +167,57 @@ namespace Pet.Jira.Infrastructure.Jira
 					.OrderBy(item => item.CreatedDate)
 					.ToList()
 					.ConvertTo<RawIssueWorklog>(_timeProvider, userProfile.TimeZoneInfo, WorklogSource.Comment, query.CommentWorklogTime)
+					.Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
+				result.AddRange(rawIssueWorklogs);
+			}
+
+			return result.Where(item => item.Author == userProfile.Username);
+		}
+
+		/// <summary>
+		/// Get raw issue worklogs
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		public async Task<IEnumerable<RawIssueWorklog>> GetTesterRawIssueWorklogsAsync(
+			GetRawIssueWorklogs.Query query,
+			CancellationToken cancellationToken = default)
+		{
+			var issueQuery = _queryFactory.Create()
+				.Where("updatedDate", JiraQueryComparisonType.GreaterOrEqual, query.StartDate)
+				.Where("Tester", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
+				.Where("type", JiraQueryComparisonType.NotEqual, "Story")
+				.OrderBy("updatedDate", JiraQueryOrderType.Desc)
+				.ToString();
+			var issueSearchOptions = new IssueSearchOptions(issueQuery)
+			{
+				MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
+			};
+
+			var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
+
+			var user = await _identityService.GetCurrentUserAsync();
+			var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
+
+			var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
+				changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
+
+			var changeLogItemFilter = new Func<IssueChangeLogItem, bool>(changeLogItem =>
+				changeLogItem.FieldName == JiraConstants.Status.FieldName
+				&& (changeLogItem.ToId == "10116" // In Testing
+					|| changeLogItem.FromId == "10116"));
+
+			var issueChangeLogItems = await _jiraService.GetIssueChangeLogItemsAsync(issues, changeLogFilter, changeLogItemFilter, cancellationToken);
+
+			var result = new List<RawIssueWorklog> { };
+			foreach (var issue in issues)
+			{
+				var rawIssueWorklogs = issueChangeLogItems
+					.Where(item => item.ChangeLog.Issue.Key == issue.Key)
+					.OrderBy(item => item.ChangeLog.CreatedDate)
+					.ToList()
+					.ConvertTo<RawIssueWorklog>(query.IssueStatusId, _timeProvider, userProfile.TimeZoneInfo, WorklogSource.Tester)
 					.Where(issueWorklog => issueWorklog.IsBetween(query.StartDate, query.EndDate));
 				result.AddRange(rawIssueWorklogs);
 			}

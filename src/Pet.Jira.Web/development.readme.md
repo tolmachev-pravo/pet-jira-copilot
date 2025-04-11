@@ -21,7 +21,7 @@
 - Нужно завести ILocalStorage<UserProfile> - доступ к записи в LocalStorage браузера
 - Нужно завести IDataSource<string, UserProfile> - получение данных из Jira для синхронизации с другими хранилищами
 - Нужно завести IStorage<string, UserProfile> - единая точка входа в хранилище
-- 
+
 
 Создание миграции
 ```
