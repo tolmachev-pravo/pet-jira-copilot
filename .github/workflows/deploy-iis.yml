@@ -12,12 +12,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Stop AppPool (as Admin)
+    - name: Stop AppPool
       run: |
-        Start-Process -FilePath "powershell" -ArgumentList {
-          Import-Module WebAdministration
-          Stop-WebAppPool -Name "_jira.copilot"
-        } -Verb RunAs -Wait
+        Import-Module WebAdministration
+        Stop-WebAppPool -Name "_jira.copilot"
       shell: powershell
     
     - name: Publish .NET App
@@ -25,12 +23,13 @@ jobs:
         dotnet restore
         dotnet build --configuration Release
         dotnet publish -c Release -o ./publish
-    
-    - name: Copy files to IIS
+
+    - name: Copy files (exclude appsettings.json)
       run: |
         $source = "./publish"
-        $destination = "F:\inetpub\sites\jira.copilot"
-        Copy-Item -Path "$source\*" -Destination $destination -Recurse -Force
+        $destination = "C:\inetpub\wwwroot\jira.copilot"
+        robocopy $source $destination /MIR /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log
+        if $LASTEXITCODE -ge 8 { exit 1 }
       shell: powershell
     
     - name: Start AppPool
