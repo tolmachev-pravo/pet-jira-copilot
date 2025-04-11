@@ -34,7 +34,7 @@ jobs:
         $source = "./publish"
         $destination = "F:\inetpub\sites\jira.copilot"
         robocopy $source $destination /MIR /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log
-        Get-Content deploy.log
+        if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
       shell: powershell
     
     - name: Start AppPool
