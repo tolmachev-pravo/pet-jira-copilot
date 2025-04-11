@@ -43,7 +43,7 @@ namespace Pet.Jira.Infrastructure.Authentication
                 var username = loginResponse.Username;
 
 				var user = await _userDataSource.GetUserAsync(username);
-                if (user != null)
+                if (user is null)
                 {
 					await _userRepository.AddAsync(
                         new CreateUserCommand(username));
