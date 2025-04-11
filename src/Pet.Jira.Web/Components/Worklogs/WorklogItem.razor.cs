@@ -25,6 +25,11 @@ namespace Pet.Jira.Web.Components.Worklogs
             await OnAddPressed.InvokeAsync(worklog);
         }
 
-        public Color Color => Entity.Source == WorklogSource.Assignee ? Color.Primary : Color.Info;
-    }
+        public Color Color => Entity.Source switch
+		{
+			WorklogSource.Assignee => Color.Primary,
+			WorklogSource.Tester => Color.Secondary,
+			_ => Color.Info
+		};
+	}
 }

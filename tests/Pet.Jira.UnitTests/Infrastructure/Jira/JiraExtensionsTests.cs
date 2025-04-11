@@ -158,7 +158,8 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
         {
             // Arrange
             // Act
-            var worklogs = source.ConvertTo<RawIssueWorklog>(IssueStatus.InProgress, _timeProvider, It.IsAny<TimeZoneInfo>());
+            var worklogSource = WorklogSource.Assignee;
+			var worklogs = source.ConvertTo<RawIssueWorklog>(IssueStatus.InProgress, _timeProvider, It.IsAny<TimeZoneInfo>(), worklogSource);
 
             // Assert
             var i = 0;
@@ -170,7 +171,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
                 {
                     Assert.That(worklog.Author, Is.EqualTo(expectedWorklog.Author));
                     Assert.That(worklog.Issue.Key, Is.EqualTo(expectedWorklog.Issue.Key));
-                    Assert.That(worklog.Source, Is.EqualTo(WorklogSource.Assignee));
+                    Assert.That(worklog.Source, Is.EqualTo(worklogSource));
                     Assert.That(worklog.CompleteDate, Is.EqualTo(expectedWorklog.CompleteDate));
                     Assert.That(worklog.StartDate, Is.EqualTo(expectedWorklog.StartDate));
                 });
