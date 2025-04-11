@@ -12,10 +12,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Stop AppPool
+    - name: Stop AppPool (as Admin)
       run: |
-        Import-Module WebAdministration
-        Stop-WebAppPool -Name "_jira.copilot"
+        Start-Process -FilePath "powershell" -ArgumentList {
+          Import-Module WebAdministration
+          Stop-WebAppPool -Name "_jira.copilot"
+        } -Verb RunAs -Wait
       shell: powershell
     
     - name: Publish .NET App
