@@ -28,9 +28,10 @@ jobs:
     
     - name: Copy files to IIS
       run: |
+        $source = "./publish"
         $destination = "F:\inetpub\sites\jira.copilot"
-        Remove-Item "$destination\*" -Recurse -Force
-        Copy-Item -Path "./publish/*" -Destination $destination -Recurse -Force
+        Copy-Item -Path "$source\*" -Destination $destination -Recurse -Force
+      shell: powershell
     
     - name: Start AppPool
       run: |
