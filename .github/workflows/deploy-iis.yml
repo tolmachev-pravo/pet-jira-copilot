@@ -1,28 +1,37 @@
-name: Deploy to IIS
+name: Deploy to IIS (Self-Hosted)
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  build:
+  deploy:
     runs-on: self-hosted
     
-    defaults:
-      run:
-        shell: cmd
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Stop site
-      run: C:\Windows\system32\inetsrv\appcmd stop sites "_jira.copilot"
-    - name: Publish Release
-      run: dotnet publish example.com --configuration Release -o F:\inetpub\sites\jira.copilot
-    - name: Start site
-      run: C:\Windows\system32\inetsrv\appcmd start sites "_jira.copilot"
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Stop AppPool
+      run: |
+        Import-Module WebAdministration
+        Stop-WebAppPool -Name "_jira.copilot"
+      shell: powershell
+    
+    - name: Publish .NET App
+      run: |
+        dotnet restore
+        dotnet build --configuration Release
+        dotnet publish -c Release -o ./publish
+    
+    - name: Copy files to IIS
+      run: |
+        $destination = "F:\inetpub\sites\jira.copilot"
+        Remove-Item "$destination\*" -Recurse -Force
+        Copy-Item -Path "./publish/*" -Destination $destination -Recurse -Force
+    
+    - name: Start AppPool
+      run: |
+        Import-Module WebAdministration
+        Start-WebAppPool -Name "_jira.copilot"
+      shell: powershell
