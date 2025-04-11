@@ -3,6 +3,7 @@ name: Deploy to IIS (Self-Hosted)
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -33,6 +34,7 @@ jobs:
         $source = "./publish"
         $destination = "F:\inetpub\sites\jira.copilot"
         robocopy $source $destination /MIR /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log
+        Get-Content deploy.log
       shell: powershell
     
     - name: Start AppPool
