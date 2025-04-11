@@ -102,7 +102,14 @@ namespace Pet.Jira.Infrastructure.Mock
                 CompleteDate = DateTime.Now.Date.AddDays(-3).AddHours(12),
                 Issue = Issues[5],
                 Source = WorklogSource.Comment
-            }
-        };
+            },
+            new RawIssueWorklog
+			{
+				StartDate = DateTime.Now.Date.AddDays(-3).AddHours(12),
+				CompleteDate = DateTime.Now.Date.AddDays(-3).AddHours(15),
+				Issue = Issues[6],
+				Source = WorklogSource.Tester
+			}
+		};
     }
 }
