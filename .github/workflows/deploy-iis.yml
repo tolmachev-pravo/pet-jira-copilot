@@ -33,7 +33,7 @@ jobs:
       run: |
         $source = "./publish"
         $destination = "F:\inetpub\sites\jira.copilot"
-        robocopy $source $destination /MIR /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log;
+        robocopy $source $destination /E /XO /ZB /XF "appsettings.json" "appsettings.*.json" /W:1 /R:3 /NP /LOG+:deploy.log;
         if ($lastexitcode -lt 8) { $global:LASTEXITCODE = $null }
       shell: powershell
     
