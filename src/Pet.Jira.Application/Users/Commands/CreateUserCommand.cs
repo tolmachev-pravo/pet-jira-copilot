@@ -5,6 +5,11 @@ namespace Pet.Jira.Application.Users.Commands
 {
 	public class CreateUserCommand : IRequest<Guid>
 	{
-		public string Username { get; set; }
+		public CreateUserCommand(string username)
+		{
+			Username = username;
+		}
+
+		public string Username { get; }
 	}
 }

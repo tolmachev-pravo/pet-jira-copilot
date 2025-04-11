@@ -29,7 +29,7 @@ namespace Pet.Jira.Infrastructure.Users
 			return await _dbContext.Users
 				.Where(user => user.Username == username)
 				.ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-				.FirstOrDefaultAsync();
+				.FirstOrDefaultAsync(cancellationToken: cancellationToken);
 		}
 
 		public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
