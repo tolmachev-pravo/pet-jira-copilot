@@ -4,6 +4,7 @@
     {
         Assignee,
         Comment,
-        Calendar
-    }
+        Calendar,
+		Tester
+	}
 }
