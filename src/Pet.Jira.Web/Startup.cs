@@ -2,6 +2,7 @@ using Blazored.LocalStorage;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using Pet.Jira.Application;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Integrations;
 using Pet.Jira.Infrastructure;
 using Pet.Jira.Infrastructure.Data.Contexts;
 using Pet.Jira.Infrastructure.Mock;
@@ -34,12 +36,12 @@ namespace Pet.Jira.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHttpClient();
+            services.AddDataProtection();
 
 			services.AddMudServices(config =>
             {
@@ -54,18 +56,17 @@ namespace Pet.Jira.Web
             });
             services.AddMudMarkdownServices();
             services.AddTransient<IIdentityService, IdentityService>();
-            services.AddTransient<IMarkdownService, MarkdownService>();            
+            services.AddTransient<IMarkdownService, MarkdownService>();
 
-            // Layers
+            services.Configure<YandexOAuthConfiguration>(Configuration.GetSection("YandexOAuth"));
+
             services.AddInfrastructureLayer(Configuration.GetSection("Jira"));
             services.AddApplicationLayer();
-            // Mock
             if (EnvironmentExtensions.IsMock())
             {
                 services.AddMockInfrastructureLayer();
             }
 
-            // Authentication
             services.AddHttpContextAccessor();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -73,14 +74,11 @@ namespace Pet.Jira.Web
                     options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 });
 
-            // Local storage
             services.AddBlazoredLocalStorage();
 
-            // Clipboard
             services.AddAsyncClipboardService();
             services.AddTransient<IClipboard, Clipboard>();
 
-            // Health checks
             services.AddHealthChecks()
                 .AddInfrastructureHealthChecks();
             services
@@ -97,7 +95,6 @@ namespace Pet.Jira.Web
 			services.AddSwaggerGen();
 		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -107,7 +104,6 @@ namespace Pet.Jira.Web
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -126,6 +122,11 @@ namespace Pet.Jira.Web
 			app.UseSwagger();
 			app.UseSwaggerUI();
 
+			using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+			{
+				scope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+			}
+
 			app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions()
@@ -137,15 +138,12 @@ namespace Pet.Jira.Web
                 {
                     setup.AddCustomStylesheet("wwwroot/css/dotnet.css");
                 });
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-                endpoints.MapControllers();
 			});
 
-			using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-			{
-				scope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
-			}
+
 		}
     }
 }

@@ -9,6 +9,9 @@
 - Компонент Markdown: https://github.com/MyNihongo/MudBlazor.Markdown
 - Safe storage of app secrets in development in ASP.NET Core: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows
 
+Yandex OAuth
+- Инструкция по настройке: [yandex-integration.readme.md](D:/Projects/Pet.Jira/src/Pet.Jira.Web/yandex-integration.readme.md)
+
 
 Описание хранилищ
 - IMemoryCache - хранение данных в памяти. Первый уровень доступа
@@ -29,8 +32,12 @@ dotnet ef migrations add Migration_Name --startup-project ../Pet.Jira.Web --cont
 ```
 
 Применение миграции
-```
-dotnet ef database update --startup-project ../Pet.Jira.Web --context ApplicationDbContext
+_Из корня репозитория_
+```powershell
+dotnet ef database update `
+  --project src/Pet.Jira.Infrastructure/Pet.Jira.Infrastructure.csproj `
+  --startup-project src/Pet.Jira.Web/Pet.Jira.Web.csproj `
+  --context ApplicationDbContext
 ```
 
 Prompts

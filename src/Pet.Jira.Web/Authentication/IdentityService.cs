@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Authentication.Dto;
 using Pet.Jira.Domain.Models.Users;
@@ -11,19 +12,33 @@ namespace Pet.Jira.Web.Authentication
     public class IdentityService : IIdentityService
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityService(AuthenticationStateProvider authenticationStateProvider)
+        public IdentityService(
+            AuthenticationStateProvider authenticationStateProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _authenticationStateProvider = authenticationStateProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public User CurrentUser => GetCurrentUserAsync().GetAwaiter().GetResult();
+        public User CurrentUser => CreateUser(_httpContextAccessor.HttpContext?.User);
 
         public async Task<User> GetCurrentUserAsync()
         {
+            var httpContextUser = CreateUser(_httpContextAccessor.HttpContext?.User);
+            if (httpContextUser != null)
+            {
+                return httpContextUser;
+            }
+
             var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authenticationState.User;
-            return user.Identity.IsAuthenticated
+            return CreateUser(authenticationState.User);
+        }
+
+        private static User CreateUser(ClaimsPrincipal user)
+        {
+            return user?.Identity?.IsAuthenticated == true
                 ? new User
                 {
                     Username = user.Identity.Name,

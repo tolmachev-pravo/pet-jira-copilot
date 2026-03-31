@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Pet.Jira.Domain.Entities.Blog;
+using Pet.Jira.Domain.Entities.Integrations;
 using Pet.Jira.Domain.Entities.Notifications;
 using Pet.Jira.Domain.Entities.Users;
 using System.Data;
@@ -20,6 +21,7 @@ namespace Pet.Jira.Infrastructure.Data.Contexts
 		}
 
 		public DbSet<User> Users { get; set; }
+		public DbSet<UserCalendarConnection> UserCalendarConnections { get; set; }
 		public DbSet<UserNotification> UserNotifications { get; set; }
 		public DbSet<Article> Articles { get; set; }
 
@@ -79,6 +81,23 @@ namespace Pet.Jira.Infrastructure.Data.Contexts
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<User>(entity =>
+			{
+				entity.HasIndex(item => item.Username)
+					.IsUnique();
+			});
+
+			builder.Entity<UserCalendarConnection>(entity =>
+			{
+				entity.HasIndex(item => new { item.UserId, item.Provider })
+					.IsUnique();
+
+				entity.HasOne(item => item.User)
+					.WithMany(user => user.CalendarConnections)
+					.HasForeignKey(item => item.UserId)
+					.OnDelete(DeleteBehavior.Cascade);
+			});
+
 			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 			base.OnModelCreating(builder);
