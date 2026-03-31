@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pet.Jira.Application.Articles;
 using Pet.Jira.Application.Authentication;
+using Pet.Jira.Application.Integrations;
 using Pet.Jira.Application.Issues;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Application.Users;
@@ -13,6 +14,8 @@ using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Articles;
 using Pet.Jira.Infrastructure.Authentication;
 using Pet.Jira.Infrastructure.Data.Contexts;
+using Pet.Jira.Infrastructure.Integrations;
+using Pet.Jira.Infrastructure.Integrations.Yandex;
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Health;
 using Pet.Jira.Infrastructure.Jira.Query;
@@ -32,6 +35,8 @@ namespace Pet.Jira.Infrastructure
             services.AddSingleton<IJiraLinkGenerator, JiraLinkGenerator>();
             services.AddTransient<IWorklogRepository, WorklogRepository>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IUserCalendarConnectionRepository, UserCalendarConnectionRepository>();
+            services.AddTransient<IUserCalendarConnectionService, YandexOAuthUserCalendarConnectionService>();
             services.AddSingleton<IJiraQueryFactory, JiraQueryFactory>();
             services.AddTransient<IIssueDataSource, JiraIssueDataSource>();
 
@@ -56,6 +61,7 @@ namespace Pet.Jira.Infrastructure
 
 			services.AddTransient<IUserRepository, UserRepository>();
 			services.AddTransient<IUserDataSource, UserDataSource>();
+			services.AddTransient<ICurrentAppUserService, CurrentAppUserService>();
 
 			return services;
         }

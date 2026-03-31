@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pet.Jira.Infrastructure\Pet.Jira.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Pet.Jira.Web\Pet.Jira.Web.csproj" />
   </ItemGroup>
 
 </Project>

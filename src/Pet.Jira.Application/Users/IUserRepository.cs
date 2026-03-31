@@ -7,6 +7,8 @@ namespace Pet.Jira.Application.Users
 {
 	public interface IUserRepository
 	{
-		Task<User> AddAsync(CreateUserCommand article, CancellationToken cancellationToken = default);
+		Task<User> AddAsync(CreateUserCommand user, CancellationToken cancellationToken = default);
+		Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = default);
+		Task<User> GetOrCreateByUsernameAsync(string username, CancellationToken cancellationToken = default);
 	}
 }
