@@ -189,7 +189,8 @@ namespace Pet.Jira.Infrastructure.Integrations.Yandex
 				throw new InvalidOperationException("Yandex OAuth redirect URI is not configured.");
 			}
 
-			if (Uri.TryCreate(_configuration.RedirectUri, UriKind.Absolute, out var absoluteUri))
+			if (Uri.TryCreate(_configuration.RedirectUri, UriKind.Absolute, out var absoluteUri)
+				&& (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
 			{
 				return absoluteUri.ToString();
 			}
