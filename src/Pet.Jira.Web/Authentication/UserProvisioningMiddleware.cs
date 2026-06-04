@@ -36,8 +36,7 @@ namespace Pet.Jira.Web.Authentication
                 }
                 catch (Exception exception)
                 {
-                    // Не валим запрос: пользователь продолжает работу, запись довнесётся позже.
-                    // Username намеренно НЕ кладём в кэш — попытка повторится на следующем запросе.
+                    // Username намеренно НЕ кладём в кэш — при ошибке попытка повторится на следующем запросе.
                     _logger.LogError(exception, "Failed to provision user {Username} in the database", username);
                 }
             }

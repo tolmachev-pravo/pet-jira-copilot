@@ -43,7 +43,6 @@ namespace Pet.Jira.Infrastructure.Users
             }
             catch (DbUpdateException exception)
             {
-                // Запись создана параллельным запросом — уникальный индекс отклонил дубль. Это не ошибка.
                 _logger.LogDebug(exception,
                     "Failed to insert user {Username}; likely provisioned concurrently by another request",
                     username);
