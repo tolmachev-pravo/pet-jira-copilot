@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using Pet.Jira.Domain.Entities.Blog;
 using Pet.Jira.Domain.Entities.Notifications;
+using Pet.Jira.Domain.Entities.Extensions;
 using Pet.Jira.Domain.Entities.Users;
 using System.Data;
 using System.Reflection;
@@ -22,6 +23,7 @@ namespace Pet.Jira.Infrastructure.Data.Contexts
 		public DbSet<User> Users { get; set; }
 		public DbSet<UserNotification> UserNotifications { get; set; }
 		public DbSet<Article> Articles { get; set; }
+		public DbSet<UserExtension> UserExtensions { get; set; }
 
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
 		{
