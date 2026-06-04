@@ -1,5 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Pet.Jira.Infrastructure.Data.Contexts;
 using Pet.Jira.Infrastructure.Users;
 
@@ -35,7 +36,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Users
         {
             using (var context = new ApplicationDbContext(_options))
             {
-                var repository = new UserRepository(context);
+                var repository = new UserRepository(context, NullLogger<UserRepository>.Instance);
                 await repository.EnsureUserExistsAsync("john");
             }
 
@@ -48,11 +49,11 @@ namespace Pet.Jira.UnitTests.Infrastructure.Users
         {
             using (var context = new ApplicationDbContext(_options))
             {
-                await new UserRepository(context).EnsureUserExistsAsync("john");
+                await new UserRepository(context, NullLogger<UserRepository>.Instance).EnsureUserExistsAsync("john");
             }
             using (var context = new ApplicationDbContext(_options))
             {
-                await new UserRepository(context).EnsureUserExistsAsync("john");
+                await new UserRepository(context, NullLogger<UserRepository>.Instance).EnsureUserExistsAsync("john");
             }
 
             using var assertContext = new ApplicationDbContext(_options);

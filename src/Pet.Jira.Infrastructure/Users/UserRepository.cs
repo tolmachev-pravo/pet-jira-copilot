@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Pet.Jira.Application.Users;
 using Pet.Jira.Domain.Entities.Users;
 using Pet.Jira.Infrastructure.Data.Contexts;
@@ -11,10 +12,14 @@ namespace Pet.Jira.Infrastructure.Users
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILogger<UserRepository> _logger;
 
-        public UserRepository(ApplicationDbContext dbContext)
+        public UserRepository(
+            ApplicationDbContext dbContext,
+            ILogger<UserRepository> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public async Task EnsureUserExistsAsync(string username, CancellationToken cancellationToken = default)
@@ -36,9 +41,12 @@ namespace Pet.Jira.Infrastructure.Users
             {
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException exception)
             {
                 // Запись создана параллельным запросом — уникальный индекс отклонил дубль. Это не ошибка.
+                _logger.LogDebug(exception,
+                    "Failed to insert user {Username}; likely provisioned concurrently by another request",
+                    username);
             }
         }
     }
