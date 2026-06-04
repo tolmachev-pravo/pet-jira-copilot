@@ -1,0 +1,27 @@
+<MudCard Elevation="2">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Error" Size="Size.Large" />
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Яндекс Календарь</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Списывайте время из событий Яндекс.Календаря через CalDAV
+            </MudText>
+            <MudChip T="string" Size="Size.Small" Color="@(_isEnabled ? Color.Success : Color.Default)"
+                     Class="mt-1">
+                @(_isEnabled ? "Подключён" : "Не подключён")
+            </MudChip>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardActions>
+        <MudSwitch T="bool" Value="_isEnabled" Color="Color.Primary"
+                   Label="@(_isEnabled ? "Включён" : "Отключён")"
+                   ValueChanged="OnToggleChanged" />
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Settings"
+                   OnClick="OpenSettingsDialog">
+            Настроить
+        </MudButton>
+    </MudCardActions>
+</MudCard>

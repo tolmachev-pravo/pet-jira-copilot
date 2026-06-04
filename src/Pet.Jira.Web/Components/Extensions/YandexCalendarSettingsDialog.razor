@@ -1,0 +1,26 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form">
+            <MudTextField T="string" @bind-Value="_login" Label="Логин (email)"
+                          Required="true" RequiredError="Обязательное поле" Class="mb-4" />
+            <MudTextField T="string" @bind-Value="_appPassword" Label="Пароль приложения"
+                          InputType="InputType.Password" Required="true"
+                          RequiredError="Обязательное поле" />
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-1">
+                Создаётся в Яндекс ID → Безопасность → Пароли приложений. Обычный пароль не подходит.
+            </MudText>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="TestConnection" Variant="Variant.Text" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.WifiTethering">
+            Test connection
+        </MudButton>
+        <MudSpacer />
+        <MudButton OnClick="Cancel">Отмена</MudButton>
+        <MudButton OnClick="Save" Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Save">
+            Сохранить
+        </MudButton>
+    </DialogActions>
+</MudDialog>
