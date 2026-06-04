@@ -54,6 +54,8 @@ namespace Pet.Jira.Infrastructure
 			services.AddTransient<IArticleRepository, ArticleRepository>();
 			services.AddTransient<IArticleDataSource, ArticleDataSource>();
 
+			services.AddTransient<IUserRepository, UserRepository>();
+
 			return services;
         }
 
