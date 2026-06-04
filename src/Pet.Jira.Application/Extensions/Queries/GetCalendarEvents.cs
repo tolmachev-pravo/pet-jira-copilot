@@ -1,0 +1,39 @@
+using MediatR;
+using Pet.Jira.Application.Extensions.Dto;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Pet.Jira.Application.Extensions.Queries
+{
+    public class GetCalendarEvents
+    {
+        public record Query(string Username, DateOnly Date)
+            : IRequest<IReadOnlyList<CalendarEventDto>>;
+
+        public class Handler : IRequestHandler<Query, IReadOnlyList<CalendarEventDto>>
+        {
+            private readonly IUserExtensionRepository _repo;
+            private readonly ICalendarService _calendar;
+
+            public Handler(IUserExtensionRepository repo, ICalendarService calendar)
+            {
+                _repo = repo;
+                _calendar = calendar;
+            }
+
+            public async Task<IReadOnlyList<CalendarEventDto>> Handle(Query request, CancellationToken ct)
+            {
+                var settings = await _repo.GetYandexSettingsAsync(request.Username, ct);
+                if (settings is null)
+                    return Array.Empty<CalendarEventDto>();
+
+                return await _calendar.GetEventsAsync(
+                    new CalendarCredentials(settings.Login, settings.AppPassword),
+                    request.Date,
+                    ct);
+            }
+        }
+    }
+}
