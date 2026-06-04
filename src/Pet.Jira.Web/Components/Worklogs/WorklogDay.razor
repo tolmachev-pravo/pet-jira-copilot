@@ -1,7 +1,6 @@
-﻿@using Pet.Jira.Web.Common;
-
-<style>
-</style>
+@using Pet.Jira.Web.Common
+@using Pet.Jira.Application.Extensions.Dto
+@using MudBlazor
 
 <tr class="pet-table-summary-tr">
     <td>
@@ -31,6 +30,8 @@
         </MudPaper>
     </td>
 </tr>
+
+@* Estimated worklogs — unchanged *@
 @foreach (var entity in Entity.EstimatedWorklogs)
 {
     <tr>
@@ -47,11 +48,42 @@
         </tr>
     }
 }
-@foreach (var entity in Entity.ActualWorklogs.Where(item => item.Parent == null))
+
+@* Actual worklogs merged with calendar events, sorted by time *@
+@foreach (var row in _dayRows)
 {
     <tr>
         <td>
-            <ActualWorklogItem Entity="@entity" />
+            @if (row.Worklog is not null)
+            {
+                <ActualWorklogItem Entity="@row.Worklog" />
+            }
+            else if (row.CalendarEvent is not null)
+            {
+                <MudPaper @onclick="() => OpenCalendarWorklogDialog(row.CalendarEvent)"
+                          Class="d-flex align-center gap-3 pa-2 my-1"
+                          Style="cursor:pointer"
+                          Elevation="0">
+                    <MudText Typo="Typo.caption" Color="Color.Default" Style="min-width:52px">
+                        @row.CalendarEvent.StartLocal.ToString("HH:mm")
+                    </MudText>
+                    <MudDivider Vertical="true" FlexItem="true" Style="border-color: var(--mud-palette-success);" />
+                    <MudIcon Icon="@Icons.Material.Filled.Event" Color="Color.Success" Size="Size.Small" />
+                    <MudText Typo="Typo.body2" Style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                        @row.CalendarEvent.Summary
+                    </MudText>
+                    @if (row.CalendarEvent.JiraIssueKeyHint is not null)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">
+                            @row.CalendarEvent.JiraIssueKeyHint
+                        </MudChip>
+                    }
+                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success"
+                               StartIcon="@Icons.Material.Filled.Add">
+                        Залогировать
+                    </MudButton>
+                </MudPaper>
+            }
         </td>
     </tr>
 }
