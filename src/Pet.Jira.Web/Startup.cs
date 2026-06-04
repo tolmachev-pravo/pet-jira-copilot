@@ -121,6 +121,7 @@ namespace Pet.Jira.Web
             app.UseCookiePolicy();
 
             app.UseMiddleware<AuthenticationMiddleware>();
+            app.UseMiddleware<UserProvisioningMiddleware>();
             app.UseMiddleware<LogEnrichmentMiddleware>();
 
 			app.UseSwagger();
