@@ -366,3 +366,6 @@ FodyWeavers.xsd
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
+
+# Local docs (specs, plans) — not tracked
+docs/
