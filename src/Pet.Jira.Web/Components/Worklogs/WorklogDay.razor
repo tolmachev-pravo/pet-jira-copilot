@@ -62,9 +62,12 @@
                 <CalendarEventItem Entity="@row.CalendarEvent"
                                    IsLogged="@row.IsCalendarEventLogged"
                                    OnLogPressed="OpenCalendarWorklogDialog" />
-                @foreach (var child in row.CalendarChildren ?? Array.Empty<WorkingDayWorklog>())
+                @if (row.CalendarChildren is { Count: > 0 })
                 {
-                    <EstimatedActualWorklogItem Entity="@child" />
+                    @foreach (var child in row.CalendarChildren)
+                    {
+                        <EstimatedActualWorklogItem Entity="@child" />
+                    }
                 }
             }
         </td>
