@@ -30,7 +30,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
                      .ReturnsAsync(new UserExtension { IsEnabled = true });
 
-            var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret", new List<string>());
+            var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret", new List<string>(), new List<YandexCalendarIssueMapping>());
             _providerMock.Setup(p => p.GetSettingsAsync("alice", CancellationToken.None))
                          .ReturnsAsync(settings);
 
@@ -48,7 +48,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
                      .ReturnsAsync(new UserExtension { IsEnabled = false });
 
-            var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret", new List<string>());
+            var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret", new List<string>(), new List<YandexCalendarIssueMapping>());
             _providerMock.Setup(p => p.GetSettingsAsync("alice", CancellationToken.None))
                          .ReturnsAsync(settings);
 

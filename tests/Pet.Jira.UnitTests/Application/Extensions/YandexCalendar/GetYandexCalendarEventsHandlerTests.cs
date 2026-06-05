@@ -44,7 +44,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
                      .ReturnsAsync(new UserExtension { IsEnabled = true });
 
-            var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string>());
+            var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string>(), new List<YandexCalendarIssueMapping>());
             _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))
                          .ReturnsAsync(dto);
 
@@ -75,7 +75,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
                      .ReturnsAsync(new UserExtension { IsEnabled = true });
 
-            var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string> { "Обед", "Lunch" });
+            var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string> { "Обед", "Lunch" }, new List<YandexCalendarIssueMapping>());
             _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))
                          .ReturnsAsync(dto);
 
@@ -99,6 +99,42 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
 
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0].Summary, Is.EqualTo("Standup"));
+        }
+
+        [Test]
+        public async Task Handle_AppliesIssueMapping_WhenEventTitleMatchesExactly()
+        {
+            _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
+                     .ReturnsAsync(new UserExtension { IsEnabled = true });
+
+            var mappings = new List<YandexCalendarIssueMapping>
+            {
+                new YandexCalendarIssueMapping("Core Daily Sync", "CASEM-73656")
+            };
+            var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string>(), mappings);
+            _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))
+                         .ReturnsAsync(dto);
+
+            var date = new DateOnly(2026, 6, 4);
+            var utcNow = new DateTime(2026, 6, 4, 10, 0, 0, DateTimeKind.Utc);
+            var events = new List<YandexCalendarEventDto>
+            {
+                new("Core Daily Sync", utcNow, utcNow.AddHours(1), null),
+                new("Other Meeting",   utcNow.AddHours(2), utcNow.AddHours(3), null),
+            };
+            _calMock.Setup(c => c.GetEventsAsync(
+                        It.IsAny<YandexCalendarCredentials>(),
+                        date,
+                        It.IsAny<TimeZoneInfo>(),
+                        CancellationToken.None))
+                    .ReturnsAsync(events);
+
+            var result = await CreateHandler().Handle(
+                new GetYandexCalendarEvents.Query("alice", date), CancellationToken.None);
+
+            Assert.That(result, Has.Count.EqualTo(2));
+            Assert.That(result[0].JiraIssueKeyHint, Is.EqualTo("CASEM-73656"), "Mapped event should get the issue key");
+            Assert.That(result[1].JiraIssueKeyHint, Is.Null, "Unmapped event should have no hint");
         }
 
         [Test]

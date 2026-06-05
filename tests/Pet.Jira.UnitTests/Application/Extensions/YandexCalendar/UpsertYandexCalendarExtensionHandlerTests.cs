@@ -5,6 +5,7 @@ using Pet.Jira.Application.Extensions.YandexCalendar.Commands;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             await handler.Handle(
                 new UpsertYandexCalendarExtension.Command(
                     "alice",
-                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw", new System.Collections.Generic.List<string>()),
+                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw", new List<string>(), new List<YandexCalendarIssueMapping>()),
                     IsEnabled: true),
                 CancellationToken.None);
 
