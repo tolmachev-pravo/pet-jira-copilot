@@ -46,22 +46,21 @@ namespace Pet.Jira.Web.Components.Worklogs
             var oldVirtual = Entity.Worklogs.Where(w => w.IsVirtualCalendar).ToList();
             foreach (var v in oldVirtual) Entity.Worklogs.Remove(v);
 
-            IEnumerable<DayRow> calRows = Array.Empty<DayRow>();
+            IReadOnlyList<YandexCalendarEventDto> loadedEvents = Array.Empty<YandexCalendarEventDto>();
             Entity.CalendarBlockedTime = TimeSpan.Zero;
             try
             {
                 var username = IdentityService.CurrentUser?.Username;
                 if (!string.IsNullOrEmpty(username))
                 {
-                    var events = await Mediator.Send(
+                    loadedEvents = await Mediator.Send(
                         new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
 
-                    // Real Jira worklogs only — used both for IsLogged detection and for keeping CalendarBlockedTime correct
                     var jiraWorklogs = Entity.ActualWorklogs
-                        .Where(w => w.Parent == null && !w.IsVirtualCalendar)
+                        .Where(w => !w.IsVirtualCalendar)
                         .ToList();
 
-                    foreach (var e in events)
+                    foreach (var e in loadedEvents)
                     {
                         bool isLogged = jiraWorklogs.Any(w => w.StartDate < e.End && w.CompleteDate > e.Start);
                         if (!isLogged)
@@ -88,12 +87,6 @@ namespace Pet.Jira.Web.Components.Worklogs
                             }
                         }
                     }
-
-                    calRows = events.Select(e => new DayRow(
-                        e.Start,
-                        CalendarEvent: e,
-                        IsCalendarEventLogged: jiraWorklogs.Any(w =>
-                            w.StartDate < e.End && w.CompleteDate > e.Start)));
                 }
             }
             catch
@@ -106,9 +99,28 @@ namespace Pet.Jira.Web.Components.Worklogs
                 _isLoadingCalendar = false;
             }
 
-            // Only top-level real worklogs — matched children render inline under their estimated parent
+            // Build calendar rows after Refresh so Parent assignments from WorklogMatching are final.
+            // CalendarChildren: worklogs that overlap the event but were NOT matched to an estimated worklog.
+            // Worklogs matched to an estimated (Parent != null) stay under their estimated parent instead.
+            var allJiraWorklogs = Entity.ActualWorklogs.Where(w => !w.IsVirtualCalendar).ToList();
+
+            var calRows = loadedEvents.Select(e =>
+            {
+                var children = allJiraWorklogs
+                    .Where(w => w.Parent == null && w.StartDate < e.End && w.CompleteDate > e.Start)
+                    .ToList();
+                return new DayRow(
+                    e.Start,
+                    CalendarEvent: e,
+                    IsCalendarEventLogged: allJiraWorklogs.Any(w => w.StartDate < e.End && w.CompleteDate > e.Start),
+                    CalendarChildren: children);
+            }).ToList();
+
+            var calendarChildSet = calRows.SelectMany(r => r.CalendarChildren).ToHashSet();
+
+            // Exclude worklogs already shown as children of a calendar event row
             var worklogRows = Entity.ActualWorklogs
-                .Where(w => w.Parent == null && !w.IsVirtualCalendar)
+                .Where(w => w.Parent == null && !w.IsVirtualCalendar && !calendarChildSet.Contains(w))
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
             var estimatedRows = Entity.EstimatedWorklogs
@@ -174,6 +186,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             WorkingDayWorklog? Worklog = null,
             WorkingDayWorklog? EstimatedWorklog = null,
             YandexCalendarEventDto? CalendarEvent = null,
-            bool IsCalendarEventLogged = false);
+            bool IsCalendarEventLogged = false,
+            IReadOnlyList<WorkingDayWorklog>? CalendarChildren = null);
     }
 }
