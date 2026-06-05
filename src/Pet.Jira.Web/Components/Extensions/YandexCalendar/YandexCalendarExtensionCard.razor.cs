@@ -35,7 +35,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
                 await StateChanged.InvokeAsync(_isEnabled);
         }
 
-        private async Task OnToggleChanged(bool value)
+        private async Task OnToggleChangedAsync(bool value)
         {
             var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
 
@@ -51,7 +51,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
                 await Mediator.Send(new UpsertYandexCalendarExtension.Command(_username, extension.Settings, value));
                 _isEnabled = value;
                 await NotifyStateChangedAsync();
-            }
+			}
         }
 
         private async Task OpenSettingsDialog()

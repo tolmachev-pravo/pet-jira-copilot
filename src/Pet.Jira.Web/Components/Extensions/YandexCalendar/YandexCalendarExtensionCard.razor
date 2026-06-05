@@ -15,8 +15,7 @@
     </MudText>
 
     <div class="extv-glow__foot">
-        <MudSwitch T="bool" Value="_isEnabled" Color="Color.Success"
-                   ValueChanged="OnToggleChanged" />
+        <MudSwitch T="bool" Checked="_isEnabled" Color="Color.Success" CheckedChanged="OnToggleChangedAsync" />
         <MudSpacer />
         <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small"
                    StartIcon="@Icons.Material.Filled.Tune"
