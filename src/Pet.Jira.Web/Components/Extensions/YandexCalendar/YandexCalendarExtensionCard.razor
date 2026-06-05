@@ -15,12 +15,23 @@
     </MudText>
 
     <div class="extv-glow__foot">
-        <MudSwitch T="bool" Checked="_isEnabled" Color="Color.Success" CheckedChanged="OnToggleChangedAsync" />
-        <MudSpacer />
-        <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small"
-                   StartIcon="@Icons.Material.Filled.Tune"
-                   OnClick="OpenSettingsDialog">
-            Настроить
-        </MudButton>
+        @if (!_hasSettings)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" FullWidth="true"
+                       StartIcon="@Icons.Material.Filled.AddLink"
+                       OnClick="OpenSettingsDialog">
+                Подключить
+            </MudButton>
+        }
+        else
+        {
+            <MudSwitch T="bool" Checked="_isEnabled" Color="Color.Success" CheckedChanged="OnToggleChangedAsync" />
+            <MudSpacer />
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Tune"
+                       OnClick="OpenSettingsDialog">
+                Настроить
+            </MudButton>
+        }
     </div>
 </MudPaper>

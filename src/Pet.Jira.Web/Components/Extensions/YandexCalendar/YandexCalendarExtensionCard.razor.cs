@@ -19,6 +19,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         [Parameter] public EventCallback<bool> StateChanged { get; set; }
 
         private bool _isEnabled;
+        private bool _hasSettings;
         private string _username = string.Empty;
 
         protected override async Task OnInitializedAsync()
@@ -26,6 +27,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             _username = IdentityService.CurrentUser?.Username ?? string.Empty;
             var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
             _isEnabled = extension.IsEnabled;
+            _hasSettings = extension.Settings is not null;
             await NotifyStateChangedAsync();
         }
 
@@ -37,21 +39,19 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private async Task OnToggleChangedAsync(bool value)
         {
-            var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
-
-            if (extension.Settings is null && value)
+            if (!_hasSettings && value)
             {
-                Snackbar.Add("Сначала настройте расширение", Severity.Info);
-                _isEnabled = false;
+                await OpenSettingsDialog();
                 return;
             }
 
+            var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
             if (extension.Settings is not null)
             {
                 await Mediator.Send(new UpsertYandexCalendarExtension.Command(_username, extension.Settings, value));
                 _isEnabled = value;
                 await NotifyStateChangedAsync();
-			}
+            }
         }
 
         private async Task OpenSettingsDialog()
@@ -68,7 +68,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                _isEnabled = result.Data is YandexCalendarSettingsDto;
+                _hasSettings = result.Data is YandexCalendarSettingsDto;
+                _isEnabled = _hasSettings;
                 await NotifyStateChangedAsync();
                 StateHasChanged();
             }
