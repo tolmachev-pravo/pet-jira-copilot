@@ -17,6 +17,7 @@ namespace Pet.Jira.Web.Components.Worklogs
     public partial class WorklogDayItemDialog : ComponentBase
     {
         private readonly ComponentModel _model = ComponentModel.Create();
+        private MudForm _form;
 
         [Parameter] public WorkingDay WorkingDay { get; set; }
         [Parameter] public WorkingDayWorklog WorklogTemplate { get; set; }
@@ -126,13 +127,16 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        void Submit()
+        private async Task SubmitAsync()
         {
-            var worklog = _model.Worklog.Convert();
-            var result = DialogResult.Ok(worklog, typeof(WorkingDayWorklog));
-            MudDialog.Close(result);
+            await _form.Validate();
+            if (!_form.IsValid)
+                return;
 
+            var worklog = _model.Worklog.Convert();
+            MudDialog.Close(DialogResult.Ok(worklog, typeof(WorkingDayWorklog)));
         }
+
         void Cancel() => MudDialog.Cancel();
     }
 }
