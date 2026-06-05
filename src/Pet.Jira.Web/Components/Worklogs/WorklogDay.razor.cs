@@ -6,6 +6,7 @@ using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,9 @@ namespace Pet.Jira.Web.Components.Worklogs
                 RawStartDate = calEvent.Start,
                 RawCompleteDate = calEvent.End,
                 Comment = calEvent.Summary,
+                Issue = calEvent.JiraIssueKeyHint is not null
+                    ? new Issue { Key = calEvent.JiraIssueKeyHint, Identifier = calEvent.JiraIssueKeyHint }
+                    : null,
                 Type = Domain.Models.Worklogs.WorklogType.Actual,
                 Source = Domain.Models.Worklogs.WorklogSource.Calendar
             };
