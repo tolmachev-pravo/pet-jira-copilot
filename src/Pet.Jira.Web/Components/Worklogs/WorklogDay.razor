@@ -48,17 +48,14 @@
             @if (row.EstimatedWorklog is not null)
             {
                 <WorklogItem Entity="@row.EstimatedWorklog" OnAddPressed="AddWorklogAsync" />
+                @foreach (var child in row.EstimatedWorklog.Children.Where(c => !c.IsVirtualCalendar))
+                {
+                    <EstimatedActualWorklogItem Entity="@child" />
+                }
             }
             else if (row.Worklog is not null)
             {
-                @if (row.Worklog.Parent is not null)
-                {
-                    <EstimatedActualWorklogItem Entity="@row.Worklog" />
-                }
-                else
-                {
-                    <ActualWorklogItem Entity="@row.Worklog" />
-                }
+                <ActualWorklogItem Entity="@row.Worklog" />
             }
             else if (row.CalendarEvent is not null)
             {

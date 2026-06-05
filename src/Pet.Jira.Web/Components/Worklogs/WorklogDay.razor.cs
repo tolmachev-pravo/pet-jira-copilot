@@ -106,9 +106,9 @@ namespace Pet.Jira.Web.Components.Worklogs
                 _isLoadingCalendar = false;
             }
 
-            // Virtual calendar worklogs show as CalendarEventItem; all real worklogs (including matched children) are included
+            // Only top-level real worklogs — matched children render inline under their estimated parent
             var worklogRows = Entity.ActualWorklogs
-                .Where(w => !w.IsVirtualCalendar)
+                .Where(w => w.Parent == null && !w.IsVirtualCalendar)
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
             var estimatedRows = Entity.EstimatedWorklogs
