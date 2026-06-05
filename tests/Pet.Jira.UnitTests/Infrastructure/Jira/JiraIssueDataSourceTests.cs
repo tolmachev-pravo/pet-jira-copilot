@@ -154,7 +154,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Jira
         [TestCase("5", null)]
         [TestCase("6", "https://unit-test.com/6")]
         [TestCase("7", "https://unit-test.com/7-2")]
-        public async Task GetIssueOpenPullRequestUrlAsync_Should_BeCorrect(string identifier, string expected)
+        public async Task GetIssueOpenPullRequestUrlAsync_Should_BeCorrect(string identifier, string? expected)
         {
             // Arrange
             var query = new Pet.Jira.Application.Issues.Queries.GetIssueOpenPullRequestUrl.Query
