@@ -79,10 +79,15 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public int RawEstimatedWorklogCount => EstimatedWorklogs.Count(item => item.RemainingTimeSpent > TimeSpan.Zero);
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
+        /// <summary>
+        /// Time blocked by calendar events — subtracted from available day time during distribution.
+        /// </summary>
+        public TimeSpan CalendarBlockedTime { get; set; }
+
         public void Refresh()
         {
             WorklogMatching.Match(
-                parents: EstimatedWorklogs, 
+                parents: EstimatedWorklogs,
                 children: ActualWorklogs);
 
             // Remaining estimated worklog time spent for logging
@@ -91,8 +96,8 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 .Select(worklog => worklog.TimeSpent)
                 .Sum();
 
-            // Remaining day time spent for logging
-            var remainingDayTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent();
+            // Remaining day time spent for logging, calendar events are treated as hard blocks
+            var remainingDayTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent() - CalendarBlockedTime;
 
             // Fill estimated remaining time spent for each estimated worklog in proportions
             foreach (var estimatedWorklog in EstimatedWorklogs)

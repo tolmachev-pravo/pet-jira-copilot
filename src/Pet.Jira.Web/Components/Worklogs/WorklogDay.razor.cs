@@ -47,6 +47,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
             IEnumerable<DayRow> calRows = Array.Empty<DayRow>();
+            Entity.CalendarBlockedTime = TimeSpan.Zero;
             try
             {
                 var username = IdentityService.CurrentUser?.Username;
@@ -54,6 +55,8 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     var events = await Mediator.Send(
                         new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
+                    Entity.CalendarBlockedTime = events.Aggregate(
+                        TimeSpan.Zero, (acc, e) => acc + (e.End - e.Start));
                     var actualWorklogs = Entity.ActualWorklogs.Where(w => w.Parent == null).ToList();
                     calRows = events.Select(e => new DayRow(
                         e.Start,
@@ -68,6 +71,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
             finally
             {
+                Entity.Refresh();
                 _isLoadingCalendar = false;
             }
 
