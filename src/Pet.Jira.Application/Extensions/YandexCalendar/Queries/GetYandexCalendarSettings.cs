@@ -1,5 +1,6 @@
 using MediatR;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
+using Pet.Jira.Domain.Entities.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,16 +8,28 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
 {
     public class GetYandexCalendarSettings
     {
-        public record Query(string Username) : IRequest<YandexCalendarSettingsDto?>;
+        public record Query(string Username) : IRequest<YandexCalendarExtensionDto>;
 
-        public class Handler : IRequestHandler<Query, YandexCalendarSettingsDto?>
+        public class Handler : IRequestHandler<Query, YandexCalendarExtensionDto>
         {
-            private readonly IYandexCalendarSettingsProvider _settings;
+            private readonly IUserExtensionRepository _repository;
+            private readonly IYandexCalendarSettingsProvider _settingsProvider;
 
-            public Handler(IYandexCalendarSettingsProvider settings) => _settings = settings;
+            public Handler(IUserExtensionRepository repository, IYandexCalendarSettingsProvider settingsProvider)
+            {
+                _repository = repository;
+                _settingsProvider = settingsProvider;
+            }
 
-            public Task<YandexCalendarSettingsDto?> Handle(Query request, CancellationToken ct)
-                => _settings.GetSettingsAsync(request.Username, ct);
+            public async Task<YandexCalendarExtensionDto> Handle(Query request, CancellationToken ct)
+            {
+                var entity = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
+                if (entity is null)
+                    return new YandexCalendarExtensionDto(false, null);
+
+                var settings = await _settingsProvider.GetSettingsAsync(request.Username, ct);
+                return new YandexCalendarExtensionDto(entity.IsEnabled, settings);
+            }
         }
     }
 }

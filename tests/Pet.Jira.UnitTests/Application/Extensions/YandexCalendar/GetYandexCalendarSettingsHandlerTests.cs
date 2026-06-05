@@ -1,8 +1,10 @@
 using Moq;
 using NUnit.Framework;
+using Pet.Jira.Application.Extensions;
 using Pet.Jira.Application.Extensions.YandexCalendar;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
+using Pet.Jira.Domain.Entities.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,43 +13,62 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
     [TestFixture]
     public class GetYandexCalendarSettingsHandlerTests
     {
-        private Mock<IYandexCalendarSettingsProvider> _settingsMock = null!;
+        private Mock<IUserExtensionRepository> _repoMock = null!;
+        private Mock<IYandexCalendarSettingsProvider> _providerMock = null!;
 
         [SetUp]
         public void SetUp()
         {
-            _settingsMock = new Mock<IYandexCalendarSettingsProvider>();
+            _repoMock = new Mock<IUserExtensionRepository>();
+            _providerMock = new Mock<IYandexCalendarSettingsProvider>();
         }
 
         [Test]
-        public async Task Handle_ReturnsSettings_WhenExtensionExists()
+        public async Task Handle_ReturnsEnabledWithSettings_WhenExtensionEnabled()
         {
+            _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
+                     .ReturnsAsync(new UserExtension { IsEnabled = true });
+
             var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret");
-            _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))
+            _providerMock.Setup(p => p.GetSettingsAsync("alice", CancellationToken.None))
                          .ReturnsAsync(settings);
 
-            var handler = new GetYandexCalendarSettings.Handler(_settingsMock.Object);
-            var result = await handler.Handle(
-                new GetYandexCalendarSettings.Query("alice"),
-                CancellationToken.None);
+            var handler = new GetYandexCalendarSettings.Handler(_repoMock.Object, _providerMock.Object);
+            var result = await handler.Handle(new GetYandexCalendarSettings.Query("alice"), CancellationToken.None);
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result!.Login, Is.EqualTo("user@yandex.ru"));
-            Assert.That(result.AppPassword, Is.EqualTo("secret"));
+            Assert.That(result.IsEnabled, Is.True);
+            Assert.That(result.Settings, Is.Not.Null);
+            Assert.That(result.Settings!.Login, Is.EqualTo("user@yandex.ru"));
         }
 
         [Test]
-        public async Task Handle_ReturnsNull_WhenExtensionNotFound()
+        public async Task Handle_ReturnsDisabledWithSettings_WhenExtensionDisabled()
         {
-            _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))
-                         .ReturnsAsync((YandexCalendarSettingsDto?)null);
+            _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
+                     .ReturnsAsync(new UserExtension { IsEnabled = false });
 
-            var handler = new GetYandexCalendarSettings.Handler(_settingsMock.Object);
-            var result = await handler.Handle(
-                new GetYandexCalendarSettings.Query("alice"),
-                CancellationToken.None);
+            var settings = new YandexCalendarSettingsDto("user@yandex.ru", "secret");
+            _providerMock.Setup(p => p.GetSettingsAsync("alice", CancellationToken.None))
+                         .ReturnsAsync(settings);
 
-            Assert.That(result, Is.Null);
+            var handler = new GetYandexCalendarSettings.Handler(_repoMock.Object, _providerMock.Object);
+            var result = await handler.Handle(new GetYandexCalendarSettings.Query("alice"), CancellationToken.None);
+
+            Assert.That(result.IsEnabled, Is.False);
+            Assert.That(result.Settings, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task Handle_ReturnsDisabledWithNullSettings_WhenExtensionNotConfigured()
+        {
+            _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
+                     .ReturnsAsync((UserExtension?)null);
+
+            var handler = new GetYandexCalendarSettings.Handler(_repoMock.Object, _providerMock.Object);
+            var result = await handler.Handle(new GetYandexCalendarSettings.Query("alice"), CancellationToken.None);
+
+            Assert.That(result.IsEnabled, Is.False);
+            Assert.That(result.Settings, Is.Null);
         }
     }
 }

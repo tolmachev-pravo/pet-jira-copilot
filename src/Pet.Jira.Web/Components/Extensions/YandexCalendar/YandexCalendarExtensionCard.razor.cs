@@ -24,9 +24,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         protected override async Task OnInitializedAsync()
         {
             _username = IdentityService.CurrentUser?.Username ?? string.Empty;
-            var settings = await Mediator.Send(
-                new GetYandexCalendarSettings.Query(_username));
-            _isEnabled = settings is not null;
+            var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
+            _isEnabled = extension.IsEnabled;
             await NotifyStateChangedAsync();
         }
 
@@ -38,19 +37,18 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private async Task OnToggleChanged(bool value)
         {
-            var settings = await Mediator.Send(
-                new GetYandexCalendarSettings.Query(_username));
+            var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
 
-            if (settings is null && value)
+            if (extension.Settings is null && value)
             {
                 Snackbar.Add("Сначала настройте расширение", Severity.Info);
                 _isEnabled = false;
                 return;
             }
 
-            if (settings is not null)
+            if (extension.Settings is not null)
             {
-                await Mediator.Send(new UpsertYandexCalendarExtension.Command(_username, settings, value));
+                await Mediator.Send(new UpsertYandexCalendarExtension.Command(_username, extension.Settings, value));
                 _isEnabled = value;
                 await NotifyStateChangedAsync();
             }
@@ -58,13 +56,12 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private async Task OpenSettingsDialog()
         {
-            var settings = await Mediator.Send(
-                new GetYandexCalendarSettings.Query(_username));
+            var extension = await Mediator.Send(new GetYandexCalendarSettings.Query(_username));
 
             var parameters = new DialogParameters
             {
                 { nameof(YandexCalendarSettingsDialog.Username), _username },
-                { nameof(YandexCalendarSettingsDialog.ExistingSettings), settings }
+                { nameof(YandexCalendarSettingsDialog.ExistingSettings), extension.Settings }
             };
             var dialog = await DialogService.ShowAsync<YandexCalendarSettingsDialog>(
                 "Яндекс Календарь — настройки", parameters);
