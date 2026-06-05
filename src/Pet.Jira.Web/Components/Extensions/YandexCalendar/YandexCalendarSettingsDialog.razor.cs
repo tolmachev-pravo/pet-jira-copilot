@@ -109,7 +109,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private async Task Save()
         {
-            await _form.Validate();
+            await _form.ValidateAsync();
             if (!_form.IsValid) return;
 
             var settings = new YandexCalendarSettingsDto(
