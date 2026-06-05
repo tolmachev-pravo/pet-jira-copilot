@@ -1,12 +1,46 @@
 @using Pet.Jira.Web.Components.Extensions
 
-<MudText Typo="Typo.h5" Class="mb-2">Extensions</MudText>
-<MudText Typo="Typo.body2" Class="mb-6" Color="Color.Secondary">
-    Подключайте внешние сервисы для расширения функциональности
-</MudText>
+<div class="extv-glow">
+    <div class="extv-glow__head">
+        <MudText Typo="Typo.overline" Class="extv-glow__eyebrow">Control Surface</MudText>
+        <MudText Typo="Typo.h3" Class="extv-glow__title">Extensions</MudText>
+        <MudText Typo="Typo.body1" Style="opacity:.65">
+            Подключайте внешние сервисы и расширяйте возможности Jira Copilot.
+            Каждый модуль работает автономно — включайте только то, что нужно.
+        </MudText>
 
-<MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <YandexCalendarExtensionCard />
-    </MudItem>
-</MudGrid>
+        <div class="extv-glow__readout">
+            <span><b>@_activeCount.ToString("00")</b>&nbsp;активных</span>
+            <span><b>@TotalSlots.ToString("00")</b>&nbsp;модулей</span>
+        </div>
+    </div>
+
+    <div class="extv-glow__grid">
+        <YandexCalendarExtensionCard StateChanged="OnYandexStateChanged" />
+
+        @foreach (var slot in _comingSoon)
+        {
+            <MudPaper Elevation="0" Class="extv-glow__card extv-glow__card--soon">
+                <div class="extv-glow__card-top">
+                    <div class="extv-glow__icon">
+                        <MudIcon Icon="@slot.Icon" />
+                    </div>
+                    <div class="extv-glow__status extv-glow__status--soon">
+                        <span class="extv-glow__led"></span>
+                        soon
+                    </div>
+                </div>
+
+                <MudText Typo="Typo.h6" Class="mt-3" Style="font-weight:600">@slot.Title</MudText>
+                <MudText Typo="Typo.body2" Style="opacity:.65" Class="mt-1">@slot.Description</MudText>
+
+                <div class="extv-glow__foot">
+                    <MudText Typo="Typo.caption" Style="opacity:.5; letter-spacing:.1em">
+                        <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small"
+                                 Class="pet-vertical-align-middle mr-1" />В РАЗРАБОТКЕ
+                    </MudText>
+                </div>
+            </MudPaper>
+        }
+    </div>
+</div>

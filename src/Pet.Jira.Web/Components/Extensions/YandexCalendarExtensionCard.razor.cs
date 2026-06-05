@@ -17,6 +17,8 @@ namespace Pet.Jira.Web.Components.Extensions
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
         [Inject] private IIdentityService IdentityService { get; set; } = default!;
 
+        [Parameter] public EventCallback<bool> StateChanged { get; set; }
+
         private bool _isEnabled;
         private string _username = string.Empty;
 
@@ -26,6 +28,13 @@ namespace Pet.Jira.Web.Components.Extensions
             var settings = await Mediator.Send(
                 new GetExtension.Query(_username, ExtensionType.YandexCalendar));
             _isEnabled = settings is not null;
+            await NotifyStateChangedAsync();
+        }
+
+        private async Task NotifyStateChangedAsync()
+        {
+            if (StateChanged.HasDelegate)
+                await StateChanged.InvokeAsync(_isEnabled);
         }
 
         private async Task OnToggleChanged(bool value)
@@ -44,6 +53,7 @@ namespace Pet.Jira.Web.Components.Extensions
             {
                 await Mediator.Send(new UpsertExtension.Command(_username, settings, value));
                 _isEnabled = value;
+                await NotifyStateChangedAsync();
             }
         }
 
@@ -63,6 +73,7 @@ namespace Pet.Jira.Web.Components.Extensions
             if (!result.Cancelled)
             {
                 _isEnabled = result.Data is YandexCalendarSettingsDto;
+                await NotifyStateChangedAsync();
                 StateHasChanged();
             }
         }

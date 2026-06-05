@@ -45,10 +45,10 @@
         <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
             <NavMenu />
         </MudDrawer>
-        <MudMainContent Style="height: 100vh" Class="pet-grid-container">
+        <MudMainContent Style="height: 100vh" Class="pet-fill-height">
             <AuthorizeView>
                 <Authorized>
-                    <MudElement Class="ma-4 pet-grid-container">
+                    <MudElement Class="ma-4 pet-fill-height">
                         @Body
                     </MudElement>
                 </Authorized>

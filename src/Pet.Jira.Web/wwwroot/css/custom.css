@@ -28,8 +28,18 @@
     transform: translateY(-50%);
 }
 
-.pet-grid-container {
-    display: grid !important;
+/*
+ * A link in the full-height layout chain: a flex column that fills its parent.
+ * Applied to MudMainContent (height comes from its own 100vh) and the @Body
+ * wrapper so the chain has a definite height to hand down. Pages flow naturally
+ * by default (content-height, top-aligned); a page that wants to fill the
+ * viewport opts in by adding `flex-grow-1` to its own root (see WorklogListPage).
+ */
+.pet-fill-height {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .pet-white {
@@ -88,3 +98,118 @@
 
 @media (max-width:1281px) { /* hi-res laptops and desktops */
 }
+
+/* ============================================================
+   EXTENSIONS — "Glow deck"
+   Theme-aware extensions console. All colors come from MudBlazor
+   palette CSS variables (--mud-palette-*), so it follows the
+   active light/dark theme automatically.
+   ============================================================ */
+.extv-glow__head { margin-bottom: 32px; }
+.extv-glow__eyebrow {
+    color: var(--mud-palette-primary);
+    letter-spacing: .35em !important;
+    font-weight: 600;
+}
+.extv-glow__title {
+    font-weight: 700;
+    letter-spacing: .02em;
+    background: linear-gradient(90deg, var(--mud-palette-text-primary), var(--mud-palette-primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.extv-glow__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+.extv-glow__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 210px;
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--mud-palette-surface);
+    border: 1px solid var(--mud-palette-lines-default);
+    overflow: hidden;
+    transition: transform .3s cubic-bezier(.2,.7,.2,1), border-color .3s ease, box-shadow .3s ease;
+}
+.extv-glow__card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(90% 70% at 50% -10%, rgba(var(--mud-palette-primary-rgb), .12), transparent 70%);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+}
+.extv-glow__card:hover {
+    transform: translateY(-5px);
+    border-color: var(--mud-palette-primary);
+    box-shadow: 0 18px 40px -20px rgba(var(--mud-palette-primary-rgb), .55);
+}
+.extv-glow__card:hover::before { opacity: 1; }
+.extv-glow__card--on { border-color: rgba(var(--mud-palette-success-rgb), .5); }
+.extv-glow__card--soon { border-style: dashed; }
+.extv-glow__card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.extv-glow__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    color: var(--mud-palette-primary);
+    background: rgba(var(--mud-palette-primary-rgb), .12);
+    border: 1px solid rgba(var(--mud-palette-primary-rgb), .25);
+}
+.extv-glow__card--on .extv-glow__icon {
+    color: var(--mud-palette-success);
+    background: rgba(var(--mud-palette-success-rgb), .12);
+    border-color: rgba(var(--mud-palette-success-rgb), .3);
+}
+.extv-glow__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+.extv-glow__led { width: 7px; height: 7px; border-radius: 50%; }
+.extv-glow__status--connected { color: var(--mud-palette-success); background: rgba(var(--mud-palette-success-rgb), .1); }
+.extv-glow__status--connected .extv-glow__led {
+    background: var(--mud-palette-success);
+    box-shadow: 0 0 9px var(--mud-palette-success);
+    animation: ext-pulse 1.8s ease-in-out infinite;
+}
+.extv-glow__status--available { color: var(--mud-palette-info); background: rgba(var(--mud-palette-info-rgb), .1); }
+.extv-glow__status--available .extv-glow__led { background: var(--mud-palette-info); }
+.extv-glow__status--soon { color: var(--mud-palette-warning); background: rgba(var(--mud-palette-warning-rgb), .12); }
+.extv-glow__status--soon .extv-glow__led { background: var(--mud-palette-warning); }
+.extv-glow__status--off { color: var(--mud-palette-text-secondary); background: rgba(128, 128, 128, .12); }
+.extv-glow__status--off .extv-glow__led { background: var(--mud-palette-text-secondary); }
+.extv-glow__readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    margin-top: 18px;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--mud-palette-text-secondary);
+}
+.extv-glow__readout b { color: var(--mud-palette-primary); font-size: 1rem; font-weight: 700; }
+.extv-glow__foot {
+    margin-top: auto;
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid var(--mud-palette-divider);
+}
+
