@@ -66,7 +66,7 @@ namespace Pet.Jira.Infrastructure
 			services.AddDataProtection()
 				.PersistKeysToFileSystem(new System.IO.DirectoryInfo(
 					System.IO.Path.Combine(System.AppContext.BaseDirectory, "DataProtection-Keys")))
-				.SetApplicationName("PetJira");
+				.SetApplicationName("Chronos");
 			services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>();
 
 			services.AddHttpClient<IYandexCalendarService, YandexCalDavService>();
