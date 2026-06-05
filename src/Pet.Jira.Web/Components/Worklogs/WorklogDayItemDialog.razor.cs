@@ -26,7 +26,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public string Label { get; set; } = "Default";
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
-        [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+        [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 
         [Inject] private IMemoryCache<string, Issue> IssueCache { get; set; }
 		[Inject] private IIssueDataSource IssueDataSource { get; set; }

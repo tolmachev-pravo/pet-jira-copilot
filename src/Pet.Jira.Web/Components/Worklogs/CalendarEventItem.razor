@@ -36,11 +36,12 @@
         }
         else
         {
-            <MudIconButton Size="Size.Small"
-                           Icon="@Icons.Material.Filled.Add"
-                           Color="Color.Success"
-                           Title="Залогировать"
-                           OnClick="@(() => OnLogPressed.InvokeAsync(Entity))" />
+            <MudTooltip Text="Залогировать">
+                <MudIconButton Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Add"
+                               Color="Color.Success"
+                               OnClick="@(() => OnLogPressed.InvokeAsync(Entity))" />
+            </MudTooltip>
         }
     </MudElement>
 </MudElement>

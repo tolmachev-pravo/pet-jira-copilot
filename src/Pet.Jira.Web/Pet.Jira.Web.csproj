@@ -25,8 +25,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MudBlazor" Version="7.15.0" />
-    <PackageReference Include="MudBlazor.Markdown" Version="7.8.0" />
+    <PackageReference Include="MudBlazor" Version="9.5.0" />
+    <PackageReference Include="MudBlazor.Markdown" Version="9.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4" />

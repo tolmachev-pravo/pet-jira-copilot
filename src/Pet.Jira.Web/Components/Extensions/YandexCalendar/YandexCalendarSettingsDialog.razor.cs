@@ -14,7 +14,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 {
     public partial class YandexCalendarSettingsDialog : ComponentBase
     {
-        [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+        [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
         [Parameter] public string Username { get; set; } = string.Empty;
         [Parameter] public YandexCalendarSettingsDto? ExistingSettings { get; set; }
