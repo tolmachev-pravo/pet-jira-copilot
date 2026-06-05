@@ -25,7 +25,7 @@ namespace Pet.Jira.Application
 			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 			services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-			services.AddAutoMapper(Assembly.GetExecutingAssembly());
+			services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
 
 			return services;
         }
