@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
 {
-    public class UpsertExtension
+    public class UpsertYandexCalendarExtension
     {
         public record Command(
             string Username,

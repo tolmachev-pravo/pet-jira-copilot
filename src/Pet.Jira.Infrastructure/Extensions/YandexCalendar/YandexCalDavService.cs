@@ -13,7 +13,7 @@ using System.Xml.Linq;
 
 namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
 {
-    public class YandexCalDavService : ICalendarService
+    public class YandexCalDavService : IYandexCalendarService
     {
         private static readonly XNamespace CalDavNs = "urn:ietf:params:xml:ns:caldav";
         private static readonly Regex JiraKeyRegex = new(@"\b[A-Z]+-\d+\b", RegexOptions.Compiled);
@@ -23,8 +23,8 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
 
         public YandexCalDavService(HttpClient http) => _http = http;
 
-        public async Task<IReadOnlyList<CalendarEventDto>> GetEventsAsync(
-            CalendarCredentials credentials,
+        public async Task<IReadOnlyList<YandexCalendarEventDto>> GetEventsAsync(
+            YandexCalendarCredentials credentials,
             DateOnly date,
             CancellationToken ct = default)
         {
@@ -65,11 +65,11 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
 </C:calendar-query>";
         }
 
-        private static IReadOnlyList<CalendarEventDto> ParseCalDavResponse(string xml)
+        private static IReadOnlyList<YandexCalendarEventDto> ParseCalDavResponse(string xml)
         {
             var doc = XDocument.Parse(xml);
             var calendarDataElements = doc.Descendants(CalDavNs + "calendar-data");
-            var result = new List<CalendarEventDto>();
+            var result = new List<YandexCalendarEventDto>();
 
             foreach (var element in calendarDataElements)
             {
@@ -86,7 +86,7 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
                     var match = JiraKeyRegex.Match(summary + " " + description);
                     var hint = match.Success ? match.Value : null;
 
-                    result.Add(new CalendarEventDto(summary, start, end, hint));
+                    result.Add(new YandexCalendarEventDto(summary, start, end, hint));
                 }
             }
 

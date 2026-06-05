@@ -7,30 +7,30 @@ using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
 {
-    public class GetCalendarEvents
+    public class GetYandexCalendarEvents
     {
         public record Query(string Username, DateOnly Date)
-            : IRequest<IReadOnlyList<CalendarEventDto>>;
+            : IRequest<IReadOnlyList<YandexCalendarEventDto>>;
 
-        public class Handler : IRequestHandler<Query, IReadOnlyList<CalendarEventDto>>
+        public class Handler : IRequestHandler<Query, IReadOnlyList<YandexCalendarEventDto>>
         {
             private readonly IYandexCalendarSettingsProvider _settings;
-            private readonly ICalendarService _calendar;
+            private readonly IYandexCalendarService _calendar;
 
-            public Handler(IYandexCalendarSettingsProvider settings, ICalendarService calendar)
+            public Handler(IYandexCalendarSettingsProvider settings, IYandexCalendarService calendar)
             {
                 _settings = settings;
                 _calendar = calendar;
             }
 
-            public async Task<IReadOnlyList<CalendarEventDto>> Handle(Query request, CancellationToken ct)
+            public async Task<IReadOnlyList<YandexCalendarEventDto>> Handle(Query request, CancellationToken ct)
             {
                 var settings = await _settings.GetSettingsAsync(request.Username, ct);
                 if (settings is null)
-                    return Array.Empty<CalendarEventDto>();
+                    return Array.Empty<YandexCalendarEventDto>();
 
                 return await _calendar.GetEventsAsync(
-                    new CalendarCredentials(settings.Login, settings.AppPassword),
+                    new YandexCalendarCredentials(settings.Login, settings.AppPassword),
                     request.Date,
                     ct);
             }

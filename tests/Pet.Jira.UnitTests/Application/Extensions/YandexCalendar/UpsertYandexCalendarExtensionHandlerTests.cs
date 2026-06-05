@@ -5,7 +5,6 @@ using Pet.Jira.Application.Extensions.YandexCalendar.Commands;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
-using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
 {
     [TestFixture]
-    public class UpsertExtensionHandlerTests
+    public class UpsertYandexCalendarExtensionHandlerTests
     {
         private Mock<IUserExtensionRepository> _repoMock = null!;
         private Mock<ISecretProtector> _protectorMock = null!;
@@ -37,9 +36,9 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             _repoMock.Setup(r => r.GetAsync("alice", ExtensionType.YandexCalendar, CancellationToken.None))
                      .ReturnsAsync((UserExtension?)null);
 
-            var handler = new UpsertExtension.Handler(_repoMock.Object, _protectorMock.Object);
+            var handler = new UpsertYandexCalendarExtension.Handler(_repoMock.Object, _protectorMock.Object);
             await handler.Handle(
-                new UpsertExtension.Command(
+                new UpsertYandexCalendarExtension.Command(
                     "alice",
                     new YandexCalendarSettingsDto("user@yandex.ru", "plainpw"),
                     IsEnabled: true),
@@ -53,7 +52,6 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             Assert.That(saved.Username, Is.EqualTo("alice"));
         }
 
-        // Mirrors the internal storage model used by UpsertExtension.Handler
         private record StoredSettingsHelper(string Login, string AppPasswordEncrypted);
     }
 }

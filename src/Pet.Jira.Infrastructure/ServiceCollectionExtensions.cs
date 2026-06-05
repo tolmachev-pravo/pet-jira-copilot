@@ -65,7 +65,7 @@ namespace Pet.Jira.Infrastructure
 			services.AddDataProtection();
 			services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>();
 
-			services.AddHttpClient<ICalendarService, YandexCalDavService>();
+			services.AddHttpClient<IYandexCalendarService, YandexCalDavService>();
 			services.AddTransient<IUserExtensionRepository, UserExtensionRepository>();
 			services.AddTransient<IYandexCalendarSettingsProvider, YandexCalendarSettingsProvider>();
 

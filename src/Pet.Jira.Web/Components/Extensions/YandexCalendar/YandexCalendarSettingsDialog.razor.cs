@@ -41,7 +41,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             }
             try
             {
-                var events = await Mediator.Send(new GetCalendarEvents.Query(
+                var events = await Mediator.Send(new GetYandexCalendarEvents.Query(
                     Username,
                     DateOnly.FromDateTime(DateTime.Today)));
                 Snackbar.Add($"Подключено! Найдено {events.Count} событий на сегодня", Severity.Success);
@@ -58,7 +58,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             if (!_form.IsValid) return;
 
             var settings = new YandexCalendarSettingsDto(_login, _appPassword);
-            await Mediator.Send(new UpsertExtension.Command(Username, settings, IsEnabled: true));
+            await Mediator.Send(new UpsertYandexCalendarExtension.Command(Username, settings, IsEnabled: true));
             MudDialog.Close(DialogResult.Ok(settings));
         }
 

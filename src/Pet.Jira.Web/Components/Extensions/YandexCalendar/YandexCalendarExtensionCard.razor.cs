@@ -50,7 +50,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
             if (settings is not null)
             {
-                await Mediator.Send(new UpsertExtension.Command(_username, settings, value));
+                await Mediator.Send(new UpsertYandexCalendarExtension.Command(_username, settings, value));
                 _isEnabled = value;
                 await NotifyStateChangedAsync();
             }

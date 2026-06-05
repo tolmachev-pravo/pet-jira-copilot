@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Extensions.YandexCalendar
 {
-    public record CalendarCredentials(string Login, string AppPassword);
+    public record YandexCalendarCredentials(string Login, string AppPassword);
 
-    public interface ICalendarService
+    public interface IYandexCalendarService
     {
-        Task<IReadOnlyList<CalendarEventDto>> GetEventsAsync(
-            CalendarCredentials credentials,
+        Task<IReadOnlyList<YandexCalendarEventDto>> GetEventsAsync(
+            YandexCalendarCredentials credentials,
             DateOnly date,
             CancellationToken ct = default);
     }

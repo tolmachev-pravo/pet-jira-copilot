@@ -40,7 +40,7 @@ END:VCALENDAR</C:calendar-data>
             var svc = new YandexCalDavService(new HttpClient(new FakeHttpMessageHandler(FakeCalDavResponse)));
 
             var result = await svc.GetEventsAsync(
-                new CalendarCredentials("user@yandex.ru", "pw"),
+                new YandexCalendarCredentials("user@yandex.ru", "pw"),
                 new DateOnly(2026, 6, 4));
 
             Assert.That(result, Has.Count.EqualTo(1));
@@ -57,7 +57,7 @@ END:VCALENDAR</C:calendar-data>
             var svc = new YandexCalDavService(new HttpClient(new FakeHttpMessageHandler(emptyResponse)));
 
             var result = await svc.GetEventsAsync(
-                new CalendarCredentials("user@yandex.ru", "pw"),
+                new YandexCalendarCredentials("user@yandex.ru", "pw"),
                 new DateOnly(2026, 6, 4));
 
             Assert.That(result, Is.Empty);

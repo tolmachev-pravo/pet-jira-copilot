@@ -47,7 +47,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 if (!string.IsNullOrEmpty(username))
                 {
                     var events = await Mediator.Send(
-                        new GetCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
+                        new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
                     calRows = events.Select(e => new DayRow(e.StartLocal, CalendarEvent: e));
                 }
             }
@@ -81,7 +81,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        private async Task OpenCalendarWorklogDialog(CalendarEventDto calEvent)
+        private async Task OpenCalendarWorklogDialog(YandexCalendarEventDto calEvent)
         {
             var template = new WorkingDayWorklog
             {
@@ -110,6 +110,6 @@ namespace Pet.Jira.Web.Components.Worklogs
         private record DayRow(
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
-            CalendarEventDto? CalendarEvent = null);
+            YandexCalendarEventDto? CalendarEvent = null);
     }
 }
