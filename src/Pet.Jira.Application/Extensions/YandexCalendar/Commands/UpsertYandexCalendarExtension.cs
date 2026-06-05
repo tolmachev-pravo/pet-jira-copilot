@@ -3,6 +3,8 @@ using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +34,10 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 var stored = new StoredSettings(
                     request.Settings.Login,
                     _protector.Protect(request.Settings.AppPassword),
-                    new System.Collections.Generic.List<string>(request.Settings.ExcludedPhrases));
+                    new List<string>(request.Settings.ExcludedPhrases),
+                    request.Settings.IssueMappings
+                        .Select(m => new StoredMapping(m.Phrase, m.IssueKey))
+                        .ToList());
 
                 var existing = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
 
@@ -51,10 +56,13 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 return Unit.Value;
             }
 
+            private record StoredMapping(string Phrase, string IssueKey);
+
             private record StoredSettings(
                 string Login,
                 string AppPasswordEncrypted,
-                System.Collections.Generic.List<string>? ExcludedPhrases = null);
+                List<string>? ExcludedPhrases = null,
+                List<StoredMapping>? IssueMappings = null);
         }
     }
 }

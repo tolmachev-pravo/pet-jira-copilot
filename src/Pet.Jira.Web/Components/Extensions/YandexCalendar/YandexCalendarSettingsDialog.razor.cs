@@ -30,6 +30,9 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         private TestResultInfo? _testResult;
         private List<string> _excludedPhrases = new();
         private string _newPhrase = string.Empty;
+        private List<YandexCalendarIssueMapping> _issueMappings = new();
+        private string _newMappingPhrase = string.Empty;
+        private string _newMappingIssueKey = string.Empty;
 
         protected override void OnParametersSet()
         {
@@ -38,6 +41,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
                 _login = ExistingSettings.Login;
                 _appPassword = ExistingSettings.AppPassword;
                 _excludedPhrases = new List<string>(ExistingSettings.ExcludedPhrases);
+                _issueMappings = new List<YandexCalendarIssueMapping>(ExistingSettings.IssueMappings);
             }
         }
 
@@ -83,12 +87,37 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private void OnChipClose(MudChip chip) => _excludedPhrases.Remove(chip.Text);
 
+        private void AddMapping()
+        {
+            var phrase = _newMappingPhrase.Trim();
+            var key = _newMappingIssueKey.Trim();
+            if (string.IsNullOrEmpty(phrase) || string.IsNullOrEmpty(key))
+                return;
+            if (_issueMappings.Any(m => m.Phrase.Equals(phrase, StringComparison.OrdinalIgnoreCase)))
+                return;
+            _issueMappings.Add(new YandexCalendarIssueMapping(phrase, key));
+            _newMappingPhrase = string.Empty;
+            _newMappingIssueKey = string.Empty;
+        }
+
+        private void OnMappingKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter") AddMapping();
+        }
+
+        private void RemoveMapping(YandexCalendarIssueMapping mapping) => _issueMappings.Remove(mapping);
+
         private async Task Save()
         {
             await _form.Validate();
             if (!_form.IsValid) return;
 
-            var settings = new YandexCalendarSettingsDto(_login, _appPassword, _excludedPhrases.AsReadOnly());
+            var settings = new YandexCalendarSettingsDto(
+                _login,
+                _appPassword,
+                _excludedPhrases.AsReadOnly(),
+                _issueMappings.AsReadOnly());
+
             await Mediator.Send(new UpsertYandexCalendarExtension.Command(Username, settings, IsEnabled: true));
             MudDialog.Close(DialogResult.Ok(settings));
         }

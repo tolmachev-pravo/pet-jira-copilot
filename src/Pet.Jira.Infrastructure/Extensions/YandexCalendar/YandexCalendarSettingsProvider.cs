@@ -3,6 +3,8 @@ using Pet.Jira.Application.Extensions.YandexCalendar;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,15 +32,25 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             if (stored is null) return null;
 
             var plainPassword = _protector.Unprotect(stored.AppPasswordEncrypted);
+
+            var mappings = stored.IssueMappings?
+                .Select(m => new YandexCalendarIssueMapping(m.Phrase, m.IssueKey))
+                .ToList()
+                ?? new List<YandexCalendarIssueMapping>();
+
             return new YandexCalendarSettingsDto(
                 stored.Login,
                 plainPassword,
-                stored.ExcludedPhrases ?? new System.Collections.Generic.List<string>());
+                stored.ExcludedPhrases ?? new List<string>(),
+                mappings);
         }
+
+        private record StoredMapping(string Phrase, string IssueKey);
 
         private record StoredSettings(
             string Login,
             string AppPasswordEncrypted,
-            System.Collections.Generic.List<string>? ExcludedPhrases = null);
+            List<string>? ExcludedPhrases = null,
+            List<StoredMapping>? IssueMappings = null);
     }
 }

@@ -65,6 +65,53 @@
             </MudChipSet>
         }
 
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Маппинг задач</MudText>
+        <MudText Typo="Typo.caption" Style="opacity:.55" Class="mb-3 d-block">
+            Событие с точным совпадением названия получит указанную задачу Jira автоматически.
+        </MudText>
+
+        <div class="d-flex gap-2 align-end">
+            <MudTextField T="string" @bind-Value="_newMappingPhrase"
+                          Label="Название события"
+                          Placeholder="например: Core Daily Sync"
+                          @onkeydown="OnMappingKeyDown"
+                          Immediate="true"
+                          Style="flex:2" />
+            <MudTextField T="string" @bind-Value="_newMappingIssueKey"
+                          Label="Ключ задачи"
+                          Placeholder="CASEM-73656"
+                          @onkeydown="OnMappingKeyDown"
+                          Immediate="true"
+                          Style="flex:1" />
+            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                           Color="Color.Primary"
+                           OnClick="AddMapping"
+                           Class="mb-1" />
+        </div>
+
+        @if (_issueMappings.Count > 0)
+        {
+            <div class="mt-2">
+                @foreach (var mapping in _issueMappings)
+                {
+                    <div class="d-flex align-center gap-2 py-1">
+                        <MudText Typo="Typo.body2" Style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            @mapping.Phrase
+                        </MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Style="opacity:.45;flex-shrink:0" />
+                        <MudText Typo="Typo.body2" Color="Color.Primary" Style="flex-shrink:0">
+                            @mapping.IssueKey
+                        </MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="Size.Small"
+                                       OnClick="@(() => RemoveMapping(mapping))" />
+                    </div>
+                }
+            </div>
+        }
+
         @if (_testResult is not null)
         {
             <MudAlert Severity="@_testResult.AlertSeverity"

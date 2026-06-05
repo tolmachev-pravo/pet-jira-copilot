@@ -57,10 +57,16 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
                 return utcEvents
                     .Where(e => !settings.ExcludedPhrases.Any(p =>
                         e.Summary.Contains(p, StringComparison.OrdinalIgnoreCase)))
-                    .Select(e => e with
+                    .Select(e =>
                     {
-                        Start = TimeZoneInfo.ConvertTimeFromUtc(e.Start, userTimeZone),
-                        End = TimeZoneInfo.ConvertTimeFromUtc(e.End, userTimeZone)
+                        var mapping = settings.IssueMappings.FirstOrDefault(m =>
+                            string.Equals(e.Summary, m.Phrase, StringComparison.OrdinalIgnoreCase));
+                        return e with
+                        {
+                            JiraIssueKeyHint = mapping?.IssueKey ?? e.JiraIssueKeyHint,
+                            Start = TimeZoneInfo.ConvertTimeFromUtc(e.Start, userTimeZone),
+                            End   = TimeZoneInfo.ConvertTimeFromUtc(e.End,   userTimeZone)
+                        };
                     })
                     .ToList();
             }
