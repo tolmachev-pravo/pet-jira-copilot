@@ -62,7 +62,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
                     foreach (var e in loadedEvents)
                     {
-                        bool isLogged = jiraWorklogs.Any(w => w.StartDate < e.End && w.CompleteDate > e.Start);
+                        bool isLogged = jiraWorklogs.Any(w => w.StartDate == e.Start && w.CompleteDate == e.End);
                         if (!isLogged)
                         {
                             if (e.JiraIssueKeyHint is not null)
@@ -107,12 +107,12 @@ namespace Pet.Jira.Web.Components.Worklogs
             var calRows = loadedEvents.Select(e =>
             {
                 var children = allJiraWorklogs
-                    .Where(w => w.Parent == null && w.StartDate < e.End && w.CompleteDate > e.Start)
+                    .Where(w => w.Parent == null && w.StartDate == e.Start && w.CompleteDate == e.End)
                     .ToList();
                 return new DayRow(
                     e.Start,
                     CalendarEvent: e,
-                    IsCalendarEventLogged: allJiraWorklogs.Any(w => w.StartDate < e.End && w.CompleteDate > e.Start),
+                    IsCalendarEventLogged: allJiraWorklogs.Any(w => w.StartDate == e.Start && w.CompleteDate == e.End),
                     CalendarChildren: children);
             }).ToList();
 
