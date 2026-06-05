@@ -1,4 +1,4 @@
-using Pet.Jira.Application.Extensions.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Domain.Entities.Extensions;
 using System.Collections.Generic;
 using System.Threading;

@@ -20,8 +20,10 @@ using Pet.Jira.Infrastructure.Storage;
 using Pet.Jira.Infrastructure.Users;
 using Pet.Jira.Infrastructure.Worklogs;
 using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Extensions.YandexCalendar;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Infrastructure.Extensions;
+using Pet.Jira.Infrastructure.Extensions.YandexCalendar;
 using Pet.Jira.Infrastructure.Security;
 
 namespace Pet.Jira.Infrastructure

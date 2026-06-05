@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Extensions.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
 using Pet.Jira.Infrastructure.Data.Contexts;

@@ -1,14 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Pet.Jira.Application.Extensions.Commands;
-using Pet.Jira.Application.Extensions.Dto;
-using Pet.Jira.Application.Extensions.Queries;
-using Pet.Jira.Domain.Entities.Extensions;
+using Pet.Jira.Application.Extensions.YandexCalendar.Commands;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using System;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.Web.Components.Extensions
+namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 {
     public partial class YandexCalendarSettingsDialog : ComponentBase
     {

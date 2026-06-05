@@ -1,6 +1,6 @@
 using Ical.Net;
-using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Extensions.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Pet.Jira.Infrastructure.Extensions
+namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
 {
     public class YandexCalDavService : ICalendarService
     {

@@ -1,5 +1,5 @@
 using MediatR;
-using Pet.Jira.Application.Extensions.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
 using System;
@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.Application.Extensions.Commands
+namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
 {
     public class UpsertExtension
     {

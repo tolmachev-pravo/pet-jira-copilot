@@ -1,13 +1,13 @@
 using NUnit.Framework;
-using Pet.Jira.Application.Extensions;
-using Pet.Jira.Infrastructure.Extensions;
+using Pet.Jira.Application.Extensions.YandexCalendar;
+using Pet.Jira.Infrastructure.Extensions.YandexCalendar;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.UnitTests.Infrastructure.Extensions
+namespace Pet.Jira.UnitTests.Infrastructure.Extensions.YandexCalendar
 {
     [TestFixture]
     public class YandexCalDavServiceTests

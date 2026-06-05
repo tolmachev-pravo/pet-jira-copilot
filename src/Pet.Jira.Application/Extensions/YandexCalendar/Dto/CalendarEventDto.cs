@@ -1,6 +1,6 @@
 using System;
 
-namespace Pet.Jira.Application.Extensions.Dto
+namespace Pet.Jira.Application.Extensions.YandexCalendar.Dto
 {
     public record CalendarEventDto(
         string Summary,

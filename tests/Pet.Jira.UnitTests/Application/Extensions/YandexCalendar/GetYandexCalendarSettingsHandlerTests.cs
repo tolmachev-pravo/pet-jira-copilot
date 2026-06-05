@@ -1,12 +1,12 @@
 using Moq;
 using NUnit.Framework;
 using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Extensions.Dto;
-using Pet.Jira.Application.Extensions.Queries;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.UnitTests.Application.Extensions
+namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
 {
     [TestFixture]
     public class GetYandexCalendarSettingsHandlerTests

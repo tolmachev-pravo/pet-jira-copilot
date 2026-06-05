@@ -1,11 +1,11 @@
 using MediatR;
-using Pet.Jira.Application.Extensions.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pet.Jira.Application.Extensions.Queries
+namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
 {
     public class GetCalendarEvents
     {
