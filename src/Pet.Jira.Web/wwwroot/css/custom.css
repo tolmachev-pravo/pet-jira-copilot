@@ -105,20 +105,6 @@
    palette CSS variables (--mud-palette-*), so it follows the
    active light/dark theme automatically.
    ============================================================ */
-.extv-glow__head { margin-bottom: 32px; }
-.extv-glow__eyebrow {
-    color: var(--mud-palette-primary);
-    letter-spacing: .35em !important;
-    font-weight: 600;
-}
-.extv-glow__title {
-    font-weight: 700;
-    letter-spacing: .02em;
-    background: linear-gradient(90deg, var(--mud-palette-text-primary), var(--mud-palette-primary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
 .extv-glow__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
