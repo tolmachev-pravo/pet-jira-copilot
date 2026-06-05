@@ -1,4 +1,3 @@
-using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Domain.Entities.Extensions;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,8 +10,5 @@ namespace Pet.Jira.Application.Extensions
         Task<UserExtension?> GetAsync(string username, ExtensionType type, CancellationToken ct = default);
         Task<IReadOnlyList<UserExtension>> GetAllAsync(string username, CancellationToken ct = default);
         Task UpsertAsync(UserExtension extension, CancellationToken ct = default);
-
-        // Returns decrypted settings; null if extension not found or disabled.
-        Task<YandexCalendarSettingsDto?> GetYandexSettingsAsync(string username, CancellationToken ct = default);
     }
 }

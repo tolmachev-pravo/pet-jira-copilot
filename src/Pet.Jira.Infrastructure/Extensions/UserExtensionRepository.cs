@@ -1,13 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Pet.Jira.Application.Extensions;
-using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
-using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
 using Pet.Jira.Infrastructure.Data.Contexts;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,13 +12,8 @@ namespace Pet.Jira.Infrastructure.Extensions
     public class UserExtensionRepository : IUserExtensionRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly ISecretProtector _protector;
 
-        public UserExtensionRepository(ApplicationDbContext db, ISecretProtector protector)
-        {
-            _db = db;
-            _protector = protector;
-        }
+        public UserExtensionRepository(ApplicationDbContext db) => _db = db;
 
         public Task<UserExtension?> GetAsync(string username, ExtensionType type, CancellationToken ct = default)
             => _db.Set<UserExtension>()
@@ -45,21 +36,5 @@ namespace Pet.Jira.Infrastructure.Extensions
 
             await _db.SaveChangesAsync(ct);
         }
-
-        public async Task<YandexCalendarSettingsDto?> GetYandexSettingsAsync(
-            string username, CancellationToken ct = default)
-        {
-            var entity = await GetAsync(username, ExtensionType.YandexCalendar, ct);
-            if (entity is null || !entity.IsEnabled || string.IsNullOrEmpty(entity.Settings))
-                return null;
-
-            var stored = JsonSerializer.Deserialize<StoredSettings>(entity.Settings);
-            if (stored is null) return null;
-
-            var plainPassword = _protector.Unprotect(stored.AppPasswordEncrypted);
-            return new YandexCalendarSettingsDto(stored.Login, plainPassword);
-        }
-
-        private record StoredSettings(string Login, string AppPasswordEncrypted);
     }
 }

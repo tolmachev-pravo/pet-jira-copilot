@@ -67,6 +67,7 @@ namespace Pet.Jira.Infrastructure
 
 			services.AddHttpClient<ICalendarService, YandexCalDavService>();
 			services.AddTransient<IUserExtensionRepository, UserExtensionRepository>();
+			services.AddTransient<IYandexCalendarSettingsProvider, YandexCalendarSettingsProvider>();
 
 			return services;
         }
