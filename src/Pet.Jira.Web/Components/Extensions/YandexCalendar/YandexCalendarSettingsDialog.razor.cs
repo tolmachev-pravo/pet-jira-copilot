@@ -40,8 +40,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             {
                 _login = ExistingSettings.Login;
                 _appPassword = ExistingSettings.AppPassword;
-                _excludedPhrases = new List<string>(ExistingSettings.ExcludedPhrases);
-                _issueMappings = new List<YandexCalendarIssueMapping>(ExistingSettings.IssueMappings);
+                _excludedPhrases = [.. ExistingSettings.ExcludedPhrases];
+                _issueMappings = [.. ExistingSettings.IssueMappings];
             }
         }
 

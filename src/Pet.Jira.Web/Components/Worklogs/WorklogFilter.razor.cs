@@ -98,7 +98,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             try
             {
-                var result = await Mediator.Send(new GetIssueStatuses.Query());
+                var result = await Mediator.Send(new GetIssueStatuses.Query(), cancellationToken);
 
                 if (string.IsNullOrEmpty(value)
                     || value.Equals(_model.Filter.IssueStatus?.Name, StringComparison.InvariantCultureIgnoreCase))

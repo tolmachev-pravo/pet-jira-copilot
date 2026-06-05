@@ -55,7 +55,7 @@ namespace Pet.Jira.Infrastructure.Storage
             }
             if (entity != null)
             {
-                await UpdateAsync(key, entity);
+                await UpdateAsync(key, entity, cancellationToken);
             }
         }
 

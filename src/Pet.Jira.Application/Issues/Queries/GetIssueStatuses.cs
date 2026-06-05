@@ -20,16 +20,11 @@ namespace Pet.Jira.Application.Issues.Queries
             public IEnumerable<IssueStatus> IssueStatuses { get; set; }
         }
 
-        public class QueryHandler : IRequestHandler<Query, Model>
+        public class QueryHandler(IIssueDataSource issueDataSource) : IRequestHandler<Query, Model>
         {
-            private readonly IIssueDataSource _issueDataSource;
+            private readonly IIssueDataSource _issueDataSource = issueDataSource;
 
-            public QueryHandler(IIssueDataSource issueDataSource)
-            {
-                _issueDataSource = issueDataSource;
-            }
-
-            public async Task<Model> Handle(
+			public async Task<Model> Handle(
                 Query query,
                 CancellationToken cancellationToken)
             {

@@ -109,7 +109,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
 
             var mappings = new List<YandexCalendarIssueMapping>
             {
-                new YandexCalendarIssueMapping("Core Daily Sync", "CASEM-73656")
+                new("Core Daily Sync", "CASEM-73656")
             };
             var dto = new YandexCalendarSettingsDto("user@yandex.ru", "pw", new List<string>(), mappings);
             _settingsMock.Setup(s => s.GetSettingsAsync("alice", CancellationToken.None))

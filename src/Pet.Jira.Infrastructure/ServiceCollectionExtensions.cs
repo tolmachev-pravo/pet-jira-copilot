@@ -82,7 +82,7 @@ namespace Pet.Jira.Infrastructure
                 .AddJiraHealthCheck()
                 .AddProcessAllocatedMemoryHealthCheck(
                     maximumMegabytesAllocated: 300,
-                    tags: new[] { "system" });
+                    tags: ["system"]);
             return builder;
         }
     }

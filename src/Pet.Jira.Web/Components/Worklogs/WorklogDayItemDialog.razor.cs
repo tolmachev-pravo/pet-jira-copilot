@@ -114,10 +114,10 @@ namespace Pet.Jira.Web.Components.Worklogs
                 if (!string.IsNullOrWhiteSpace(value)
 					&& value.IsJiraKey())
                 {
-                    var issue = await IssueDataSource.GetIssueAsync(value);
+                    var issue = await IssueDataSource.GetIssueAsync(value, cancellationToken);
                     return issue is null
-                        ? Array.Empty<Issue>()
-                        : new[] { issue };
+                        ? []
+						: new[] { issue };
 				}
                 else
                 {

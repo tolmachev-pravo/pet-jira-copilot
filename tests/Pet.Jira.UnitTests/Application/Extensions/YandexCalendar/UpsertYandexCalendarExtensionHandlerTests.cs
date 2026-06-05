@@ -27,8 +27,8 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
 
         [Test]
         public async Task Handle_EncryptsPasswordBeforeSaving()
-        {
-            _protectorMock.Setup(p => p.Protect("plainpw")).Returns("encpw");
+		{
+			_protectorMock.Setup(p => p.Protect("plainpw")).Returns("encpw");
 
             UserExtension? saved = null;
             _repoMock.Setup(r => r.UpsertAsync(It.IsAny<UserExtension>(), CancellationToken.None))
@@ -41,18 +41,21 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             await handler.Handle(
                 new UpsertYandexCalendarExtension.Command(
                     "alice",
-                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw", new List<string>(), new List<YandexCalendarIssueMapping>()),
+                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw", [], []),
                     IsEnabled: true),
                 CancellationToken.None);
 
             Assert.That(saved, Is.Not.Null);
             var settings = JsonSerializer.Deserialize<StoredSettingsHelper>(saved!.Settings)!;
-            Assert.That(settings.Login, Is.EqualTo("user@yandex.ru"));
-            Assert.That(settings.AppPasswordEncrypted, Is.EqualTo("encpw"));
-            Assert.That(saved.IsEnabled, Is.True);
-            Assert.That(saved.Username, Is.EqualTo("alice"));
-        }
+			Assert.Multiple(() =>
+			{
+				Assert.That(settings.Login, Is.EqualTo("user@yandex.ru"));
+				Assert.That(settings.AppPasswordEncrypted, Is.EqualTo("encpw"));
+				Assert.That(saved.IsEnabled, Is.True);
+				Assert.That(saved.Username, Is.EqualTo("alice"));
+			});
+		}
 
-        private record StoredSettingsHelper(string Login, string AppPasswordEncrypted);
+		private record StoredSettingsHelper(string Login, string AppPasswordEncrypted);
     }
 }
