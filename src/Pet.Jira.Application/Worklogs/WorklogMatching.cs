@@ -24,9 +24,11 @@ namespace Pet.Jira.Application.Worklogs
 
             foreach (var child in children)
             {
+                if (child.Issue == null) continue;
+
                 // Find all suggested parents by issue key.
                 var issueParents = parents
-                    .Where(worklog => worklog.Issue.Key == child.Issue.Key)
+                    .Where(worklog => worklog.Issue?.Key == child.Issue.Key)
                     .ToList();
 
                 if (issueParents.IsEmpty()

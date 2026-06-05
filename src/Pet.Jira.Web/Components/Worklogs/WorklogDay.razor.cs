@@ -42,9 +42,9 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task RebuildDayRows()
         {
-            var worklogRows = Entity.ActualWorklogs
-                .Where(w => w.Parent == null)
-                .Select(w => new DayRow(w.RawStartDate, Worklog: w));
+            // Remove virtual calendar placeholders from a previous call
+            var oldVirtual = Entity.Worklogs.Where(w => w.IsVirtualCalendar).ToList();
+            foreach (var v in oldVirtual) Entity.Worklogs.Remove(v);
 
             IEnumerable<DayRow> calRows = Array.Empty<DayRow>();
             Entity.CalendarBlockedTime = TimeSpan.Zero;
@@ -55,13 +55,44 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     var events = await Mediator.Send(
                         new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
-                    Entity.CalendarBlockedTime = events.Aggregate(
-                        TimeSpan.Zero, (acc, e) => acc + (e.End - e.Start));
-                    var actualWorklogs = Entity.ActualWorklogs.Where(w => w.Parent == null).ToList();
+
+                    // Real Jira worklogs only — used both for IsLogged detection and for keeping CalendarBlockedTime correct
+                    var jiraWorklogs = Entity.ActualWorklogs
+                        .Where(w => w.Parent == null && !w.IsVirtualCalendar)
+                        .ToList();
+
+                    foreach (var e in events)
+                    {
+                        bool isLogged = jiraWorklogs.Any(w => w.StartDate < e.End && w.CompleteDate > e.Start);
+                        if (!isLogged)
+                        {
+                            if (e.JiraIssueKeyHint is not null)
+                            {
+                                // Virtual actual worklog — participates in WorklogMatching with estimated worklogs
+                                Entity.Worklogs.Add(new WorkingDayWorklog
+                                {
+                                    StartDate = e.Start,
+                                    CompleteDate = e.End,
+                                    RawStartDate = e.Start,
+                                    RawCompleteDate = e.End,
+                                    Issue = new Issue { Key = e.JiraIssueKeyHint, Identifier = e.JiraIssueKeyHint },
+                                    Type = Domain.Models.Worklogs.WorklogType.Actual,
+                                    Source = Domain.Models.Worklogs.WorklogSource.Calendar,
+                                    IsVirtualCalendar = true
+                                });
+                            }
+                            else
+                            {
+                                // No issue key — block the time unconditionally
+                                Entity.CalendarBlockedTime += e.End - e.Start;
+                            }
+                        }
+                    }
+
                     calRows = events.Select(e => new DayRow(
                         e.Start,
                         CalendarEvent: e,
-                        IsCalendarEventLogged: actualWorklogs.Any(w =>
+                        IsCalendarEventLogged: jiraWorklogs.Any(w =>
                             w.StartDate < e.End && w.CompleteDate > e.Start)));
                 }
             }
@@ -74,6 +105,11 @@ namespace Pet.Jira.Web.Components.Worklogs
                 Entity.Refresh();
                 _isLoadingCalendar = false;
             }
+
+            // Virtual calendar worklogs are excluded — they show as CalendarEventItem rows, not ActualWorklogItem
+            var worklogRows = Entity.ActualWorklogs
+                .Where(w => w.Parent == null && !w.IsVirtualCalendar)
+                .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
             _dayRows = worklogRows
                 .Concat(calRows)
