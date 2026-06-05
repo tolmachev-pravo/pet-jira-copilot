@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pet.Jira.Application.Articles;
@@ -62,7 +63,10 @@ namespace Pet.Jira.Infrastructure
 
 			services.AddTransient<IUserRepository, UserRepository>();
 
-			services.AddDataProtection();
+			services.AddDataProtection()
+				.PersistKeysToFileSystem(new System.IO.DirectoryInfo(
+					System.IO.Path.Combine(System.AppContext.BaseDirectory, "DataProtection-Keys")))
+				.SetApplicationName("PetJira");
 			services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>();
 
 			services.AddHttpClient<IYandexCalendarService, YandexCalDavService>();
