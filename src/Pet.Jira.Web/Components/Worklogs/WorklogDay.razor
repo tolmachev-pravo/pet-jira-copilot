@@ -60,29 +60,9 @@
             }
             else if (row.CalendarEvent is not null)
             {
-                <MudPaper @onclick="() => OpenCalendarWorklogDialog(row.CalendarEvent)"
-                          Class="d-flex align-center gap-3 pa-2 my-1"
-                          Style="cursor:pointer"
-                          Elevation="0">
-                    <MudText Typo="Typo.caption" Color="Color.Default" Style="min-width:52px">
-                        @row.CalendarEvent.Start.ToString("HH:mm")
-                    </MudText>
-                    <MudDivider Vertical="true" FlexItem="true" Style="border-color: var(--mud-palette-success);" />
-                    <MudIcon Icon="@Icons.Material.Filled.Event" Color="Color.Success" Size="Size.Small" />
-                    <MudText Typo="Typo.body2" Style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                        @row.CalendarEvent.Summary
-                    </MudText>
-                    @if (row.CalendarEvent.JiraIssueKeyHint is not null)
-                    {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">
-                            @row.CalendarEvent.JiraIssueKeyHint
-                        </MudChip>
-                    }
-                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success"
-                               StartIcon="@Icons.Material.Filled.Add">
-                        Залогировать
-                    </MudButton>
-                </MudPaper>
+                <CalendarEventItem Entity="@row.CalendarEvent"
+                                   IsLogged="@row.IsCalendarEventLogged"
+                                   OnLogPressed="OpenCalendarWorklogDialog" />
             }
         </td>
     </tr>

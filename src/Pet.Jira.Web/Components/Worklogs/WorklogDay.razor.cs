@@ -48,7 +48,12 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     var events = await Mediator.Send(
                         new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
-                    calRows = events.Select(e => new DayRow(e.Start, CalendarEvent: e));
+                    var actualWorklogs = Entity.ActualWorklogs.Where(w => w.Parent == null).ToList();
+                    calRows = events.Select(e => new DayRow(
+                        e.Start,
+                        CalendarEvent: e,
+                        IsCalendarEventLogged: actualWorklogs.Any(w =>
+                            w.StartDate < e.End && w.CompleteDate > e.Start)));
                 }
             }
             catch
@@ -110,6 +115,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private record DayRow(
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
-            YandexCalendarEventDto? CalendarEvent = null);
+            YandexCalendarEventDto? CalendarEvent = null,
+            bool IsCalendarEventLogged = false);
     }
 }
