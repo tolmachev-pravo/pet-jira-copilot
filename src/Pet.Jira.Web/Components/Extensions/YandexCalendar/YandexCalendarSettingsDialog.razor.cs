@@ -41,10 +41,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             }
             try
             {
-                var events = await Mediator.Send(new GetYandexCalendarEvents.Query(
-                    Username,
-                    DateOnly.FromDateTime(DateTime.Today)));
-                Snackbar.Add($"Подключено! Найдено {events.Count} событий на сегодня", Severity.Success);
+                var count = await Mediator.Send(new TestYandexCalendarConnection.Query(_login, _appPassword));
+                Snackbar.Add($"Подключено! Найдено {count} событий на сегодня", Severity.Success);
             }
             catch (Exception ex)
             {
