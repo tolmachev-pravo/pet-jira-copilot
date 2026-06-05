@@ -1,4 +1,6 @@
 using Ical.Net;
+using Ical.Net.CalendarComponents;
+using Ical.Net.DataTypes;
 using Pet.Jira.Application.Extensions.YandexCalendar;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using System;
@@ -45,13 +47,13 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             response.EnsureSuccessStatusCode();
 
             var xml = await response.Content.ReadAsStringAsync(ct);
-            return ParseCalDavResponse(xml);
+            return ParseCalDavResponse(xml, date);
         }
 
         private static string BuildReportBody(DateOnly date)
         {
-            var start = date.ToString("yyyyMMdd") + "T000000Z";
-            var end = date.AddDays(1).ToString("yyyyMMdd") + "T000000Z";
+            var start = date.ToDateTime(TimeOnly.MinValue).ToUniversalTime().ToString("yyyyMMdd'T'HHmmss") + "Z";
+            var end = date.AddDays(1).ToDateTime(TimeOnly.MinValue).ToUniversalTime().ToString("yyyyMMdd'T'HHmmss") + "Z";
             return $@"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <C:calendar-query xmlns:D=""DAV:"" xmlns:C=""urn:ietf:params:xml:ns:caldav"">
   <D:prop><D:getetag/><C:calendar-data/></D:prop>
@@ -65,11 +67,14 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
 </C:calendar-query>";
         }
 
-        private static IReadOnlyList<YandexCalendarEventDto> ParseCalDavResponse(string xml)
+        private static IReadOnlyList<YandexCalendarEventDto> ParseCalDavResponse(string xml, DateOnly date)
         {
             var doc = XDocument.Parse(xml);
             var calendarDataElements = doc.Descendants(CalDavNs + "calendar-data");
             var result = new List<YandexCalendarEventDto>();
+
+            var rangeStart = new CalDateTime(date.ToDateTime(TimeOnly.MinValue));
+            var rangeEnd = new CalDateTime(date.AddDays(1).ToDateTime(TimeOnly.MinValue));
 
             foreach (var element in calendarDataElements)
             {
@@ -77,10 +82,14 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
                 if (string.IsNullOrWhiteSpace(icalText)) continue;
 
                 var calendar = Calendar.Load(icalText);
-                foreach (var vevent in calendar.Events)
+                var occurrences = calendar.GetOccurrences<CalendarEvent>(rangeStart, rangeEnd);
+
+                foreach (var occurrence in occurrences)
                 {
-                    var start = vevent.DtStart?.AsSystemLocal ?? DateTime.MinValue;
-                    var end = vevent.DtEnd?.AsSystemLocal ?? DateTime.MinValue;
+                    if (occurrence.Source is not CalendarEvent vevent) continue;
+
+                    var start = occurrence.Period.StartTime.AsSystemLocal;
+                    var end = occurrence.Period.EndTime?.AsSystemLocal ?? start;
                     var summary = vevent.Summary ?? string.Empty;
                     var description = vevent.Description ?? string.Empty;
                     var match = JiraKeyRegex.Match(summary + " " + description);
