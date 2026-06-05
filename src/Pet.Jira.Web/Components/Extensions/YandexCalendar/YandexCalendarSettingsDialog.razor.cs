@@ -22,6 +22,9 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         private MudForm _form = default!;
         private string _login = string.Empty;
         private string _appPassword = string.Empty;
+        private bool _showPassword;
+        private bool _isTesting;
+        private TestResultInfo? _testResult;
 
         protected override void OnParametersSet()
         {
@@ -32,21 +35,29 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             }
         }
 
-        private async Task TestConnection()
+        private async Task TestConnectionAsync()
         {
             if (string.IsNullOrWhiteSpace(_login) || string.IsNullOrWhiteSpace(_appPassword))
             {
-                Snackbar.Add("Заполните логин и пароль", Severity.Warning);
+                _testResult = TestResultInfo.Warning("Заполните логин и пароль");
                 return;
             }
+
+            _isTesting = true;
+            _testResult = null;
+
             try
             {
                 var count = await Mediator.Send(new TestYandexCalendarConnection.Query(_login, _appPassword));
-                Snackbar.Add($"Подключено! Найдено {count} событий на сегодня", Severity.Success);
+                _testResult = TestResultInfo.Success($"Подключено! Найдено {count} событий на сегодня");
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Ошибка подключения: {ex.Message}", Severity.Error);
+                _testResult = TestResultInfo.Error($"Ошибка подключения: {ex.Message}");
+            }
+            finally
+            {
+                _isTesting = false;
             }
         }
 
@@ -61,5 +72,12 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         }
 
         private void Cancel() => MudDialog.Cancel();
+
+        private sealed record TestResultInfo(Severity AlertSeverity, string Message)
+        {
+            public static TestResultInfo Success(string msg) => new(Severity.Success, msg);
+            public static TestResultInfo Error(string msg)   => new(Severity.Error,   msg);
+            public static TestResultInfo Warning(string msg) => new(Severity.Warning,  msg);
+        }
     }
 }
