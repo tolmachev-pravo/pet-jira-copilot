@@ -30,9 +30,13 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private List<DayRow> _dayRows = new();
         private bool _isLoadingCalendar = true;
+        private WorkingDay? _previousEntity;
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnParametersSetAsync()
         {
+            if (_previousEntity == Entity) return;
+            _previousEntity = Entity;
+            _isLoadingCalendar = true;
             await RebuildDayRows();
         }
 
