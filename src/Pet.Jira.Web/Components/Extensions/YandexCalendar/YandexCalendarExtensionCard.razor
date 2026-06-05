@@ -3,15 +3,15 @@
         <div class="extv-glow__icon">
             <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" />
         </div>
-        <div class="@($"extv-glow__status extv-glow__status--{(_isEnabled ? "connected" : "off")}")">
+        <div class="@($"extv-glow__status extv-glow__status--{(_isEnabled ? "connected" : _hasSettings ? "off" : "available")}")">
             <span class="extv-glow__led"></span>
-            @(_isEnabled ? "online" : "offline")
+            @(_isEnabled ? "Активен" : _hasSettings ? "Отключён" : "Не настроен")
         </div>
     </div>
 
     <MudText Typo="Typo.h6" Class="mt-3" Style="font-weight:600">Яндекс Календарь</MudText>
     <MudText Typo="Typo.body2" Style="opacity:.65" Class="mt-1">
-        Списывайте время из событий Яндекс.Календаря через CalDAV
+        Списывайте время из событий Яндекс.Календаря
     </MudText>
 
     <div class="extv-glow__foot">
