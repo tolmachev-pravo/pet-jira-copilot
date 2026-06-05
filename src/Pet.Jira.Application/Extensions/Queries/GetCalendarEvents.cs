@@ -14,18 +14,18 @@ namespace Pet.Jira.Application.Extensions.Queries
 
         public class Handler : IRequestHandler<Query, IReadOnlyList<CalendarEventDto>>
         {
-            private readonly IUserExtensionRepository _repo;
+            private readonly IUserExtensionRepository _repository;
             private readonly ICalendarService _calendar;
 
-            public Handler(IUserExtensionRepository repo, ICalendarService calendar)
+            public Handler(IUserExtensionRepository repository, ICalendarService calendar)
             {
-                _repo = repo;
+                _repository = repository;
                 _calendar = calendar;
             }
 
             public async Task<IReadOnlyList<CalendarEventDto>> Handle(Query request, CancellationToken ct)
             {
-                var settings = await _repo.GetYandexSettingsAsync(request.Username, ct);
+                var settings = await _repository.GetYandexSettingsAsync(request.Username, ct);
                 if (settings is null)
                     return Array.Empty<CalendarEventDto>();
 

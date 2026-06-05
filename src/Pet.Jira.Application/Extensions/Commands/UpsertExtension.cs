@@ -18,12 +18,12 @@ namespace Pet.Jira.Application.Extensions.Commands
 
         public class Handler : IRequestHandler<Command>
         {
-            private readonly IUserExtensionRepository _repo;
+            private readonly IUserExtensionRepository _repository;
             private readonly ISecretProtector _protector;
 
-            public Handler(IUserExtensionRepository repo, ISecretProtector protector)
+            public Handler(IUserExtensionRepository repository, ISecretProtector protector)
             {
-                _repo = repo;
+                _repository = repository;
                 _protector = protector;
             }
 
@@ -33,7 +33,7 @@ namespace Pet.Jira.Application.Extensions.Commands
                     request.Settings.Login,
                     _protector.Protect(request.Settings.AppPassword));
 
-                var existing = await _repo.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
+                var existing = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
 
                 var entity = existing ?? new UserExtension
                 {
@@ -46,7 +46,7 @@ namespace Pet.Jira.Application.Extensions.Commands
                 entity.Settings = JsonSerializer.Serialize(stored);
                 entity.UpdatedAt = DateTime.UtcNow;
 
-                await _repo.UpsertAsync(entity, ct);
+                await _repository.UpsertAsync(entity, ct);
                 return Unit.Value;
             }
 

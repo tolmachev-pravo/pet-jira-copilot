@@ -13,12 +13,12 @@ namespace Pet.Jira.Application.Extensions.Queries
 
         public class Handler : IRequestHandler<Query, YandexCalendarSettingsDto?>
         {
-            private readonly IUserExtensionRepository _repo;
+            private readonly IUserExtensionRepository _repository;
 
-            public Handler(IUserExtensionRepository repo) => _repo = repo;
+            public Handler(IUserExtensionRepository repository) => _repository = repository;
 
             public Task<YandexCalendarSettingsDto?> Handle(Query request, CancellationToken ct)
-                => _repo.GetYandexSettingsAsync(request.Username, ct);
+                => _repository.GetYandexSettingsAsync(request.Username, ct);
         }
     }
 }
