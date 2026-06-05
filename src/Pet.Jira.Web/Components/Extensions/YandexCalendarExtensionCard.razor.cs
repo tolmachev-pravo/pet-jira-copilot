@@ -5,7 +5,6 @@ using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Extensions.Commands;
 using Pet.Jira.Application.Extensions.Dto;
 using Pet.Jira.Application.Extensions.Queries;
-using Pet.Jira.Domain.Entities.Extensions;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Extensions
@@ -26,7 +25,7 @@ namespace Pet.Jira.Web.Components.Extensions
         {
             _username = IdentityService.CurrentUser?.Username ?? string.Empty;
             var settings = await Mediator.Send(
-                new GetExtension.Query(_username, ExtensionType.YandexCalendar));
+                new GetYandexCalendarSettings.Query(_username));
             _isEnabled = settings is not null;
             await NotifyStateChangedAsync();
         }
@@ -40,7 +39,7 @@ namespace Pet.Jira.Web.Components.Extensions
         private async Task OnToggleChanged(bool value)
         {
             var settings = await Mediator.Send(
-                new GetExtension.Query(_username, ExtensionType.YandexCalendar));
+                new GetYandexCalendarSettings.Query(_username));
 
             if (settings is null && value)
             {
@@ -60,7 +59,7 @@ namespace Pet.Jira.Web.Components.Extensions
         private async Task OpenSettingsDialog()
         {
             var settings = await Mediator.Send(
-                new GetExtension.Query(_username, ExtensionType.YandexCalendar));
+                new GetYandexCalendarSettings.Query(_username));
 
             var parameters = new DialogParameters
             {

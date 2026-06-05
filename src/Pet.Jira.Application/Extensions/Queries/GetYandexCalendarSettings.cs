@@ -1,15 +1,13 @@
 using MediatR;
 using Pet.Jira.Application.Extensions.Dto;
-using Pet.Jira.Domain.Entities.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Application.Extensions.Queries
 {
-    public class GetExtension
+    public class GetYandexCalendarSettings
     {
-        public record Query(string Username, ExtensionType Type)
-            : IRequest<YandexCalendarSettingsDto?>;
+        public record Query(string Username) : IRequest<YandexCalendarSettingsDto?>;
 
         public class Handler : IRequestHandler<Query, YandexCalendarSettingsDto?>
         {

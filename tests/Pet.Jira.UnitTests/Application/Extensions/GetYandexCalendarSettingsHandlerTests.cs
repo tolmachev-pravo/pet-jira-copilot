@@ -3,14 +3,13 @@ using NUnit.Framework;
 using Pet.Jira.Application.Extensions;
 using Pet.Jira.Application.Extensions.Dto;
 using Pet.Jira.Application.Extensions.Queries;
-using Pet.Jira.Domain.Entities.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.UnitTests.Application.Extensions
 {
     [TestFixture]
-    public class GetExtensionHandlerTests
+    public class GetYandexCalendarSettingsHandlerTests
     {
         private Mock<IUserExtensionRepository> _repoMock = null!;
 
@@ -27,9 +26,9 @@ namespace Pet.Jira.UnitTests.Application.Extensions
             _repoMock.Setup(r => r.GetYandexSettingsAsync("alice", CancellationToken.None))
                      .ReturnsAsync(settings);
 
-            var handler = new GetExtension.Handler(_repoMock.Object);
+            var handler = new GetYandexCalendarSettings.Handler(_repoMock.Object);
             var result = await handler.Handle(
-                new GetExtension.Query("alice", ExtensionType.YandexCalendar),
+                new GetYandexCalendarSettings.Query("alice"),
                 CancellationToken.None);
 
             Assert.That(result, Is.Not.Null);
@@ -43,9 +42,9 @@ namespace Pet.Jira.UnitTests.Application.Extensions
             _repoMock.Setup(r => r.GetYandexSettingsAsync("alice", CancellationToken.None))
                      .ReturnsAsync((YandexCalendarSettingsDto?)null);
 
-            var handler = new GetExtension.Handler(_repoMock.Object);
+            var handler = new GetYandexCalendarSettings.Handler(_repoMock.Object);
             var result = await handler.Handle(
-                new GetExtension.Query("alice", ExtensionType.YandexCalendar),
+                new GetYandexCalendarSettings.Query("alice"),
                 CancellationToken.None);
 
             Assert.That(result, Is.Null);
