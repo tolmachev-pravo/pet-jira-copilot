@@ -23,7 +23,7 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
         public async Task<YandexCalendarSettingsDto?> GetSettingsAsync(string username, CancellationToken ct = default)
         {
             var entity = await _repository.GetAsync(username, ExtensionType.YandexCalendar, ct);
-            if (entity is null || !entity.IsEnabled || string.IsNullOrEmpty(entity.Settings))
+            if (entity is null || string.IsNullOrEmpty(entity.Settings))
                 return null;
 
             var stored = JsonSerializer.Deserialize<StoredSettings>(entity.Settings);
