@@ -37,7 +37,7 @@ namespace Pet.Jira.Infrastructure.Articles
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var entity = await _dbContext.Articles.FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _dbContext.Articles.FindAsync(new object?[] { id }, cancellationToken);
             if (entity == null)
                 return false;
 
