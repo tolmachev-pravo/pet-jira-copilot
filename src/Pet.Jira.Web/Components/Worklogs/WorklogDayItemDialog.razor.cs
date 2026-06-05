@@ -95,9 +95,16 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             _model.Worklog.Initialize(WorkingDay, WorklogTemplate);
+
+            if (_model.Worklog.Issue is { Key: not null, Summary: null })
+            {
+                var full = await IssueDataSource.GetIssueAsync(_model.Worklog.Issue.Key);
+                if (full is not null)
+                    _model.Worklog.Issue = full;
+            }
         }
 
         private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value)
