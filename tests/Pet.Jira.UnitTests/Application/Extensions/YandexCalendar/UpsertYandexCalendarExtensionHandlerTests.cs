@@ -40,7 +40,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             await handler.Handle(
                 new UpsertYandexCalendarExtension.Command(
                     "alice",
-                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw"),
+                    new YandexCalendarSettingsDto("user@yandex.ru", "plainpw", new System.Collections.Generic.List<string>()),
                     IsEnabled: true),
                 CancellationToken.None);
 

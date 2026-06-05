@@ -39,6 +39,32 @@
             </MudText>
         </div>
 
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Исключённые события</MudText>
+        <MudText Typo="Typo.caption" Style="opacity:.55" Class="mb-3 d-block">
+            События, в названии которых есть любая из фраз ниже, не будут показаны в ворклогах.
+        </MudText>
+
+        <MudTextField T="string" @bind-Value="_newPhrase"
+                      Label="Добавить фразу"
+                      Placeholder="например: Обед"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Add"
+                      OnAdornmentClick="AddPhrase"
+                      @onkeydown="OnPhraseKeyDown"
+                      Immediate="true" />
+
+        @if (_excludedPhrases.Count > 0)
+        {
+            <MudChipSet AllClosable="true" OnClose="OnChipClose" Class="mt-2 ycd-chips">
+                @foreach (var phrase in _excludedPhrases)
+                {
+                    <MudChip Text="@phrase" Size="Size.Small" Color="Color.Default" />
+                }
+            </MudChipSet>
+        }
+
         @if (_testResult is not null)
         {
             <MudAlert Severity="@_testResult.AlertSeverity"
@@ -112,5 +138,10 @@
         opacity: .45;
         flex-shrink: 0;
         margin-top: 1px;
+    }
+
+    .ycd-chips {
+        flex-wrap: wrap;
+        gap: 4px;
     }
 </style>

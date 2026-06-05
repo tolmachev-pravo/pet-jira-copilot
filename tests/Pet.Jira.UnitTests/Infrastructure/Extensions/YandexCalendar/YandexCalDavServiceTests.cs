@@ -41,7 +41,8 @@ END:VCALENDAR</C:calendar-data>
 
             var result = await svc.GetEventsAsync(
                 new YandexCalendarCredentials("user@yandex.ru", "pw"),
-                new DateOnly(2026, 6, 4));
+                new DateOnly(2026, 6, 4),
+                TimeZoneInfo.Utc);
 
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0].Summary, Is.EqualTo("Team sync PROJ-42"));
@@ -58,7 +59,8 @@ END:VCALENDAR</C:calendar-data>
 
             var result = await svc.GetEventsAsync(
                 new YandexCalendarCredentials("user@yandex.ru", "pw"),
-                new DateOnly(2026, 6, 4));
+                new DateOnly(2026, 6, 4),
+                TimeZoneInfo.Utc);
 
             Assert.That(result, Is.Empty);
         }

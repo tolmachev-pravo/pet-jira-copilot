@@ -1,10 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using Pet.Jira.Application.Extensions.YandexCalendar.Commands;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
@@ -25,6 +28,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
         private bool _showPassword;
         private bool _isTesting;
         private TestResultInfo? _testResult;
+        private List<string> _excludedPhrases = new();
+        private string _newPhrase = string.Empty;
 
         protected override void OnParametersSet()
         {
@@ -32,6 +37,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             {
                 _login = ExistingSettings.Login;
                 _appPassword = ExistingSettings.AppPassword;
+                _excludedPhrases = new List<string>(ExistingSettings.ExcludedPhrases);
             }
         }
 
@@ -61,12 +67,28 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             }
         }
 
+        private void AddPhrase()
+        {
+            var phrase = _newPhrase.Trim();
+            if (string.IsNullOrEmpty(phrase) || _excludedPhrases.Any(p => p.Equals(phrase, StringComparison.OrdinalIgnoreCase)))
+                return;
+            _excludedPhrases.Add(phrase);
+            _newPhrase = string.Empty;
+        }
+
+        private void OnPhraseKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter") AddPhrase();
+        }
+
+        private void OnChipClose(MudChip chip) => _excludedPhrases.Remove(chip.Text);
+
         private async Task Save()
         {
             await _form.Validate();
             if (!_form.IsValid) return;
 
-            var settings = new YandexCalendarSettingsDto(_login, _appPassword);
+            var settings = new YandexCalendarSettingsDto(_login, _appPassword, _excludedPhrases.AsReadOnly());
             await Mediator.Send(new UpsertYandexCalendarExtension.Command(Username, settings, IsEnabled: true));
             MudDialog.Close(DialogResult.Ok(settings));
         }

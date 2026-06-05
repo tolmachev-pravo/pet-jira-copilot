@@ -31,7 +31,8 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
             {
                 var stored = new StoredSettings(
                     request.Settings.Login,
-                    _protector.Protect(request.Settings.AppPassword));
+                    _protector.Protect(request.Settings.AppPassword),
+                    new System.Collections.Generic.List<string>(request.Settings.ExcludedPhrases));
 
                 var existing = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
 
@@ -50,7 +51,10 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 return Unit.Value;
             }
 
-            private record StoredSettings(string Login, string AppPasswordEncrypted);
+            private record StoredSettings(
+                string Login,
+                string AppPasswordEncrypted,
+                System.Collections.Generic.List<string>? ExcludedPhrases = null);
         }
     }
 }

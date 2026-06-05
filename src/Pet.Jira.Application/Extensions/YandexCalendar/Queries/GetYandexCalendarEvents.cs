@@ -55,6 +55,8 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
                     ct);
 
                 return utcEvents
+                    .Where(e => !settings.ExcludedPhrases.Any(p =>
+                        e.Summary.Contains(p, StringComparison.OrdinalIgnoreCase)))
                     .Select(e => e with
                     {
                         Start = TimeZoneInfo.ConvertTimeFromUtc(e.Start, userTimeZone),

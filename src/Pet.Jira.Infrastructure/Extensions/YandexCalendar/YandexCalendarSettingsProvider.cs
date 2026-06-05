@@ -30,9 +30,15 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             if (stored is null) return null;
 
             var plainPassword = _protector.Unprotect(stored.AppPasswordEncrypted);
-            return new YandexCalendarSettingsDto(stored.Login, plainPassword);
+            return new YandexCalendarSettingsDto(
+                stored.Login,
+                plainPassword,
+                stored.ExcludedPhrases ?? new System.Collections.Generic.List<string>());
         }
 
-        private record StoredSettings(string Login, string AppPasswordEncrypted);
+        private record StoredSettings(
+            string Login,
+            string AppPasswordEncrypted,
+            System.Collections.Generic.List<string>? ExcludedPhrases = null);
     }
 }
