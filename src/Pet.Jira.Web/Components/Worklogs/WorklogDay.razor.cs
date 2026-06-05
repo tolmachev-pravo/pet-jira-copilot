@@ -106,12 +106,16 @@ namespace Pet.Jira.Web.Components.Worklogs
                 _isLoadingCalendar = false;
             }
 
-            // Virtual calendar worklogs are excluded — they show as CalendarEventItem rows, not ActualWorklogItem
+            // Virtual calendar worklogs show as CalendarEventItem; all real worklogs (including matched children) are included
             var worklogRows = Entity.ActualWorklogs
-                .Where(w => w.Parent == null && !w.IsVirtualCalendar)
+                .Where(w => !w.IsVirtualCalendar)
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
+            var estimatedRows = Entity.EstimatedWorklogs
+                .Select(w => new DayRow(w.RawStartDate, EstimatedWorklog: w));
+
             _dayRows = worklogRows
+                .Concat(estimatedRows)
                 .Concat(calRows)
                 .OrderBy(r => r.Time)
                 .ToList();
@@ -168,6 +172,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private record DayRow(
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
+            WorkingDayWorklog? EstimatedWorklog = null,
             YandexCalendarEventDto? CalendarEvent = null,
             bool IsCalendarEventLogged = false);
     }

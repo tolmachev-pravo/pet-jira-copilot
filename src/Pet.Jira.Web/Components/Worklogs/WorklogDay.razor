@@ -31,24 +31,6 @@
     </td>
 </tr>
 
-@* Estimated worklogs — unchanged *@
-@foreach (var entity in Entity.EstimatedWorklogs)
-{
-    <tr>
-        <td>
-            <WorklogItem Entity="@entity" OnAddPressed="AddWorklogAsync" />
-        </td>
-    </tr>
-    @foreach (var child in entity.Children)
-    {
-        <tr>
-            <td>
-                <EstimatedActualWorklogItem Entity="@child" />
-            </td>
-        </tr>
-    }
-}
-
 @if (_isLoadingCalendar)
 {
     <tr>
@@ -58,14 +40,25 @@
     </tr>
 }
 
-@* Actual worklogs merged with calendar events, sorted by time *@
+@* All rows unified and sorted by time *@
 @foreach (var row in _dayRows)
 {
     <tr>
         <td>
-            @if (row.Worklog is not null)
+            @if (row.EstimatedWorklog is not null)
             {
-                <ActualWorklogItem Entity="@row.Worklog" />
+                <WorklogItem Entity="@row.EstimatedWorklog" OnAddPressed="AddWorklogAsync" />
+            }
+            else if (row.Worklog is not null)
+            {
+                @if (row.Worklog.Parent is not null)
+                {
+                    <EstimatedActualWorklogItem Entity="@row.Worklog" />
+                }
+                else
+                {
+                    <ActualWorklogItem Entity="@row.Worklog" />
+                }
             }
             else if (row.CalendarEvent is not null)
             {
