@@ -19,6 +19,12 @@ using Pet.Jira.Infrastructure.Jira.Query;
 using Pet.Jira.Infrastructure.Storage;
 using Pet.Jira.Infrastructure.Users;
 using Pet.Jira.Infrastructure.Worklogs;
+using Pet.Jira.Application.Extensions;
+using Pet.Jira.Application.Extensions.YandexCalendar;
+using Pet.Jira.Application.Security;
+using Pet.Jira.Infrastructure.Extensions;
+using Pet.Jira.Infrastructure.Extensions.YandexCalendar;
+using Pet.Jira.Infrastructure.Security;
 
 namespace Pet.Jira.Infrastructure
 {
@@ -55,6 +61,13 @@ namespace Pet.Jira.Infrastructure
 			services.AddTransient<IArticleDataSource, ArticleDataSource>();
 
 			services.AddTransient<IUserRepository, UserRepository>();
+
+			services.AddDataProtection();
+			services.AddSingleton<ISecretProtector, DataProtectionSecretProtector>();
+
+			services.AddHttpClient<IYandexCalendarService, YandexCalDavService>();
+			services.AddTransient<IUserExtensionRepository, UserExtensionRepository>();
+			services.AddTransient<IYandexCalendarSettingsProvider, YandexCalendarSettingsProvider>();
 
 			return services;
         }

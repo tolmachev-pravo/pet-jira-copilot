@@ -1,0 +1,37 @@
+<MudPaper Elevation="0" Class="@($"extv-glow__card {(_isEnabled ? "extv-glow__card--on" : null)}")">
+    <div class="extv-glow__card-top">
+        <div class="extv-glow__icon">
+            <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" />
+        </div>
+        <div class="@($"extv-glow__status extv-glow__status--{(_isEnabled ? "connected" : _hasSettings ? "off" : "available")}")">
+            <span class="extv-glow__led"></span>
+            @(_isEnabled ? "Активен" : _hasSettings ? "Отключён" : "Не настроен")
+        </div>
+    </div>
+
+    <MudText Typo="Typo.h6" Class="mt-3" Style="font-weight:600">Яндекс Календарь</MudText>
+    <MudText Typo="Typo.body2" Style="opacity:.65" Class="mt-1">
+        Списывайте время из событий Яндекс.Календаря
+    </MudText>
+
+    <div class="extv-glow__foot">
+        @if (!_hasSettings)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" FullWidth="true"
+                       StartIcon="@Icons.Material.Filled.AddLink"
+                       OnClick="OpenSettingsDialog">
+                Подключить
+            </MudButton>
+        }
+        else
+        {
+            <MudSwitch T="bool" Checked="_isEnabled" Color="Color.Success" CheckedChanged="OnToggleChangedAsync" />
+            <MudSpacer />
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Size="Size.Small"
+                       StartIcon="@Icons.Material.Filled.Tune"
+                       OnClick="OpenSettingsDialog">
+                Настроить
+            </MudButton>
+        }
+    </div>
+</MudPaper>

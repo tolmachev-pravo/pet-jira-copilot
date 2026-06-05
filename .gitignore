@@ -369,3 +369,6 @@ FodyWeavers.xsd
 
 # Local docs (specs, plans) — not tracked
 docs/
+
+# Superpowers plugin workspace
+.superpowers/

@@ -1,7 +1,6 @@
-﻿@using Pet.Jira.Web.Common;
-
-<style>
-</style>
+@using Pet.Jira.Web.Common
+@using Pet.Jira.Application.Extensions.YandexCalendar.Dto
+@using MudBlazor
 
 <tr class="pet-table-summary-tr">
     <td>
@@ -31,27 +30,46 @@
         </MudPaper>
     </td>
 </tr>
-@foreach (var entity in Entity.EstimatedWorklogs)
+
+@if (_isLoadingCalendar)
 {
     <tr>
         <td>
-            <WorklogItem Entity="@entity" OnAddPressed="AddWorklogAsync" />
+            <MudProgressLinear Color="Color.Success" Indeterminate="true" Size="Size.Small" Class="my-1" />
         </td>
     </tr>
-    @foreach (var child in entity.Children)
-    {
-        <tr>
-            <td>
-                <EstimatedActualWorklogItem Entity="@child" />
-            </td>
-        </tr>
-    }
 }
-@foreach (var entity in Entity.ActualWorklogs.Where(item => item.Parent == null))
+
+@* All rows unified and sorted by time *@
+@foreach (var row in _dayRows)
 {
     <tr>
         <td>
-            <ActualWorklogItem Entity="@entity" />
+            @if (row.EstimatedWorklog is not null)
+            {
+                <WorklogItem Entity="@row.EstimatedWorklog" OnAddPressed="AddWorklogAsync" />
+                @foreach (var child in row.EstimatedWorklog.Children.Where(c => !c.IsVirtualCalendar))
+                {
+                    <EstimatedActualWorklogItem Entity="@child" />
+                }
+            }
+            else if (row.Worklog is not null)
+            {
+                <ActualWorklogItem Entity="@row.Worklog" />
+            }
+            else if (row.CalendarEvent is not null)
+            {
+                <CalendarEventItem Entity="@row.CalendarEvent"
+                                   IsLogged="@row.IsCalendarEventLogged"
+                                   OnLogPressed="OpenCalendarWorklogDialog" />
+                @if (row.CalendarChildren is { Count: > 0 })
+                {
+                    @foreach (var child in row.CalendarChildren)
+                    {
+                        <EstimatedActualWorklogItem Entity="@child" />
+                    }
+                }
+            }
         </td>
     </tr>
 }

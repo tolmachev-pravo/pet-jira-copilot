@@ -1,0 +1,194 @@
+<MudDialog>
+    <DialogContent>
+
+        <div class="ycd-header">
+            <MudPaper Elevation="0" Class="ycd-icon-wrap">
+                <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Style="font-size:1.75rem" Color="Color.Success" />
+            </MudPaper>
+            <div>
+                <MudText Typo="Typo.h6" Style="font-weight:700;line-height:1.2">Яндекс Календарь</MudText>
+                <MudText Typo="Typo.caption" Style="opacity:.55">CalDAV · подключение</MudText>
+            </div>
+        </div>
+
+        <MudDivider Class="my-4" />
+
+        <MudForm @ref="_form">
+            <MudTextField T="string" @bind-Value="_login"
+                          Label="Логин (email Яндекс)"
+                          Placeholder="user@yandex.ru"
+                          Required="true" RequiredError="Обязательное поле"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.AlternateEmail"
+                          Class="mb-4" />
+
+            <MudTextField T="string" @bind-Value="_appPassword"
+                          Label="Пароль приложения"
+                          InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                          Required="true" RequiredError="Обязательное поле"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                          OnAdornmentClick="@(() => _showPassword = !_showPassword)"
+                          AdornmentAriaLabel="Показать пароль" />
+        </MudForm>
+
+        <div class="ycd-hint mt-2">
+            <MudIcon Icon="@Icons.Material.Outlined.Info" Size="Size.Small" Class="ycd-hint-icon" />
+            <MudText Typo="Typo.caption" Style="opacity:.6">
+                Обычный пароль не подходит. Создайте пароль приложения в&nbsp;<MudLink Href="https://id.yandex.ru/security/app-passwords" Target="_blank" Typo="Typo.caption">Яндекс ID → Пароли приложений</MudLink>.
+            </MudText>
+        </div>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Исключённые события</MudText>
+        <MudText Typo="Typo.caption" Style="opacity:.55" Class="mb-3 d-block">
+            События, в названии которых есть любая из фраз ниже, не будут показаны в ворклогах.
+        </MudText>
+
+        <MudTextField T="string" @bind-Value="_newPhrase"
+                      Label="Добавить фразу"
+                      Placeholder="например: Обед"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Add"
+                      OnAdornmentClick="AddPhrase"
+                      @onkeydown="OnPhraseKeyDown"
+                      Immediate="true" />
+
+        @if (_excludedPhrases.Count > 0)
+        {
+            <MudChipSet AllClosable="true" OnClose="OnChipClose" Class="mt-2 ycd-chips">
+                @foreach (var phrase in _excludedPhrases)
+                {
+                    <MudChip Text="@phrase" Size="Size.Small" Color="Color.Default" />
+                }
+            </MudChipSet>
+        }
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Маппинг задач</MudText>
+        <MudText Typo="Typo.caption" Style="opacity:.55" Class="mb-3 d-block">
+            Событие с точным совпадением названия получит указанную задачу Jira автоматически.
+        </MudText>
+
+        <div class="d-flex gap-2 align-end">
+            <MudTextField T="string" @bind-Value="_newMappingPhrase"
+                          Label="Название события"
+                          Placeholder="например: Core Daily Sync"
+                          @onkeydown="OnMappingKeyDown"
+                          Immediate="true"
+                          Style="flex:2" />
+            <MudTextField T="string" @bind-Value="_newMappingIssueKey"
+                          Label="Ключ задачи"
+                          Placeholder="CASEM-73656"
+                          @onkeydown="OnMappingKeyDown"
+                          Immediate="true"
+                          Style="flex:1" />
+            <MudIconButton Icon="@Icons.Material.Filled.Add"
+                           Color="Color.Primary"
+                           OnClick="AddMapping"
+                           Class="mb-1" />
+        </div>
+
+        @if (_issueMappings.Count > 0)
+        {
+            <div class="mt-2">
+                @foreach (var mapping in _issueMappings)
+                {
+                    <div class="d-flex align-center gap-2 py-1">
+                        <MudText Typo="Typo.body2" Style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            @mapping.Phrase
+                        </MudText>
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" Style="opacity:.45;flex-shrink:0" />
+                        <MudText Typo="Typo.body2" Color="Color.Primary" Style="flex-shrink:0">
+                            @mapping.IssueKey
+                        </MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="Size.Small"
+                                       OnClick="@(() => RemoveMapping(mapping))" />
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_testResult is not null)
+        {
+            <MudAlert Severity="@_testResult.AlertSeverity"
+                      Dense="true"
+                      ShowCloseIcon="true"
+                      CloseIconClicked="@(() => _testResult = null)"
+                      Class="mt-3">
+                @_testResult.Message
+            </MudAlert>
+        }
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="TestConnectionAsync"
+                   Disabled="@_isTesting"
+                   Variant="Variant.Text"
+                   StartIcon="@(_isTesting ? null : Icons.Material.Filled.WifiTethering)"
+                   Size="Size.Small">
+            @if (_isTesting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>Проверка…</span>
+            }
+            else
+            {
+                <span>Проверить</span>
+            }
+        </MudButton>
+
+        <MudSpacer />
+
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Disabled="@_isTesting">
+            Отмена
+        </MudButton>
+        <MudButton OnClick="Save"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Check"
+                   Disabled="@_isTesting">
+            Сохранить
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .ycd-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .ycd-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: color-mix(in srgb, var(--mud-palette-success) 14%, transparent);
+    }
+
+    .ycd-hint {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .ycd-hint-icon {
+        opacity: .45;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .ycd-chips {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+</style>
