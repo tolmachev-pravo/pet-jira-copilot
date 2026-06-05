@@ -34,5 +34,16 @@ namespace Pet.Jira.Infrastructure.Articles
 
             return articleEntity;
         }
+
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var entity = await _dbContext.Articles.FindAsync(new object[] { id }, cancellationToken);
+            if (entity == null)
+                return false;
+
+            _dbContext.Articles.Remove(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return true;
+        }
     }
 }
