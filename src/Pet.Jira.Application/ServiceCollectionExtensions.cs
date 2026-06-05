@@ -21,7 +21,7 @@ namespace Pet.Jira.Application
             services.AddSingleton<IMemoryCache<string, UserTheme>, UserThemeMemoryCache>();
             services.AddSingleton<IMemoryCache<string, UserWorklogFilter>, UserWorklogFilterMemoryCache>();
 
-			services.AddMediatR(Assembly.GetExecutingAssembly());
+			services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 			services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
