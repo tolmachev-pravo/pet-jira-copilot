@@ -94,7 +94,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             await _filterStorage.UpdateAsync(user?.Key, filter);
         }
 
-        private async Task<IEnumerable<IssueStatus>> SearchIssueStatuses(string value)
+        private async Task<IEnumerable<IssueStatus>> SearchIssueStatuses(string value, System.Threading.CancellationToken cancellationToken)
         {
             try
             {

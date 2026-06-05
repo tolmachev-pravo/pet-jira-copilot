@@ -57,10 +57,10 @@
 
         @if (_excludedPhrases.Count > 0)
         {
-            <MudChipSet AllClosable="true" OnClose="OnChipClose" Class="mt-2 ycd-chips">
+            <MudChipSet T="string" AllClosable="true" OnClose="OnChipClose" Class="mt-2 ycd-chips">
                 @foreach (var phrase in _excludedPhrases)
                 {
-                    <MudChip Text="@phrase" Size="Size.Small" Color="Color.Default" />
+                    <MudChip T="string" Value="@phrase" Text="@phrase" Size="Size.Small" Color="Color.Default" />
                 }
             </MudChipSet>
         }

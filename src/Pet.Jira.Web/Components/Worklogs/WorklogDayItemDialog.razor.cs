@@ -107,7 +107,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value)
+        private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value, System.Threading.CancellationToken cancellationToken)
         {
             try
             {

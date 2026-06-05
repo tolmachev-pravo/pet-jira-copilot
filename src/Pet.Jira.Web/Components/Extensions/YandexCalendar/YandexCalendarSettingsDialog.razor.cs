@@ -85,7 +85,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             if (e.Key == "Enter") AddPhrase();
         }
 
-        private void OnChipClose(MudChip chip) => _excludedPhrases.Remove(chip.Text);
+        private void OnChipClose(MudChip<string> chip) => _excludedPhrases.Remove(chip.Text);
 
         private void AddMapping()
         {
