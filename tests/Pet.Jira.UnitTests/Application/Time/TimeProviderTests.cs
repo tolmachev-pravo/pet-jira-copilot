@@ -9,7 +9,7 @@ namespace Pet.Jira.UnitTests.Application.Time
         [SetUp]
         public void Setup()
         {
-            _timeProvider = new TimeProvider();
+            _timeProvider = new Pet.Jira.Application.Time.TimeProvider();
         }
 
         [Test]
