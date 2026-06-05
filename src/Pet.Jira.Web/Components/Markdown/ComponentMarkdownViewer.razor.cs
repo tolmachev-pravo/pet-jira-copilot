@@ -1,5 +1,4 @@
-﻿using Markdig.Syntax.Inlines;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Threading.Tasks;
@@ -26,6 +25,5 @@ namespace Pet.Jira.Web.Components.Markdown
             }            
         }
 
-        private static string OverrideLink(LinkInline x) => x.Url;
     }
 }

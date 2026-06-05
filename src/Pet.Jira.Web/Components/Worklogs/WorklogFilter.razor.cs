@@ -94,11 +94,11 @@ namespace Pet.Jira.Web.Components.Worklogs
             await _filterStorage.UpdateAsync(user?.Key, filter);
         }
 
-        private async Task<IEnumerable<IssueStatus>> SearchIssueStatuses(string value)
+        private async Task<IEnumerable<IssueStatus>> SearchIssueStatuses(string value, System.Threading.CancellationToken cancellationToken)
         {
             try
             {
-                var result = await Mediator.Send(new GetIssueStatuses.Query());
+                var result = await Mediator.Send(new GetIssueStatuses.Query(), cancellationToken);
 
                 if (string.IsNullOrEmpty(value)
                     || value.Equals(_model.Filter.IssueStatus?.Name, StringComparison.InvariantCultureIgnoreCase))

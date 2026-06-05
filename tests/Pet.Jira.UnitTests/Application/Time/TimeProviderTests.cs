@@ -9,7 +9,7 @@ namespace Pet.Jira.UnitTests.Application.Time
         [SetUp]
         public void Setup()
         {
-            _timeProvider = new TimeProvider();
+            _timeProvider = new Pet.Jira.Application.Time.TimeProvider();
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace Pet.Jira.UnitTests.Application.Time
             var result = _timeProvider.ConvertToUserTimezone(dateTime, userTimeZone);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace Pet.Jira.UnitTests.Application.Time
             var result = _timeProvider.ConvertToServerTimezone(dateTime, userTimeZone);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]

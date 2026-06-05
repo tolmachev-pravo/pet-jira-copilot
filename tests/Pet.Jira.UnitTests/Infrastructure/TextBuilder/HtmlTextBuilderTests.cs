@@ -18,7 +18,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.TextBuilder
         [TestCase(null, "site url", $"<a href=\"\">site url</a> ")]
         [TestCase("https://localhost.ru", null, $"<a href=\"https://localhost.ru\"></a> ")]
         [TestCase(null, null, $"<a href=\"\"></a> ")]
-        public void AddLink_Should_BeCorrect(string href, string value, string expected)
+        public void AddLink_Should_BeCorrect(string? href, string? value, string expected)
         {
             // Arrange
             // Act
@@ -34,7 +34,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.TextBuilder
         [TestCase("text ", "text")]
         [TestCase(" ", "")]
         [TestCase(" ", null)]
-        public void AddText_Should_BeCorrect(string expected, string text, params TextOption[] options)
+        public void AddText_Should_BeCorrect(string expected, string? text, params TextOption[] options)
         {
             // Arrange
             // Act

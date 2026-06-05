@@ -29,7 +29,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 _protector = protector;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken ct)
+            public async Task Handle(Command request, CancellationToken ct)
             {
                 var stored = new StoredSettings(
                     request.Settings.Login,
@@ -53,7 +53,6 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 entity.UpdatedAt = DateTime.UtcNow;
 
                 await _repository.UpsertAsync(entity, ct);
-                return Unit.Value;
             }
 
             private record StoredMapping(string Phrase, string IssueKey);

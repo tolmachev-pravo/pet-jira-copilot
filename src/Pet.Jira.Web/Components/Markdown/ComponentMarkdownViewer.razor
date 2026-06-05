@@ -1,6 +1,4 @@
-﻿@using Markdig.Syntax.Inlines
-
-<style>
+﻿<style>
     .mud-markdown-body p {
         margin-bottom: 0em !important;
         text-align: left !important;
@@ -10,8 +8,5 @@
 </style>
 
 <MudElement Class="d-flex flex-wrap gap-4 border-none">
-    <MudMarkdown Value="@Value"
-                 TableCellMinWidth="100"
-                 OverrideLinkUrl="OverrideLink"
-                 CodeBlockTheme="CodeBlockTheme.DraculaBase16" />
+    <MudMarkdown Value="@Value" />
 </MudElement>

@@ -32,7 +32,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 
 			// Act
 			// Assert
-			Assert.DoesNotThrow(() => WorklogMatching.Match(parents, children));
+			Assert.That(() => WorklogMatching.Match(parents, children), Throws.Nothing);
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 
 			// Act
 			// Assert
-			Assert.DoesNotThrow(() => WorklogMatching.Match(parents, children));
+			Assert.That(() => WorklogMatching.Match(parents, children), Throws.Nothing);
 		}
 
 		[Test]
@@ -62,7 +62,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
 
 			// Act
 			// Assert
-			Assert.DoesNotThrow(() => WorklogMatching.Match(parents, children));
+			Assert.That(() => WorklogMatching.Match(parents, children), Throws.Nothing);
 		}
 
 		[Test]

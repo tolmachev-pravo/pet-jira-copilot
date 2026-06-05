@@ -26,7 +26,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public string Label { get; set; } = "Default";
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
-        [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+        [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 
         [Inject] private IMemoryCache<string, Issue> IssueCache { get; set; }
 		[Inject] private IIssueDataSource IssueDataSource { get; set; }
@@ -107,17 +107,17 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value)
+        private async Task<IEnumerable<Issue>> SearchIssuesAsync(string value, System.Threading.CancellationToken cancellationToken)
         {
             try
             {
                 if (!string.IsNullOrWhiteSpace(value)
 					&& value.IsJiraKey())
                 {
-                    var issue = await IssueDataSource.GetIssueAsync(value);
+                    var issue = await IssueDataSource.GetIssueAsync(value, cancellationToken);
                     return issue is null
-                        ? Array.Empty<Issue>()
-                        : new[] { issue };
+                        ? []
+						: new[] { issue };
 				}
                 else
                 {
@@ -136,7 +136,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private async Task SubmitAsync()
         {
-            await _form.Validate();
+            await _form.ValidateAsync();
             if (!_form.IsValid)
                 return;
 

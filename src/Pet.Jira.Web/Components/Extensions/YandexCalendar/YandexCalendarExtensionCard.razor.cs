@@ -66,7 +66,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             var dialog = await DialogService.ShowAsync<YandexCalendarSettingsDialog>(
                 "Яндекс Календарь — настройки", parameters);
             var result = await dialog.Result;
-            if (!result.Cancelled)
+            if (!result.Canceled)
             {
                 _hasSettings = result.Data is YandexCalendarSettingsDto;
                 _isEnabled = _hasSettings;

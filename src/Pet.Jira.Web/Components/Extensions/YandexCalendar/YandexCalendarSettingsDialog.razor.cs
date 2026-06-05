@@ -14,7 +14,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 {
     public partial class YandexCalendarSettingsDialog : ComponentBase
     {
-        [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+        [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
         [Parameter] public string Username { get; set; } = string.Empty;
         [Parameter] public YandexCalendarSettingsDto? ExistingSettings { get; set; }
@@ -40,8 +40,8 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             {
                 _login = ExistingSettings.Login;
                 _appPassword = ExistingSettings.AppPassword;
-                _excludedPhrases = new List<string>(ExistingSettings.ExcludedPhrases);
-                _issueMappings = new List<YandexCalendarIssueMapping>(ExistingSettings.IssueMappings);
+                _excludedPhrases = [.. ExistingSettings.ExcludedPhrases];
+                _issueMappings = [.. ExistingSettings.IssueMappings];
             }
         }
 
@@ -85,7 +85,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
             if (e.Key == "Enter") AddPhrase();
         }
 
-        private void OnChipClose(MudChip chip) => _excludedPhrases.Remove(chip.Text);
+        private void OnChipClose(MudChip<string> chip) => _excludedPhrases.Remove(chip.Text);
 
         private void AddMapping()
         {
@@ -109,7 +109,7 @@ namespace Pet.Jira.Web.Components.Extensions.YandexCalendar
 
         private async Task Save()
         {
-            await _form.Validate();
+            await _form.ValidateAsync();
             if (!_form.IsValid) return;
 
             var settings = new YandexCalendarSettingsDto(

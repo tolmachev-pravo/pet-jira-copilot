@@ -1,5 +1,6 @@
 using Pet.Jira.Application.Extensions;
 using Pet.Jira.Application.Extensions.YandexCalendar;
+using System.Security.Cryptography;
 using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
 using Pet.Jira.Application.Security;
 using Pet.Jira.Domain.Entities.Extensions;
@@ -31,7 +32,17 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             var stored = JsonSerializer.Deserialize<StoredSettings>(entity.Settings);
             if (stored is null) return null;
 
-            var plainPassword = _protector.Unprotect(stored.AppPasswordEncrypted);
+            string plainPassword;
+            try
+            {
+                plainPassword = _protector.Unprotect(stored.AppPasswordEncrypted);
+            }
+            catch (CryptographicException)
+            {
+                // Stored password was encrypted with a different key (e.g. after app restart or migration).
+                // Treat as missing so the user can re-enter credentials.
+                return null;
+            }
 
             var mappings = stored.IssueMappings?
                 .Select(m => new YandexCalendarIssueMapping(m.Phrase, m.IssueKey))
