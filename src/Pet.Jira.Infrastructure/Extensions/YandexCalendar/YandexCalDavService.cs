@@ -28,10 +28,11 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
         public async Task<IReadOnlyList<YandexCalendarEventDto>> GetEventsAsync(
             YandexCalendarCredentials credentials,
             DateOnly date,
+            TimeZoneInfo userTimeZone,
             CancellationToken ct = default)
         {
             var url = string.Format(CalDavBaseUrl, credentials.Login);
-            var body = BuildReportBody(date);
+            var body = BuildReportBody(date, userTimeZone);
 
             var request = new HttpRequestMessage(new HttpMethod("REPORT"), url)
             {
@@ -50,10 +51,10 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             return ParseCalDavResponse(xml, date);
         }
 
-        private static string BuildReportBody(DateOnly date)
+        private static string BuildReportBody(DateOnly date, TimeZoneInfo userTimeZone)
         {
-            var start = date.ToDateTime(TimeOnly.MinValue).ToUniversalTime().ToString("yyyyMMdd'T'HHmmss") + "Z";
-            var end = date.AddDays(1).ToDateTime(TimeOnly.MinValue).ToUniversalTime().ToString("yyyyMMdd'T'HHmmss") + "Z";
+            var start = TimeZoneInfo.ConvertTimeToUtc(date.ToDateTime(TimeOnly.MinValue), userTimeZone).ToString("yyyyMMdd'T'HHmmss") + "Z";
+            var end = TimeZoneInfo.ConvertTimeToUtc(date.AddDays(1).ToDateTime(TimeOnly.MinValue), userTimeZone).ToString("yyyyMMdd'T'HHmmss") + "Z";
             return $@"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <C:calendar-query xmlns:D=""DAV:"" xmlns:C=""urn:ietf:params:xml:ns:caldav"">
   <D:prop><D:getetag/><C:calendar-data/></D:prop>
@@ -88,8 +89,8 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
                 {
                     if (occurrence.Source is not CalendarEvent vevent) continue;
 
-                    var start = occurrence.Period.StartTime.AsSystemLocal;
-                    var end = occurrence.Period.EndTime?.AsSystemLocal ?? start;
+                    var start = occurrence.Period.StartTime.AsUtc;
+                    var end = occurrence.Period.EndTime?.AsUtc ?? start;
                     var summary = vevent.Summary ?? string.Empty;
                     var description = vevent.Description ?? string.Empty;
                     var match = JiraKeyRegex.Match(summary + " " + description);

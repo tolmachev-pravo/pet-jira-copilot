@@ -20,6 +20,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
                 var events = await _calendar.GetEventsAsync(
                     new YandexCalendarCredentials(request.Login, request.AppPassword),
                     DateOnly.FromDateTime(DateTime.Today),
+                    TimeZoneInfo.Local,
                     ct);
                 return events.Count;
             }

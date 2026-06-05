@@ -48,7 +48,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                 {
                     var events = await Mediator.Send(
                         new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
-                    calRows = events.Select(e => new DayRow(e.StartLocal, CalendarEvent: e));
+                    calRows = events.Select(e => new DayRow(e.Start, CalendarEvent: e));
                 }
             }
             catch
@@ -85,10 +85,10 @@ namespace Pet.Jira.Web.Components.Worklogs
         {
             var template = new WorkingDayWorklog
             {
-                StartDate = calEvent.StartLocal,
-                CompleteDate = calEvent.EndLocal,
-                RawStartDate = calEvent.StartLocal,
-                RawCompleteDate = calEvent.EndLocal,
+                StartDate = calEvent.Start,
+                CompleteDate = calEvent.End,
+                RawStartDate = calEvent.Start,
+                RawCompleteDate = calEvent.End,
                 Comment = calEvent.Summary,
                 Type = Domain.Models.Worklogs.WorklogType.Actual,
                 Source = Domain.Models.Worklogs.WorklogSource.Calendar

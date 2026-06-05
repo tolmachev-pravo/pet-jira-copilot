@@ -13,6 +13,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar
         Task<IReadOnlyList<YandexCalendarEventDto>> GetEventsAsync(
             YandexCalendarCredentials credentials,
             DateOnly date,
+            TimeZoneInfo userTimeZone,
             CancellationToken ct = default);
     }
 }
