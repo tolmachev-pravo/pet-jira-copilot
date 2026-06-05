@@ -49,6 +49,15 @@
     }
 }
 
+@if (_isLoadingCalendar)
+{
+    <tr>
+        <td>
+            <MudProgressLinear Color="Color.Success" Indeterminate="true" Size="Size.Small" Class="my-1" />
+        </td>
+    </tr>
+}
+
 @* Actual worklogs merged with calendar events, sorted by time *@
 @foreach (var row in _dayRows)
 {

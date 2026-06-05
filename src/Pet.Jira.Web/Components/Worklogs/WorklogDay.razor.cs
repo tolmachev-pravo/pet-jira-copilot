@@ -29,6 +29,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         public Color Color => Entity.IsWeekend ? Color.Error : Color.Default;
 
         private List<DayRow> _dayRows = new();
+        private bool _isLoadingCalendar = true;
 
         protected override async Task OnInitializedAsync()
         {
@@ -60,6 +61,10 @@ namespace Pet.Jira.Web.Components.Worklogs
             catch
             {
                 // Calendar unavailable — show worklogs only, silently
+            }
+            finally
+            {
+                _isLoadingCalendar = false;
             }
 
             _dayRows = worklogRows
