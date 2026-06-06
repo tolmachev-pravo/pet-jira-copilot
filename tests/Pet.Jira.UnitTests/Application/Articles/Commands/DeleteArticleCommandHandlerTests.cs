@@ -51,6 +51,7 @@ namespace Pet.Jira.UnitTests.Application.Articles.Commands
 
             // Assert
             Assert.That(result, Is.False);
+            _repository.Verify(r => r.DeleteAsync(id, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
