@@ -26,6 +26,8 @@ using Pet.Jira.Application.Security;
 using Pet.Jira.Infrastructure.Extensions;
 using Pet.Jira.Infrastructure.Extensions.YandexCalendar;
 using Pet.Jira.Infrastructure.Security;
+using Pet.Jira.Application.Events;
+using Pet.Jira.Infrastructure.Events;
 
 namespace Pet.Jira.Infrastructure
 {
@@ -72,6 +74,11 @@ namespace Pet.Jira.Infrastructure
 			services.AddHttpClient<IYandexCalendarService, YandexCalDavService>();
 			services.AddTransient<IUserExtensionRepository, UserExtensionRepository>();
 			services.AddTransient<IYandexCalendarSettingsProvider, YandexCalendarSettingsProvider>();
+
+			services.AddTransient<IEventDataSource, YandexCalendarEventDataSource>();
+			services.AddTransient<IEventDataSource, JiraCommentEventDataSource>();
+			services.AddTransient<IEventDataSource, JiraTaskEventDataSource>();
+			services.AddTransient<IEventDataSource, JiraTesterEventDataSource>();
 
 			return services;
         }
