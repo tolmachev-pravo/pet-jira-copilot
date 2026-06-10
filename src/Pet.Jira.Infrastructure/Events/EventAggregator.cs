@@ -31,7 +31,9 @@ namespace Pet.Jira.Infrastructure.Events
             foreach (var e in allEvents)
             {
                 var startDay = DateOnly.FromDateTime(e.Start);
-                var endDay = DateOnly.FromDateTime(e.End);
+                var endDay = e.End.TimeOfDay == TimeSpan.Zero
+                    ? DateOnly.FromDateTime(e.End).AddDays(-1)
+                    : DateOnly.FromDateTime(e.End);
                 var loopStart = startDay < from ? from : startDay;
                 var loopEnd = endDay > to ? to : endDay;
 

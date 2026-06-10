@@ -2,6 +2,7 @@ using Moq;
 using NUnit.Framework;
 using Pet.Jira.Application.Events;
 using Pet.Jira.Domain.Models.Events;
+using Pet.Jira.Infrastructure.Events;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -14,14 +15,14 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
     {
         private Mock<IEventDataSource> _source1Mock;
         private Mock<IEventDataSource> _source2Mock;
-        private Pet.Jira.Infrastructure.Events.EventAggregator _sut;
+        private EventAggregator _sut;
 
         [SetUp]
         public void SetUp()
         {
             _source1Mock = new Mock<IEventDataSource>();
             _source2Mock = new Mock<IEventDataSource>();
-            _sut = new Pet.Jira.Infrastructure.Events.EventAggregator(
+            _sut = new EventAggregator(
                 new[] { _source1Mock.Object, _source2Mock.Object });
         }
 
@@ -125,6 +126,29 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
 
             Assert.That(result[from][0], Is.EqualTo(earlierEvent));
             Assert.That(result[from][1], Is.EqualTo(laterEvent));
+        }
+
+        [Test]
+        public async Task GetEventsAsync_EventEndingAtMidnight_BucketedOnStartDay()
+        {
+            var from = new DateOnly(2026, 6, 1);
+            var to = new DateOnly(2026, 6, 2);
+            var midnightEndEvent = new Event(
+                new DateTime(2026, 6, 1, 10, 0, 0),
+                new DateTime(2026, 6, 2, 0, 0, 0),
+                "Status period", null, null, null, EventSource.Task);
+
+            _source1Mock
+                .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Event> { midnightEndEvent });
+            _source2Mock
+                .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Event>());
+
+            var result = await _sut.GetEventsAsync(from, to, CancellationToken.None);
+
+            Assert.That(result[new DateOnly(2026, 6, 1)], Contains.Item(midnightEndEvent));
+            Assert.That(result[new DateOnly(2026, 6, 2)], Is.Empty);
         }
     }
 }
