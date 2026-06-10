@@ -75,6 +75,7 @@ namespace Pet.Jira.Infrastructure.Events
                             Start: start,
                             End: end,
                             Title: issue.Name,
+                            Key: null,
                             Description: null,
                             Link: issue.Link != null ? new Uri(issue.Link) : null,
                             Issue: issue.Adapt(),

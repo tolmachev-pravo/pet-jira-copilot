@@ -7,6 +7,7 @@ namespace Pet.Jira.Domain.Models.Events
         DateTime Start,
         DateTime End,
         string Title,
+        string? Key,
         string? Description,
         Uri? Link,
         Issue? Issue,

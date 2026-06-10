@@ -34,7 +34,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var multiDayEvent = new Event(
                 new DateTime(2026, 6, 1, 10, 0, 0),
                 new DateTime(2026, 6, 3, 15, 0, 0),
-                "Task A", null, null, null, EventSource.Task);
+                "Task A", null, null, null, null, EventSource.Task);
 
             _source1Mock
                 .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
@@ -58,11 +58,11 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var calendarEvent = new Event(
                 new DateTime(2026, 6, 1, 9, 0, 0),
                 new DateTime(2026, 6, 1, 10, 0, 0),
-                "Meeting", null, null, null, EventSource.Calendar);
+                "Meeting", null, null, null, null, EventSource.Calendar);
             var taskEvent = new Event(
                 new DateTime(2026, 6, 1, 11, 0, 0),
                 new DateTime(2026, 6, 1, 13, 0, 0),
-                "Task B", null, null, null, EventSource.Task);
+                "Task B", null, null, null, null, EventSource.Task);
 
             _source1Mock
                 .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
@@ -86,7 +86,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var outsideEvent = new Event(
                 new DateTime(2026, 6, 1, 10, 0, 0),
                 new DateTime(2026, 6, 1, 11, 0, 0),
-                "Old event", null, null, null, EventSource.Calendar);
+                "Old event", null, null, null, null, EventSource.Calendar);
 
             _source1Mock
                 .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
@@ -109,11 +109,11 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var laterEvent = new Event(
                 new DateTime(2026, 6, 1, 14, 0, 0),
                 new DateTime(2026, 6, 1, 15, 0, 0),
-                "Later", null, null, null, EventSource.Task);
+                "Later", null, null, null, null, EventSource.Task);
             var earlierEvent = new Event(
                 new DateTime(2026, 6, 1, 9, 0, 0),
                 new DateTime(2026, 6, 1, 10, 0, 0),
-                "Earlier", null, null, null, EventSource.Calendar);
+                "Earlier", null, null, null, null, EventSource.Calendar);
 
             _source1Mock
                 .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))
@@ -136,7 +136,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var midnightEndEvent = new Event(
                 new DateTime(2026, 6, 1, 10, 0, 0),
                 new DateTime(2026, 6, 2, 0, 0, 0),
-                "Status period", null, null, null, EventSource.Task);
+                "Status period", null, null, null, null, EventSource.Task);
 
             _source1Mock
                 .Setup(s => s.GetEventsAsync(from, to, It.IsAny<CancellationToken>()))

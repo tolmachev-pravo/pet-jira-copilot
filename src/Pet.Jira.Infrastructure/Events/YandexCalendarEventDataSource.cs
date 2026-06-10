@@ -56,8 +56,9 @@ namespace Pet.Jira.Infrastructure.Events
                         Start: calEvent.Start,
                         End: calEvent.End,
                         Title: calEvent.Summary,
-                        Description: null,
-                        Link: null,
+                        Key: calEvent.Uid,
+                        Description: calEvent.Description,
+                        Link: calEvent.Url,
                         Issue: null,
                         Source: EventSource.Calendar));
                 }

@@ -75,7 +75,10 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
                 Summary: "Daily standup",
                 Start: new DateTime(2026, 6, 1, 9, 0, 0),
                 End: new DateTime(2026, 6, 1, 9, 30, 0),
-                JiraIssueKeyHint: null);
+                JiraIssueKeyHint: null,
+                Uid: null,
+                Description: null,
+                Url: null);
 
             _calendarServiceMock
                 .Setup(x => x.GetEventsAsync(

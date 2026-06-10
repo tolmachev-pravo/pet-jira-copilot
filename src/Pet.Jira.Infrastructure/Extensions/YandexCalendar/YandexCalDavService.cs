@@ -96,7 +96,14 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
                     var match = JiraKeyRegex.Match(summary + " " + description);
                     var hint = match.Success ? match.Value : null;
 
-                    result.Add(new YandexCalendarEventDto(summary, start, end, hint));
+                    result.Add(new YandexCalendarEventDto(
+                        Summary: summary,
+                        Start: start,
+                        End: end,
+                        JiraIssueKeyHint: hint,
+                        Uid: vevent.Uid,
+                        Description: string.IsNullOrEmpty(description) ? null : description,
+                        Url: vevent.Url));
                 }
             }
 

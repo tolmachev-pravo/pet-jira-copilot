@@ -70,6 +70,7 @@ namespace Pet.Jira.Infrastructure.Events
                     Start: comment.CreatedDate,
                     End: comment.CreatedDate,
                     Title: comment.Issue.Name,
+                    Key: null,
                     Description: comment.Body,
                     Link: comment.Issue.Link != null ? new Uri(comment.Issue.Link) : null,
                     Issue: comment.Issue.Adapt(),

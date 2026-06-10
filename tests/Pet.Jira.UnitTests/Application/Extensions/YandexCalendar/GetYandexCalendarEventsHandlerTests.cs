@@ -53,7 +53,7 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             var utcEnd   = new DateTime(2026, 6, 4, 11, 0, 0, DateTimeKind.Utc);
             var events = new List<YandexCalendarEventDto>
             {
-                new("Standup PROJ-42", utcStart, utcEnd, "PROJ-42")
+                new("Standup PROJ-42", utcStart, utcEnd, "PROJ-42", null, null, null)
             };
             _calMock.Setup(c => c.GetEventsAsync(
                         It.Is<YandexCalendarCredentials>(cr => cr.Login == "user@yandex.ru"),
@@ -83,9 +83,9 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             var utcNow = new DateTime(2026, 6, 4, 10, 0, 0, DateTimeKind.Utc);
             var events = new List<YandexCalendarEventDto>
             {
-                new("Standup", utcNow, utcNow.AddHours(1), null),
-                new("Обед с командой", utcNow.AddHours(2), utcNow.AddHours(3), null),
-                new("Team Lunch", utcNow.AddHours(3), utcNow.AddHours(4), null),
+                new("Standup", utcNow, utcNow.AddHours(1), null, null, null, null),
+                new("Обед с командой", utcNow.AddHours(2), utcNow.AddHours(3), null, null, null, null),
+                new("Team Lunch", utcNow.AddHours(3), utcNow.AddHours(4), null, null, null, null),
             };
             _calMock.Setup(c => c.GetEventsAsync(
                         It.IsAny<YandexCalendarCredentials>(),
@@ -119,8 +119,8 @@ namespace Pet.Jira.UnitTests.Application.Extensions.YandexCalendar
             var utcNow = new DateTime(2026, 6, 4, 10, 0, 0, DateTimeKind.Utc);
             var events = new List<YandexCalendarEventDto>
             {
-                new("Core Daily Sync", utcNow, utcNow.AddHours(1), null),
-                new("Other Meeting",   utcNow.AddHours(2), utcNow.AddHours(3), null),
+                new("Core Daily Sync", utcNow, utcNow.AddHours(1), null, null, null, null),
+                new("Other Meeting",   utcNow.AddHours(2), utcNow.AddHours(3), null, null, null, null),
             };
             _calMock.Setup(c => c.GetEventsAsync(
                         It.IsAny<YandexCalendarCredentials>(),
