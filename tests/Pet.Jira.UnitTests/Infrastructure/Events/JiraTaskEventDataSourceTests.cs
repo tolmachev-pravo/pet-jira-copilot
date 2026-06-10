@@ -1,11 +1,8 @@
 using Atlassian.Jira;
 using Moq;
 using NUnit.Framework;
-using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Events;
-using Pet.Jira.Application.Storage;
 using Pet.Jira.Domain.Models.Events;
-using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Events;
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Dto;
@@ -22,8 +19,6 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
     {
         private Mock<IJiraService> _jiraServiceMock;
         private Mock<IJiraQueryFactory> _queryFactoryMock;
-        private Mock<IIdentityService> _identityServiceMock;
-        private Mock<IStorage<string, UserProfile>> _userProfileStorageMock;
         private IEventDataSource _sut;
         private CancellationToken _ct;
 
@@ -32,22 +27,10 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
         {
             _jiraServiceMock = new Mock<IJiraService>();
             _queryFactoryMock = new Mock<IJiraQueryFactory>();
-            _identityServiceMock = new Mock<IIdentityService>();
-            _userProfileStorageMock = new Mock<IStorage<string, UserProfile>>();
             _sut = new JiraTaskEventDataSource(
                 _jiraServiceMock.Object,
-                _queryFactoryMock.Object,
-                _identityServiceMock.Object,
-                _userProfileStorageMock.Object);
+                _queryFactoryMock.Object);
             _ct = CancellationToken.None;
-
-            _identityServiceMock
-                .Setup(x => x.GetCurrentUserAsync())
-                .ReturnsAsync(new Pet.Jira.Domain.Models.Users.User { Username = "user1" });
-
-            _userProfileStorageMock
-                .Setup(x => x.GetValueAsync("user1", _ct))
-                .ReturnsAsync(new UserProfile { Username = "user1", TimeZoneId = "UTC" });
 
             _queryFactoryMock.Setup(x => x.Create()).Returns(new JiraQuery());
         }

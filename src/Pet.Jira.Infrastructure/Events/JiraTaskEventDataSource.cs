@@ -1,9 +1,6 @@
 using Atlassian.Jira;
-using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Events;
-using Pet.Jira.Application.Storage;
 using Pet.Jira.Domain.Models.Events;
-using Pet.Jira.Domain.Models.Users;
 using Pet.Jira.Infrastructure.Jira;
 using Pet.Jira.Infrastructure.Jira.Query;
 using System;
@@ -18,19 +15,13 @@ namespace Pet.Jira.Infrastructure.Events
     {
         private readonly IJiraService _jiraService;
         private readonly IJiraQueryFactory _queryFactory;
-        private readonly IIdentityService _identityService;
-        private readonly IStorage<string, UserProfile> _userProfileStorage;
 
         public JiraTaskEventDataSource(
             IJiraService jiraService,
-            IJiraQueryFactory queryFactory,
-            IIdentityService identityService,
-            IStorage<string, UserProfile> userProfileStorage)
+            IJiraQueryFactory queryFactory)
         {
             _jiraService = jiraService;
             _queryFactory = queryFactory;
-            _identityService = identityService;
-            _userProfileStorage = userProfileStorage;
         }
 
         public async Task<IReadOnlyList<Domain.Models.Events.Event>> GetEventsAsync(
