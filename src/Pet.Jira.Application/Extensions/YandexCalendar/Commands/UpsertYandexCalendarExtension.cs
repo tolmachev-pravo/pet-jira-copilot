@@ -29,7 +29,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 _protector = protector;
             }
 
-            public async Task Handle(Command request, CancellationToken ct)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
             {
                 var stored = new StoredSettings(
                     request.Settings.Login,
@@ -39,7 +39,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                         .Select(m => new StoredMapping(m.Phrase, m.IssueKey))
                         .ToList());
 
-                var existing = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
+                var existing = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, cancellationToken);
 
                 var entity = existing ?? new UserExtension
                 {
@@ -52,7 +52,7 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Commands
                 entity.Settings = JsonSerializer.Serialize(stored);
                 entity.UpdatedAt = DateTime.UtcNow;
 
-                await _repository.UpsertAsync(entity, ct);
+                await _repository.UpsertAsync(entity, cancellationToken);
             }
 
             private record StoredMapping(string Phrase, string IssueKey);

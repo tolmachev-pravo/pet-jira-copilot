@@ -18,9 +18,9 @@ namespace Pet.Jira.Infrastructure.Events
         }
 
         public async Task<IReadOnlyDictionary<DateOnly, IReadOnlyList<Event>>> GetEventsAsync(
-            DateOnly from, DateOnly to, CancellationToken ct)
+            DateOnly from, DateOnly to, CancellationToken cancellationToken)
         {
-            var tasks = _sources.Select(s => s.GetEventsAsync(from, to, ct));
+            var tasks = _sources.Select(s => s.GetEventsAsync(from, to, cancellationToken));
             var results = await Task.WhenAll(tasks);
             var allEvents = results.SelectMany(r => r);
 

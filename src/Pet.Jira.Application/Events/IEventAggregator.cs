@@ -9,6 +9,6 @@ namespace Pet.Jira.Application.Events
     public interface IEventAggregator
     {
         Task<IReadOnlyDictionary<DateOnly, IReadOnlyList<Event>>> GetEventsAsync(
-            DateOnly from, DateOnly to, CancellationToken ct);
+            DateOnly from, DateOnly to, CancellationToken cancellationToken);
     }
 }

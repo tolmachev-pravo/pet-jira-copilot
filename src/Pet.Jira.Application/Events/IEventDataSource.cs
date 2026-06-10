@@ -11,6 +11,6 @@ namespace Pet.Jira.Application.Events
         Task<IReadOnlyList<Event>> GetEventsAsync(
             DateOnly from,
             DateOnly to,
-            CancellationToken ct);
+            CancellationToken cancellationToken);
     }
 }

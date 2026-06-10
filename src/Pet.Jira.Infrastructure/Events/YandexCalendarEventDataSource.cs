@@ -39,19 +39,19 @@ namespace Pet.Jira.Infrastructure.Events
         public async Task<IReadOnlyList<Domain.Models.Events.Event>> GetEventsAsync(
             DateOnly from,
             DateOnly to,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             var user = await _identityService.GetCurrentUserAsync();
 
-            var extension = await _extensionRepository.GetAsync(user.Key, ExtensionType.YandexCalendar, ct);
+            var extension = await _extensionRepository.GetAsync(user.Key, ExtensionType.YandexCalendar, cancellationToken);
             if (extension is null || !extension.IsEnabled)
                 return Array.Empty<Domain.Models.Events.Event>();
 
-            var settings = await _settingsProvider.GetSettingsAsync(user.Key, ct);
+            var settings = await _settingsProvider.GetSettingsAsync(user.Key, cancellationToken);
             if (settings is null)
                 return Array.Empty<Domain.Models.Events.Event>();
 
-            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, ct);
+            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
             var userTimeZone = userProfile?.TimeZoneInfo ?? TimeZoneInfo.Local;
 
             var credentials = new YandexCalendarCredentials(settings.Login, settings.AppPassword);
@@ -60,7 +60,7 @@ namespace Pet.Jira.Infrastructure.Events
             for (var date = from; date <= to; date = date.AddDays(1))
             {
                 var calendarEvents = await _calendarService.GetEventsAsync(
-                    credentials, date, userTimeZone, ct);
+                    credentials, date, userTimeZone, cancellationToken);
 
                 foreach (var calEvent in calendarEvents)
                 {

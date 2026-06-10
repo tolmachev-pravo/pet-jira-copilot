@@ -14,6 +14,6 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar
             YandexCalendarCredentials credentials,
             DateOnly date,
             TimeZoneInfo userTimeZone,
-            CancellationToken ct = default);
+            CancellationToken cancellationToken = default);
     }
 }

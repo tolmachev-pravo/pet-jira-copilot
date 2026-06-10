@@ -15,13 +15,13 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
 
             public Handler(IYandexCalendarService calendar) => _calendar = calendar;
 
-            public async Task<int> Handle(Query request, CancellationToken ct)
+            public async Task<int> Handle(Query request, CancellationToken cancellationToken)
             {
                 var events = await _calendar.GetEventsAsync(
                     new YandexCalendarCredentials(request.Login, request.AppPassword),
                     DateOnly.FromDateTime(DateTime.Today),
                     TimeZoneInfo.Local,
-                    ct);
+                    cancellationToken);
                 return events.Count;
             }
         }

@@ -35,7 +35,7 @@ namespace Pet.Jira.Infrastructure.Events
         public async Task<IReadOnlyList<Domain.Models.Events.Event>> GetEventsAsync(
             DateOnly from,
             DateOnly to,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             var fromDateTime = from.ToDateTime(TimeOnly.MinValue);
             var toDateTime = to.ToDateTime(TimeOnly.MaxValue);
@@ -51,17 +51,17 @@ namespace Pet.Jira.Infrastructure.Events
                 MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
             };
 
-            var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, ct);
+            var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
             var user = await _identityService.GetCurrentUserAsync();
-            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, ct);
+            var userProfile = await _userProfileStorage.GetValueAsync(user.Key, cancellationToken);
 
             var commentFilter = new Func<Comment, bool>(comment =>
                 comment.Author == userProfile!.Username
                 && comment.CreatedDate.Value >= fromDateTime
                 && comment.CreatedDate.Value <= toDateTime);
 
-            var comments = await _jiraService.GetIssueCommentsAsync(issues, commentFilter, ct);
+            var comments = await _jiraService.GetIssueCommentsAsync(issues, commentFilter, cancellationToken);
 
             var events = new List<Domain.Models.Events.Event>();
             foreach (var comment in comments)

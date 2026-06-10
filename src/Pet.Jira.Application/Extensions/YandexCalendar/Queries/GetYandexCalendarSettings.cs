@@ -21,13 +21,13 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
                 _settingsProvider = settingsProvider;
             }
 
-            public async Task<YandexCalendarExtensionDto> Handle(Query request, CancellationToken ct)
+            public async Task<YandexCalendarExtensionDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var entity = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
+                var entity = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, cancellationToken);
                 if (entity is null)
                     return new YandexCalendarExtensionDto(false, null);
 
-                var settings = await _settingsProvider.GetSettingsAsync(request.Username, ct);
+                var settings = await _settingsProvider.GetSettingsAsync(request.Username, cancellationToken);
                 return new YandexCalendarExtensionDto(entity.IsEnabled, settings);
             }
         }

@@ -29,7 +29,7 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             YandexCalendarCredentials credentials,
             DateOnly date,
             TimeZoneInfo userTimeZone,
-            CancellationToken ct = default)
+            CancellationToken cancellationToken = default)
         {
             var url = string.Format(CalDavBaseUrl, credentials.Login);
             var body = BuildReportBody(date, userTimeZone);
@@ -44,10 +44,10 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
                     Encoding.UTF8.GetBytes($"{credentials.Login}:{credentials.AppPassword}")));
             request.Headers.Add("Depth", "1");
 
-            var response = await _http.SendAsync(request, ct);
+            var response = await _http.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            var xml = await response.Content.ReadAsStringAsync(ct);
+            var xml = await response.Content.ReadAsStringAsync(cancellationToken);
             return ParseCalDavResponse(xml, date);
         }
 

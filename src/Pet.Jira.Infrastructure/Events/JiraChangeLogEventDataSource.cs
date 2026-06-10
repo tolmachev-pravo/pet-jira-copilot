@@ -31,7 +31,7 @@ namespace Pet.Jira.Infrastructure.Events
         public async Task<IReadOnlyList<Domain.Models.Events.Event>> GetEventsAsync(
             DateOnly from,
             DateOnly to,
-            CancellationToken ct)
+            CancellationToken cancellationToken)
         {
             var fromDateTime = from.ToDateTime(TimeOnly.MinValue);
             var toDateTime = to.ToDateTime(TimeOnly.MaxValue);
@@ -48,13 +48,13 @@ namespace Pet.Jira.Infrastructure.Events
                 MaxIssuesPerRequest = JiraConstants.DefaultMaxIssuesPerRequest
             };
 
-            var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, ct);
+            var issues = await _jiraService.GetIssuesAsync(issueSearchOptions, cancellationToken);
 
             var changeLogFilter = new Func<IssueChangeLog, bool>(changeLog =>
                 changeLog.Items.Any(item => item.FieldName == JiraConstants.Status.FieldName));
 
             var changeLogItems = await _jiraService.GetIssueChangeLogItemsAsync(
-                issues, changeLogFilter, ChangeLogItemFilter, ct);
+                issues, changeLogFilter, ChangeLogItemFilter, cancellationToken);
 
             var events = new List<Domain.Models.Events.Event>();
             foreach (var issue in issues)
