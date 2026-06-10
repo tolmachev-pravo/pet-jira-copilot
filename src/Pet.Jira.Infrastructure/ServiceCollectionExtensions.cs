@@ -79,6 +79,7 @@ namespace Pet.Jira.Infrastructure
 			services.AddTransient<IEventDataSource, JiraCommentEventDataSource>();
 			services.AddTransient<IEventDataSource, JiraTaskEventDataSource>();
 			services.AddTransient<IEventDataSource, JiraTesterEventDataSource>();
+			services.AddTransient<IEventAggregator, EventAggregator>();
 
 			return services;
         }
