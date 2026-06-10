@@ -4,7 +4,6 @@ using Pet.Jira.Application.Extensions.YandexCalendar;
 using Pet.Jira.Application.Storage;
 using Pet.Jira.Domain.Models.Events;
 using Pet.Jira.Domain.Models.Users;
-using Pet.Jira.Infrastructure.Jira;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,20 +17,17 @@ namespace Pet.Jira.Infrastructure.Events
         private readonly IYandexCalendarSettingsProvider _settingsProvider;
         private readonly IIdentityService _identityService;
         private readonly IStorage<string, UserProfile> _userProfileStorage;
-        private readonly IJiraService _jiraService;
 
         public YandexCalendarEventDataSource(
             IYandexCalendarService calendarService,
             IYandexCalendarSettingsProvider settingsProvider,
             IIdentityService identityService,
-            IStorage<string, UserProfile> userProfileStorage,
-            IJiraService jiraService)
+            IStorage<string, UserProfile> userProfileStorage)
         {
             _calendarService = calendarService;
             _settingsProvider = settingsProvider;
             _identityService = identityService;
             _userProfileStorage = userProfileStorage;
-            _jiraService = jiraService;
         }
 
         public async Task<IReadOnlyList<Domain.Models.Events.Event>> GetEventsAsync(
@@ -56,24 +52,13 @@ namespace Pet.Jira.Infrastructure.Events
 
                 foreach (var calEvent in calendarEvents)
                 {
-                    Domain.Models.Issues.Issue? issue = null;
-                    if (calEvent.JiraIssueKeyHint is not null)
-                    {
-                        try
-                        {
-                            var issueDto = await _jiraService.GetIssueAsync(calEvent.JiraIssueKeyHint, ct);
-                            issue = issueDto.Adapt();
-                        }
-                        catch { }
-                    }
-
                     events.Add(new Domain.Models.Events.Event(
                         Start: calEvent.Start,
                         End: calEvent.End,
                         Title: calEvent.Summary,
                         Description: null,
                         Link: null,
-                        Issue: issue,
+                        Issue: null,
                         Source: EventSource.Calendar));
                 }
             }
