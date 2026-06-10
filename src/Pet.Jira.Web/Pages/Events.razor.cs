@@ -37,8 +37,10 @@ namespace Pet.Jira.Web.Pages
 
         private static string FormatTime(Event e) =>
             e.Start == e.End
-                ? e.Start.ToString("HH:mm")
-                : $"{e.Start:HH:mm} – {e.End:HH:mm}";
+                ? e.Start.ToString("dd.MM HH:mm")
+                : e.Start.Date == e.End.Date
+                    ? $"{e.Start:dd.MM HH:mm} – {e.End:HH:mm}"
+                    : $"{e.Start:dd.MM HH:mm} – {e.End:dd.MM HH:mm}";
 
         private static Color GetSourceColor(EventSource source) => source switch
         {
