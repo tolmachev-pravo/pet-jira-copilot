@@ -62,19 +62,19 @@ namespace Pet.Jira.Infrastructure.Events
                 var calendarEvents = await _calendarService.GetEventsAsync(
                     credentials, date, userTimeZone, cancellationToken);
 
-                foreach (var calEvent in calendarEvents)
+                foreach (var calendarEvent in calendarEvents)
                 {
                     if (settings.ExcludedPhrases.Any(p =>
-                            calEvent.Summary.Contains(p, StringComparison.OrdinalIgnoreCase)))
+                            calendarEvent.Summary.Contains(p, StringComparison.OrdinalIgnoreCase)))
                         continue;
 
                     events.Add(new Domain.Models.Events.Event(
-                        Start: TimeZoneInfo.ConvertTimeFromUtc(calEvent.Start, userTimeZone),
-                        End: TimeZoneInfo.ConvertTimeFromUtc(calEvent.End, userTimeZone),
-                        Title: calEvent.Summary,
-                        Key: calEvent.Uid,
-                        Description: calEvent.Description,
-                        Link: calEvent.Url,
+                        Start: TimeZoneInfo.ConvertTimeFromUtc(calendarEvent.Start, userTimeZone),
+                        End: TimeZoneInfo.ConvertTimeFromUtc(calendarEvent.End, userTimeZone),
+                        Title: calendarEvent.Summary,
+                        Key: calendarEvent.Uid,
+                        Description: calendarEvent.Description,
+                        Link: calendarEvent.Url,
                         Issue: null,
                         Source: EventSource.Calendar));
                 }
