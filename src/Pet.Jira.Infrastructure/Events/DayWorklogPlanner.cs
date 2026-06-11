@@ -14,6 +14,10 @@ namespace Pet.Jira.Infrastructure.Events
 
         public IReadOnlyList<ProposedWorklog> Plan(DateOnly day, IReadOnlyList<Event> dayEvents)
         {
+            var calendar = dayEvents
+                .Where(e => e.Source == EventSource.Calendar)
+                .ToList();
+
             var tasks = dayEvents
                 .Where(e => e.Source == EventSource.Task)
                 .OrderBy(e => e.Start)
@@ -21,7 +25,14 @@ namespace Pet.Jira.Infrastructure.Events
 
             var result = new List<ProposedWorklog>();
 
-            var budget = Target;
+            // Calendar events keep their exact real time and act as hard blocks.
+            foreach (var calendarEvent in calendar)
+                result.Add(new ProposedWorklog(calendarEvent, calendarEvent.Start, calendarEvent.End));
+
+            var budget = Target - Sum(calendar);
+            if (budget < TimeSpan.Zero)
+                budget = TimeSpan.Zero;
+
             var totalTaskDuration = Sum(tasks);
 
             if (budget > TimeSpan.Zero && totalTaskDuration > TimeSpan.Zero)

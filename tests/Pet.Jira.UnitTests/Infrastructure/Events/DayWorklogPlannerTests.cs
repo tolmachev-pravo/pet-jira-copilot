@@ -56,5 +56,58 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             Assert.That(result[0].Duration, Is.EqualTo(TimeSpan.FromHours(6)));  // 3h weight -> 6h
             Assert.That(result[1].Duration, Is.EqualTo(TimeSpan.FromHours(2)));  // 1h weight -> 2h
         }
+
+        [Test]
+        public void Plan_CalendarPlusTask_CalendarExact_TaskFillsRemainder()
+        {
+            var meeting = Calendar(new DateTime(2026, 6, 1, 11, 0, 0), new DateTime(2026, 6, 1, 13, 0, 0)); // 2h
+            var task = Task(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 9, 30, 0));         // 0.5h
+            var events = new List<Event> { meeting, task };
+
+            var result = _sut.Plan(_day, events);
+
+            var calendarSlot = result.Single(p => p.Event == meeting);
+            Assert.That(calendarSlot.Start, Is.EqualTo(meeting.Start));
+            Assert.That(calendarSlot.End, Is.EqualTo(meeting.End));
+
+            var taskSlot = result.Single(p => p.Event == task);
+            Assert.That(taskSlot.Duration, Is.EqualTo(TimeSpan.FromHours(6))); // 8h - 2h
+            Assert.That(taskSlot.Start, Is.EqualTo(new DateTime(2026, 6, 1, 10, 0, 0)));
+
+            Assert.That(result.Sum(p => p.Duration.Ticks), Is.EqualTo(TimeSpan.FromHours(8).Ticks));
+        }
+
+        [Test]
+        public void Plan_CalendarFillsEightHours_TasksGetNothing()
+        {
+            var meeting = Calendar(new DateTime(2026, 6, 1, 10, 0, 0), new DateTime(2026, 6, 1, 18, 0, 0)); // 8h
+            var task = Task(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 10, 0, 0));
+            var events = new List<Event> { meeting, task };
+
+            var result = _sut.Plan(_day, events);
+
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(result.Single().Event, Is.SameAs(meeting));
+        }
+
+        [Test]
+        public void Plan_CalendarExceedsEightHours_TasksGetNothing_NoNegative()
+        {
+            var meeting = Calendar(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 18, 0, 0)); // 9h
+            var task = Task(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 10, 0, 0));
+            var events = new List<Event> { meeting, task };
+
+            var result = _sut.Plan(_day, events);
+
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(result.Single().Event, Is.SameAs(meeting));
+        }
+
+        [Test]
+        public void Plan_NoEvents_ReturnsEmpty()
+        {
+            var result = _sut.Plan(_day, new List<Event>());
+            Assert.That(result, Is.Empty);
+        }
     }
 }
