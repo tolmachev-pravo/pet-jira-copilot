@@ -82,9 +82,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                 var days = CalculateDays(issueWorklogs, allRawWorklogs, query).ToList();
                 foreach (var day in days)
                 {
-                    var blockedEvents = blockedEventsByDay.GetValueOrDefault(day.Date) ?? new List<BlockedCalendarEvent>();
-                    day.BlockedCalendarEvents = blockedEvents;
-                    day.CalendarBlockedTime = blockedEvents.Aggregate(TimeSpan.Zero, (acc, e) => acc + e.Duration);
+                    day.BlockedCalendarEvents = blockedEventsByDay.GetValueOrDefault(day.Date) ?? new List<BlockedCalendarEvent>();
                     day.Refresh();
                 }
 

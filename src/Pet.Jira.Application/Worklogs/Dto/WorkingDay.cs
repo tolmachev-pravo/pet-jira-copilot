@@ -80,9 +80,20 @@ namespace Pet.Jira.Application.Worklogs.Dto
         public bool HasRawEstimatedWorklogs => RawEstimatedWorklogCount > 0;
 
         /// <summary>
-        /// Time blocked by calendar events — subtracted from available day time during distribution.
+        /// Time blocked by keyless calendar events that are not yet logged — subtracted from
+        /// available day time during distribution. Logged events (matched by exact start/end to an
+        /// actual worklog) do not block, since their time is already accounted for.
         /// </summary>
-        public TimeSpan CalendarBlockedTime { get; set; }
+        public TimeSpan CalendarBlockedTime => BlockedCalendarEvents
+            .Where(calendarEvent => !IsCalendarEventLogged(calendarEvent))
+            .Aggregate(TimeSpan.Zero, (acc, calendarEvent) => acc + calendarEvent.Duration);
+
+        /// <summary>
+        /// True when an actual worklog exactly matches the calendar event's start and end.
+        /// </summary>
+        public bool IsCalendarEventLogged(BlockedCalendarEvent calendarEvent) =>
+            ActualWorklogs.Any(worklog =>
+                worklog.StartDate == calendarEvent.Start && worklog.CompleteDate == calendarEvent.End);
 
         /// <summary>
         /// Calendar events without a Jira key — shown for context; they block time but are not loggable.
