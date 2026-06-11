@@ -30,15 +30,6 @@
     </td>
 </tr>
 
-@if (_isLoadingCalendar)
-{
-    <tr>
-        <td>
-            <MudProgressLinear Color="Color.Success" Indeterminate="true" Size="Size.Small" Class="my-1" />
-        </td>
-    </tr>
-}
-
 @* All rows unified and sorted by time *@
 @foreach (var row in _dayRows)
 {
@@ -47,7 +38,7 @@
             @if (row.EstimatedWorklog is not null)
             {
                 <WorklogItem Entity="@row.EstimatedWorklog" OnAddPressed="AddWorklogAsync" />
-                @foreach (var child in row.EstimatedWorklog.Children.Where(c => !c.IsVirtualCalendar))
+                @foreach (var child in row.EstimatedWorklog.Children)
                 {
                     <EstimatedActualWorklogItem Entity="@child" />
                 }
@@ -55,19 +46,6 @@
             else if (row.Worklog is not null)
             {
                 <ActualWorklogItem Entity="@row.Worklog" />
-            }
-            else if (row.CalendarEvent is not null)
-            {
-                <CalendarEventItem Entity="@row.CalendarEvent"
-                                   IsLogged="@row.IsCalendarEventLogged"
-                                   OnLogPressed="OpenCalendarWorklogDialog" />
-                @if (row.CalendarChildren is { Count: > 0 })
-                {
-                    @foreach (var child in row.CalendarChildren)
-                    {
-                        <EstimatedActualWorklogItem Entity="@child" />
-                    }
-                }
             }
         </td>
     </tr>
