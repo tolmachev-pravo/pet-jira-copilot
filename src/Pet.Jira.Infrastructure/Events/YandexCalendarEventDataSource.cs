@@ -64,8 +64,8 @@ namespace Pet.Jira.Infrastructure.Events
 
                 foreach (var calendarEvent in calendarEvents)
                 {
-                    if (settings.ExcludedPhrases.Any(p =>
-                            calendarEvent.Summary.Contains(p, StringComparison.OrdinalIgnoreCase)))
+                    if (settings.ExcludedPhrases.Any(excludedPhrase =>
+                            calendarEvent.Summary.Contains(excludedPhrase, StringComparison.OrdinalIgnoreCase)))
                         continue;
 
                     events.Add(new Domain.Models.Events.Event(
@@ -75,7 +75,7 @@ namespace Pet.Jira.Infrastructure.Events
                         Key: calendarEvent.Uid,
                         Description: calendarEvent.Description,
                         Link: calendarEvent.Url,
-                        Issue: null,
+                        IssueKey: calendarEvent.JiraIssueKeyHint,
                         Source: EventSource.Calendar));
                 }
             }

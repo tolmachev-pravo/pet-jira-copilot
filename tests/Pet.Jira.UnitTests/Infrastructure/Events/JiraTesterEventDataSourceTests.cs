@@ -100,7 +100,7 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             Assert.That(result[0].Start, Is.EqualTo(t0));
             Assert.That(result[0].End, Is.EqualTo(t1));
             Assert.That(result[0].Source, Is.EqualTo(Pet.Jira.Domain.Models.Events.EventSource.Task));
-            Assert.That(result[0].Issue!.Key, Is.EqualTo("PROJ-2"));
+            Assert.That(result[0].IssueKey, Is.EqualTo("PROJ-2"));
         }
     }
 }

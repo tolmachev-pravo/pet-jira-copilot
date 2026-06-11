@@ -27,10 +27,10 @@ else
                             @FormatTime(e)
                         </MudText>
                         <MudText>@e.Title</MudText>
-                        @if (e.Issue != null)
+                        @if (e.IssueKey != null)
                         {
                             <MudText Typo="Typo.body2" Color="Color.Primary">
-                                @e.Issue.Key
+                                @e.IssueKey
                             </MudText>
                         }
                     </MudStack>

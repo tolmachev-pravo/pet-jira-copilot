@@ -73,7 +73,7 @@ namespace Pet.Jira.Infrastructure.Events
                     Key: null,
                     Description: comment.Body,
                     Link: comment.Issue.Link != null ? new Uri(comment.Issue.Link) : null,
-                    Issue: comment.Issue.Adapt(),
+                    IssueKey: comment.Issue.Key,
                     Source: EventSource.Comment));
             }
 

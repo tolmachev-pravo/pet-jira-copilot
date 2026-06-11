@@ -1,4 +1,3 @@
-using Pet.Jira.Domain.Models.Issues;
 using System;
 
 namespace Pet.Jira.Domain.Models.Events
@@ -10,7 +9,7 @@ namespace Pet.Jira.Domain.Models.Events
         string? Key,
         string? Description,
         Uri? Link,
-        Issue? Issue,
+        string? IssueKey,
         EventSource Source
     );
 }

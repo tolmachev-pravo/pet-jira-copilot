@@ -138,7 +138,41 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             Assert.That(result[0].Start, Is.EqualTo(new DateTime(2026, 6, 1, 9, 0, 0)));
             Assert.That(result[0].End, Is.EqualTo(new DateTime(2026, 6, 1, 9, 30, 0)));
             Assert.That(result[0].Source, Is.EqualTo(EventSource.Calendar));
-            Assert.That(result[0].Issue, Is.Null);
+            Assert.That(result[0].IssueKey, Is.Null);
+        }
+
+        [Test]
+        public async Task GetEventsAsync_WhenEventHasJiraIssueKeyHint_PopulatesIssueKey()
+        {
+            var settings = new YandexCalendarSettingsDto("login", "pass", Array.Empty<string>(), Array.Empty<YandexCalendarIssueMapping>());
+            _settingsProviderMock
+                .Setup(x => x.GetSettingsAsync("user1", _ct))
+                .ReturnsAsync(settings);
+
+            var calEvent = new YandexCalendarEventDto(
+                Summary: "PROJ-42 planning",
+                Start: new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Utc),
+                End: new DateTime(2026, 6, 1, 9, 30, 0, DateTimeKind.Utc),
+                JiraIssueKeyHint: "PROJ-42",
+                Uid: null,
+                Description: null,
+                Url: null);
+
+            _calendarServiceMock
+                .Setup(x => x.GetEventsAsync(
+                    It.IsAny<YandexCalendarCredentials>(),
+                    new DateOnly(2026, 6, 1),
+                    It.IsAny<TimeZoneInfo>(),
+                    _ct))
+                .ReturnsAsync(new List<YandexCalendarEventDto> { calEvent });
+
+            var result = await _sut.GetEventsAsync(
+                new DateOnly(2026, 6, 1),
+                new DateOnly(2026, 6, 1),
+                _ct);
+
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(result[0].IssueKey, Is.EqualTo("PROJ-42"));
         }
 
         [Test]
