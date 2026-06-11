@@ -71,7 +71,7 @@ END:VCALENDAR</C:calendar-data>
             public FakeHttpMessageHandler(string response) => _response = response;
 
             protected override Task<HttpResponseMessage> SendAsync(
-                HttpRequestMessage request, CancellationToken ct)
+                HttpRequestMessage request, CancellationToken cancellationToken)
                 => Task.FromResult(new HttpResponseMessage(HttpStatusCode.MultiStatus)
                 {
                     Content = new StringContent(_response, System.Text.Encoding.UTF8, "application/xml")

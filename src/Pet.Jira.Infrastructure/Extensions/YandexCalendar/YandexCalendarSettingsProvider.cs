@@ -23,9 +23,9 @@ namespace Pet.Jira.Infrastructure.Extensions.YandexCalendar
             _protector = protector;
         }
 
-        public async Task<YandexCalendarSettingsDto?> GetSettingsAsync(string username, CancellationToken ct = default)
+        public async Task<YandexCalendarSettingsDto?> GetSettingsAsync(string username, CancellationToken cancellationToken = default)
         {
-            var entity = await _repository.GetAsync(username, ExtensionType.YandexCalendar, ct);
+            var entity = await _repository.GetAsync(username, ExtensionType.YandexCalendar, cancellationToken);
             if (entity is null || string.IsNullOrEmpty(entity.Settings))
                 return null;
 

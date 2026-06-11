@@ -1,0 +1,48 @@
+@page "/events"
+
+<MudText Typo="Typo.h5" Class="mb-4">Events</MudText>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" />
+}
+else
+{
+    @foreach (var day in _events.Keys.OrderBy(d => d))
+    {
+        var dayEvents = _events[day];
+        @if (dayEvents.Any())
+        {
+            <MudText Typo="Typo.subtitle1" Class="mt-4 mb-2">
+                @day.ToString("dddd, d MMMM")
+            </MudText>
+            @foreach (var e in dayEvents)
+            {
+                <MudPaper Class="pa-3 mb-2" Elevation="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudChip T="string" Size="Size.Small" Color="@GetSourceColor(e.Source)">
+                            @e.Source
+                        </MudChip>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            @FormatTime(e)
+                        </MudText>
+                        <MudText>@e.Title</MudText>
+                        @if (e.IssueKey != null)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Primary">
+                                @e.IssueKey
+                            </MudText>
+                        }
+                        @if (GetProposed(e) is { } proposed)
+                        {
+                            <MudSpacer />
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined">
+                                @FormatProposed(proposed)
+                            </MudChip>
+                        }
+                    </MudStack>
+                </MudPaper>
+            }
+        }
+    }
+}

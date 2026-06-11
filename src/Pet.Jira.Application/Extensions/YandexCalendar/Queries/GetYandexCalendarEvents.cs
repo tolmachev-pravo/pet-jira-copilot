@@ -35,24 +35,24 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar.Queries
                 _userProfileStorage = userProfileStorage;
             }
 
-            public async Task<IReadOnlyList<YandexCalendarEventDto>> Handle(Query request, CancellationToken ct)
+            public async Task<IReadOnlyList<YandexCalendarEventDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var entity = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, ct);
+                var entity = await _repository.GetAsync(request.Username, ExtensionType.YandexCalendar, cancellationToken);
                 if (entity is null || !entity.IsEnabled)
                     return Array.Empty<YandexCalendarEventDto>();
 
-                var settings = await _settings.GetSettingsAsync(request.Username, ct);
+                var settings = await _settings.GetSettingsAsync(request.Username, cancellationToken);
                 if (settings is null)
                     return Array.Empty<YandexCalendarEventDto>();
 
-                var userProfile = await _userProfileStorage.GetValueAsync(request.Username, ct);
+                var userProfile = await _userProfileStorage.GetValueAsync(request.Username, cancellationToken);
                 var userTimeZone = userProfile?.TimeZoneInfo ?? TimeZoneInfo.Local;
 
                 var utcEvents = await _calendar.GetEventsAsync(
                     new YandexCalendarCredentials(settings.Login, settings.AppPassword),
                     request.Date,
                     userTimeZone,
-                    ct);
+                    cancellationToken);
 
                 return utcEvents
                     .Where(e => !settings.ExcludedPhrases.Any(p =>
