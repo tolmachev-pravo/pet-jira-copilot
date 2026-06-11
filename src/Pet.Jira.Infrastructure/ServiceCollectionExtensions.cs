@@ -80,6 +80,7 @@ namespace Pet.Jira.Infrastructure
 			services.AddTransient<IEventDataSource, JiraTaskEventDataSource>();
 			services.AddTransient<IEventDataSource, JiraTesterEventDataSource>();
 			services.AddTransient<IEventAggregator, EventAggregator>();
+			services.AddTransient<IDayWorklogPlanner, DayWorklogPlanner>();
 
 			return services;
         }
