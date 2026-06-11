@@ -1,8 +1,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using Pet.Jira.Application.Events;
 using Pet.Jira.Application.Events.Queries;
 using Pet.Jira.Domain.Models.Events;
+using Pet.Jira.Domain.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,12 @@ namespace Pet.Jira.Web.Pages
     public partial class Events : ComponentBase
     {
         [Inject] private IMediator Mediator { get; set; } = default!;
+        [Inject] private IDayWorklogPlanner Planner { get; set; } = default!;
 
         private IReadOnlyDictionary<DateOnly, IReadOnlyList<Event>> _events =
             new Dictionary<DateOnly, IReadOnlyList<Event>>();
+        private Dictionary<Event, ProposedWorklog> _proposed =
+            new(ReferenceEqualityComparer.Instance);
         private bool _loading = true;
 
         protected override async Task OnInitializedAsync()
@@ -28,12 +33,24 @@ namespace Pet.Jira.Web.Pages
             try
             {
                 _events = await Mediator.Send(new GetEvents.Query { From = monday, To = sunday });
+                // Reference equality: Event is a record (value equality), so value-equal
+                // duplicates would otherwise collide as dictionary keys.
+                var comparer = (IEqualityComparer<Event>)ReferenceEqualityComparer.Instance;
+                _proposed = _events
+                    .SelectMany(kvp => Planner.Plan(kvp.Key, kvp.Value))
+                    .ToDictionary(p => p.Event, p => p, comparer);
             }
             finally
             {
                 _loading = false;
             }
         }
+
+        private ProposedWorklog? GetProposed(Event e) =>
+            _proposed.TryGetValue(e, out var proposed) ? proposed : null;
+
+        private static string FormatProposed(ProposedWorklog p) =>
+            $"{p.Start:HH:mm} – {p.End:HH:mm} ({p.Duration.TotalHours:0.##}h)";
 
         private static string FormatTime(Event e) =>
             e.Start == e.End

@@ -33,6 +33,16 @@ else
                                 @e.IssueKey
                             </MudText>
                         }
+                        @{
+                            var proposed = GetProposed(e);
+                        }
+                        @if (proposed != null)
+                        {
+                            <MudSpacer />
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined">
+                                @FormatProposed(proposed)
+                            </MudChip>
+                        }
                     </MudStack>
                 </MudPaper>
             }
