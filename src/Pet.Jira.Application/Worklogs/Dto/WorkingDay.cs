@@ -57,7 +57,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// <summary>
         /// Actual worklog time spent
         /// </summary>
-        public TimeSpan ActualWorklogTimeSpent => ActualWorklogs.Where(w => !w.IsVirtualCalendar).TimeSpent();
+        public TimeSpan ActualWorklogTimeSpent => ActualWorklogs.TimeSpent();
 
         /// <summary>
         /// Estimated worklog time spent
