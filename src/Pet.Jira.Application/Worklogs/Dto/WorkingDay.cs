@@ -84,6 +84,11 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// </summary>
         public TimeSpan CalendarBlockedTime { get; set; }
 
+        /// <summary>
+        /// Calendar events without a Jira key — shown for context; they block time but are not loggable.
+        /// </summary>
+        public IReadOnlyList<BlockedCalendarEvent> BlockedCalendarEvents { get; set; } = new List<BlockedCalendarEvent>();
+
         public void Refresh()
         {
             WorklogMatching.Match(

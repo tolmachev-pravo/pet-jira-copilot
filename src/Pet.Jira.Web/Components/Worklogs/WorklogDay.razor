@@ -47,6 +47,23 @@
             {
                 <ActualWorklogItem Entity="@row.Worklog" />
             }
+            else if (row.BlockedEvent is not null)
+            {
+                <MudElement Class="gap-2 d-flex flex-wrap border-none align-center" Style="opacity:0.6">
+                    <MudElement Style="width:28px" />
+                    <WorklogTimeRange StartDate="@row.BlockedEvent.Start"
+                                      CompleteDate="@row.BlockedEvent.End"
+                                      Color="Color.Default" />
+                    <MudIcon Icon="@Icons.Material.Filled.EventBusy"
+                             Color="Color.Default"
+                             Size="Size.Small"
+                             Class="ml-1" />
+                    <MudText Typo="Typo.body2"
+                             Style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                        @row.BlockedEvent.Title
+                    </MudText>
+                </MudElement>
+            }
         </td>
     </tr>
 }

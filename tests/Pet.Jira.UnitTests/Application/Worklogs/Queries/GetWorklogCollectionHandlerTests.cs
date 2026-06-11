@@ -85,7 +85,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs.Queries
         }
 
         [Test]
-        public async Task Handle_KeylessCalendarEvent_AddsToCalendarBlockedTime()
+        public async Task Handle_KeylessCalendarEvent_AddsToBlockedCalendarEventsAndBlockedTime()
         {
             _mediatorMock
                 .Setup(x => x.Send(It.IsAny<GetYandexCalendarEvents.Query>(), It.IsAny<CancellationToken>()))
@@ -98,6 +98,10 @@ namespace Pet.Jira.UnitTests.Application.Worklogs.Queries
 
             var day = result.WorkingDays.Single();
             Assert.That(day.CalendarBlockedTime, Is.EqualTo(TimeSpan.FromHours(1)));
+            Assert.That(day.BlockedCalendarEvents, Has.Count.EqualTo(1));
+            Assert.That(day.BlockedCalendarEvents[0].Title, Is.EqualTo("Team lunch"));
+            Assert.That(day.BlockedCalendarEvents[0].Start, Is.EqualTo(new DateTime(2026, 6, 1, 12, 0, 0)));
+            Assert.That(day.BlockedCalendarEvents[0].End, Is.EqualTo(new DateTime(2026, 6, 1, 13, 0, 0)));
             Assert.That(day.EstimatedWorklogs.Any(w => w.Source == WorklogSource.Calendar), Is.False);
         }
 
@@ -108,6 +112,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs.Queries
 
             var day = result.WorkingDays.Single();
             Assert.That(day.CalendarBlockedTime, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(day.BlockedCalendarEvents, Is.Empty);
             Assert.That(day.EstimatedWorklogs.Any(w => w.Source == WorklogSource.Calendar), Is.False);
         }
 
@@ -122,6 +127,7 @@ namespace Pet.Jira.UnitTests.Application.Worklogs.Queries
 
             var day = result.WorkingDays.Single();
             Assert.That(day.CalendarBlockedTime, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(day.BlockedCalendarEvents, Is.Empty);
             Assert.That(day.EstimatedWorklogs.Any(w => w.Source == WorklogSource.Calendar), Is.False);
         }
     }

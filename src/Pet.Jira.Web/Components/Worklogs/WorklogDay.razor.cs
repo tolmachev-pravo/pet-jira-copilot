@@ -41,8 +41,12 @@ namespace Pet.Jira.Web.Components.Worklogs
             var estimatedRows = Entity.EstimatedWorklogs
                 .Select(w => new DayRow(w.RawStartDate, EstimatedWorklog: w));
 
+            var blockedRows = Entity.BlockedCalendarEvents
+                .Select(e => new DayRow(e.Start, BlockedEvent: e));
+
             _dayRows = worklogRows
                 .Concat(estimatedRows)
+                .Concat(blockedRows)
                 .OrderBy(r => r.Time)
                 .ToList();
         }
@@ -69,6 +73,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         private record DayRow(
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
-            WorkingDayWorklog? EstimatedWorklog = null);
+            WorkingDayWorklog? EstimatedWorklog = null,
+            BlockedCalendarEvent? BlockedEvent = null);
     }
 }

@@ -75,14 +75,16 @@ namespace Pet.Jira.Application.Worklogs.Queries
                         EndDate = query.EndDate
                     }, cancellationToken);
 
-                var (calendarWorklogs, blockedByDay) = await GetCalendarWorklogsAsync(query, cancellationToken);
+                var (calendarWorklogs, blockedEventsByDay) = await GetCalendarWorklogsAsync(query, cancellationToken);
 
                 var allRawWorklogs = rawIssueWorklogs.Concat(calendarWorklogs);
 
                 var days = CalculateDays(issueWorklogs, allRawWorklogs, query).ToList();
                 foreach (var day in days)
                 {
-                    day.CalendarBlockedTime = blockedByDay.GetValueOrDefault(day.Date);
+                    var blockedEvents = blockedEventsByDay.GetValueOrDefault(day.Date) ?? new List<BlockedCalendarEvent>();
+                    day.BlockedCalendarEvents = blockedEvents;
+                    day.CalendarBlockedTime = blockedEvents.Aggregate(TimeSpan.Zero, (acc, e) => acc + e.Duration);
                     day.Refresh();
                 }
 
@@ -94,11 +96,11 @@ namespace Pet.Jira.Application.Worklogs.Queries
             /// worklogs (events with a Jira key) and per-day blocked time (events without).
             /// Calendar failures degrade silently — the collection is returned without calendar.
             /// </summary>
-            private async Task<(List<IWorklog> CalendarWorklogs, Dictionary<DateTime, TimeSpan> BlockedByDay)>
+            private async Task<(List<IWorklog> CalendarWorklogs, Dictionary<DateTime, List<BlockedCalendarEvent>> BlockedEventsByDay)>
                 GetCalendarWorklogsAsync(Query query, CancellationToken cancellationToken)
             {
                 var calendarWorklogs = new List<IWorklog>();
-                var blockedByDay = new Dictionary<DateTime, TimeSpan>();
+                var blockedEventsByDay = new Dictionary<DateTime, List<BlockedCalendarEvent>>();
 
                 try
                 {
@@ -129,8 +131,13 @@ namespace Pet.Jira.Application.Worklogs.Queries
                             else
                             {
                                 var dayKey = calendarEvent.Start.Date;
-                                blockedByDay[dayKey] = blockedByDay.GetValueOrDefault(dayKey)
-                                    + (calendarEvent.End - calendarEvent.Start);
+                                if (!blockedEventsByDay.TryGetValue(dayKey, out var dayEvents))
+                                {
+                                    dayEvents = new List<BlockedCalendarEvent>();
+                                    blockedEventsByDay[dayKey] = dayEvents;
+                                }
+                                dayEvents.Add(new BlockedCalendarEvent(
+                                    calendarEvent.Start, calendarEvent.End, calendarEvent.Summary));
                             }
                         }
                     }
@@ -140,7 +147,7 @@ namespace Pet.Jira.Application.Worklogs.Queries
                     // Calendar unavailable — return worklogs without calendar.
                 }
 
-                return (calendarWorklogs, blockedByDay);
+                return (calendarWorklogs, blockedEventsByDay);
             }
 
             private static IEnumerable<WorkingDay> CalculateDays(
