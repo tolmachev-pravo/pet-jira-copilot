@@ -41,5 +41,20 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             Assert.That(result[0].Start, Is.EqualTo(new DateTime(2026, 6, 1, 10, 0, 0)));
             Assert.That(result[1].Start, Is.EqualTo(result[0].End));
         }
+
+        [Test]
+        public void Plan_TasksOutOfOrder_PackedInRealStartOrder()
+        {
+            var late = Task(new DateTime(2026, 6, 1, 16, 0, 0), new DateTime(2026, 6, 1, 17, 0, 0));  // 1h
+            var early = Task(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 12, 0, 0));   // 3h
+            var events = new List<Event> { late, early };
+
+            var result = _sut.Plan(_day, events);
+
+            Assert.That(result[0].Event, Is.SameAs(early));
+            Assert.That(result[1].Event, Is.SameAs(late));
+            Assert.That(result[0].Duration, Is.EqualTo(TimeSpan.FromHours(6)));  // 3h weight -> 6h
+            Assert.That(result[1].Duration, Is.EqualTo(TimeSpan.FromHours(2)));  // 1h weight -> 2h
+        }
     }
 }

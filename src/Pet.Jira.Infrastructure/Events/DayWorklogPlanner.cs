@@ -16,6 +16,7 @@ namespace Pet.Jira.Infrastructure.Events
         {
             var tasks = dayEvents
                 .Where(e => e.Source == EventSource.Task)
+                .OrderBy(e => e.Start)
                 .ToList();
 
             var result = new List<ProposedWorklog>();
