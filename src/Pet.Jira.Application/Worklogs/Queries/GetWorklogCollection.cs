@@ -1,6 +1,10 @@
-﻿using MediatR;
+using MediatR;
+using Pet.Jira.Application.Authentication;
 using Pet.Jira.Application.Common.Extensions;
+using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
+using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using Pet.Jira.Application.Worklogs.Dto;
+using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Domain.Models.Worklogs;
 using System;
 using System.Collections.Generic;
@@ -31,10 +35,17 @@ namespace Pet.Jira.Application.Worklogs.Queries
         public class QueryHandler : IRequestHandler<Query, Model>
         {
             private readonly IWorklogDataSource _worklogDataSource;
+            private readonly IMediator _mediator;
+            private readonly IIdentityService _identityService;
 
-            public QueryHandler(IWorklogDataSource worklogDataSource)
+            public QueryHandler(
+                IWorklogDataSource worklogDataSource,
+                IMediator mediator,
+                IIdentityService identityService)
             {
                 _worklogDataSource = worklogDataSource;
+                _mediator = mediator;
+                _identityService = identityService;
             }
 
             public async Task<Model> Handle(
@@ -64,13 +75,72 @@ namespace Pet.Jira.Application.Worklogs.Queries
                         EndDate = query.EndDate
                     }, cancellationToken);
 
-                var days = CalculateDays(issueWorklogs, rawIssueWorklogs, query).ToList();
+                var (calendarWorklogs, blockedByDay) = await GetCalendarWorklogsAsync(query, cancellationToken);
+
+                var allRawWorklogs = rawIssueWorklogs.Concat(calendarWorklogs);
+
+                var days = CalculateDays(issueWorklogs, allRawWorklogs, query).ToList();
                 foreach (var day in days)
                 {
+                    day.CalendarBlockedTime = blockedByDay.GetValueOrDefault(day.Date);
                     day.Refresh();
                 }
 
                 return days;
+            }
+
+            /// <summary>
+            /// Fetches calendar events for the query range and splits them into estimated
+            /// worklogs (events with a Jira key) and per-day blocked time (events without).
+            /// Calendar failures degrade silently — the collection is returned without calendar.
+            /// </summary>
+            private async Task<(List<IWorklog> CalendarWorklogs, Dictionary<DateTime, TimeSpan> BlockedByDay)>
+                GetCalendarWorklogsAsync(Query query, CancellationToken cancellationToken)
+            {
+                var calendarWorklogs = new List<IWorklog>();
+                var blockedByDay = new Dictionary<DateTime, TimeSpan>();
+
+                try
+                {
+                    var user = await _identityService.GetCurrentUserAsync();
+                    for (var date = query.StartDate.Date; date <= query.EndDate.Date; date = date.AddDays(1))
+                    {
+                        var events = await _mediator.Send(
+                            new GetYandexCalendarEvents.Query(user.Username, DateOnly.FromDateTime(date)),
+                            cancellationToken);
+
+                        foreach (var calendarEvent in events)
+                        {
+                            if (!string.IsNullOrEmpty(calendarEvent.JiraIssueKeyHint))
+                            {
+                                calendarWorklogs.Add(new RawIssueWorklog
+                                {
+                                    StartDate = calendarEvent.Start,
+                                    CompleteDate = calendarEvent.End,
+                                    Issue = new Issue
+                                    {
+                                        Key = calendarEvent.JiraIssueKeyHint,
+                                        Identifier = calendarEvent.JiraIssueKeyHint
+                                    },
+                                    Author = user.Username,
+                                    Source = WorklogSource.Calendar
+                                });
+                            }
+                            else
+                            {
+                                var dayKey = calendarEvent.Start.Date;
+                                blockedByDay[dayKey] = blockedByDay.GetValueOrDefault(dayKey)
+                                    + (calendarEvent.End - calendarEvent.Start);
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    // Calendar unavailable — return worklogs without calendar.
+                }
+
+                return (calendarWorklogs, blockedByDay);
             }
 
             private static IEnumerable<WorkingDay> CalculateDays(
