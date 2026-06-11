@@ -33,10 +33,7 @@ else
                                 @e.IssueKey
                             </MudText>
                         }
-                        @{
-                            var proposed = GetProposed(e);
-                        }
-                        @if (proposed != null)
+                        @if (GetProposed(e) is { } proposed)
                         {
                             <MudSpacer />
                             <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Outlined">

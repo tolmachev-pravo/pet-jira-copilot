@@ -50,7 +50,7 @@ namespace Pet.Jira.Web.Pages
             _proposed.TryGetValue(e, out var proposed) ? proposed : null;
 
         private static string FormatProposed(ProposedWorklog p) =>
-            $"{p.Start:HH:mm} – {p.End:HH:mm} ({p.Duration.TotalHours:0.##}h)";
+            FormattableString.Invariant($"{p.Start:HH:mm} – {p.End:HH:mm} ({p.Duration.TotalHours:0.##}h)");
 
         private static string FormatTime(Event e) =>
             e.Start == e.End
