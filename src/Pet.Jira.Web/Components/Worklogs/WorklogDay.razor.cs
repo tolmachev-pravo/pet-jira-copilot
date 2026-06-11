@@ -17,6 +17,7 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [Inject] private IMediator Mediator { get; set; } = default!;
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private IDialogService DialogService { get; set; } = default!;
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; } = default!;
 
@@ -67,6 +68,33 @@ namespace Pet.Jira.Web.Components.Worklogs
             catch (Exception e)
             {
                 ErrorHandler.ProcessError(e);
+            }
+        }
+
+        private async Task OpenBlockedEventDialog(BlockedCalendarEvent calendarEvent)
+        {
+            var template = new WorkingDayWorklog
+            {
+                StartDate = calendarEvent.Start,
+                CompleteDate = calendarEvent.End,
+                RawStartDate = calendarEvent.Start,
+                RawCompleteDate = calendarEvent.End,
+                Comment = calendarEvent.Title,
+                Issue = null,
+                Type = Domain.Models.Worklogs.WorklogType.Actual,
+                Source = Domain.Models.Worklogs.WorklogSource.Calendar
+            };
+
+            var parameters = new DialogParameters
+            {
+                { nameof(WorklogDayItemDialog.WorkingDay), Entity },
+                { nameof(WorklogDayItemDialog.WorklogTemplate), template }
+            };
+            var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("Add worklog", parameters);
+            var result = await dialog.Result;
+            if (result.Data is WorkingDayWorklog worklog)
+            {
+                await AddWorklogAsync(worklog);
             }
         }
 
