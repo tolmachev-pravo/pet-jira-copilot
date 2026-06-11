@@ -109,5 +109,36 @@ namespace Pet.Jira.UnitTests.Infrastructure.Events
             var result = _sut.Plan(_day, new List<Event>());
             Assert.That(result, Is.Empty);
         }
+
+        [Test]
+        public void Plan_MultipleCalendarEvents_BudgetSubtractsTheirSum()
+        {
+            var morning = Calendar(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 10, 0, 0));   // 1h
+            var afternoon = Calendar(new DateTime(2026, 6, 1, 14, 0, 0), new DateTime(2026, 6, 1, 15, 30, 0)); // 1.5h
+            var task = Task(new DateTime(2026, 6, 1, 11, 0, 0), new DateTime(2026, 6, 1, 11, 30, 0));
+            var events = new List<Event> { morning, afternoon, task };
+
+            var result = _sut.Plan(_day, events);
+
+            var taskSlot = result.Single(p => p.Event == task);
+            Assert.That(taskSlot.Duration, Is.EqualTo(TimeSpan.FromHours(5.5))); // 8h - (1h + 1.5h)
+            Assert.That(result.Sum(p => p.Duration.Ticks), Is.EqualTo(TimeSpan.FromHours(8).Ticks));
+        }
+
+        [Test]
+        public void Plan_ThreeUnequalTasks_SumIsExactlyEightHours()
+        {
+            var t1 = Task(new DateTime(2026, 6, 1, 9, 0, 0), new DateTime(2026, 6, 1, 10, 0, 0));   // 1h
+            var t2 = Task(new DateTime(2026, 6, 1, 10, 0, 0), new DateTime(2026, 6, 1, 12, 0, 0));  // 2h
+            var t3 = Task(new DateTime(2026, 6, 1, 12, 0, 0), new DateTime(2026, 6, 1, 16, 0, 0));  // 4h
+            var events = new List<Event> { t1, t2, t3 };
+
+            var result = _sut.Plan(_day, events);
+
+            Assert.That(result, Has.Count.EqualTo(3));
+            // 1h/2h/4h weights of an 8h budget produce non-integer tick slices;
+            // the last-task-remainder logic must still make the sum exact.
+            Assert.That(result.Sum(p => p.Duration.Ticks), Is.EqualTo(TimeSpan.FromHours(8).Ticks));
+        }
     }
 }
