@@ -3,14 +3,13 @@
 <MudElement Class="gap-2 d-flex flex-wrap border-none align-center">
     <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 300px">
         <MudElement Style="width:28px" />
+        <MudIcon Icon="@Icons.Material.Filled.Event"
+                 Color="Color.Tertiary"
+                 Size="Size.Small" />
         <WorklogTimeRange StartDate="@Entity.RawStartDate"
                           CompleteDate="@Entity.RawCompleteDate"
                           Color="Color.Tertiary" />
-        <MudIcon Icon="@Icons.Material.Filled.Event"
-                 Color="Color.Tertiary"
-                 Size="Size.Small"
-                 Class="ml-1" />
-        <MudElement Style="flex:1;min-width:0;overflow:hidden">
+        <MudElement Class="pl-2" Style="flex:1;min-width:0;overflow:hidden">
             <MudText Typo="Typo.body2"
                      Style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                 @Title

@@ -1,8 +1,9 @@
 ﻿<MudElement Class="gap-2 d-flex flex-wrap border-none align-center">
-    <MudElement Class="flex-auto gap-1 align-center" Style="width: 300px">
+    <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 300px">
         <WorklogMenu Entity="@Entity" Color="@Color" OnCreatedPressed="AddCustomAsync" />
+        <MudIcon Icon="@Icon" Color="@Color" Size="Size.Small" />
         <WorklogTimeRange StartDate="@Entity.RawStartDate" CompleteDate="@Entity.RawCompleteDate" Color="@Color" />
-        <MudElement Class="pl-2">
+        <MudElement Class="pl-2" Style="flex:1;min-width:0;overflow:hidden">
             <MudButton Href="@Entity.Issue.Link"
                        Size="Size.Small"
                        Target="_blank"
