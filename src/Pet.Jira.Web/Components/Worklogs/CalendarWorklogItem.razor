@@ -11,22 +11,24 @@
                  Color="@(IsLogged ? Color.Default : Color.Success)"
                  Size="Size.Small"
                  Class="ml-1" />
-        @if (Entity.Issue is not null && !string.IsNullOrEmpty(Entity.Issue.Key))
-        {
-            <MudButton Href="@Entity.Issue.Link"
-                       Size="Size.Small"
-                       Target="_blank"
-                       Variant="Variant.Outlined"
-                       Color="@(IsLogged ? Color.Default : Color.Success)">
-                @Entity.Issue.Key
-            </MudButton>
-        }
         <MudElement Style="flex:1;min-width:0;overflow:hidden">
             <MudText Typo="Typo.body2"
                      Style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                 @Title
             </MudText>
         </MudElement>
+        @if (Entity.Issue is not null && !string.IsNullOrEmpty(Entity.Issue.Key))
+        {
+            <MudChip T="string"
+                     Href="@Entity.Issue.Link"
+                     Target="_blank"
+                     Size="Size.Small"
+                     Variant="Variant.Outlined"
+                     Color="@(IsLogged ? Color.Default : Color.Success)"
+                     Style="height:20px;font-size:11px">
+                @Entity.Issue.Key
+            </MudChip>
+        }
     </MudElement>
     <MudElement Class="scalable-time-spent-container flex-none d-flex justify-end">
         <MudElement Class="static-time-spent-container flex-none d-flex justify-end align-center gap-2">
