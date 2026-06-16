@@ -82,9 +82,9 @@ namespace Pet.Jira.Infrastructure.Jira
 			CancellationToken cancellationToken = default)
 		{
 			var issueQuery = _queryFactory.Create()
-				.Where("updatedDate", JiraQueryComparisonType.GreaterOrEqual, query.StartDate)
 				.Where("assignee", JiraQueryComparisonType.Equal, JiraQueryMacros.CurrentUser)
 				.Where("type", JiraQueryComparisonType.NotEqual, "Story")
+				.WhereWas("status", "In Progress", query.StartDate, query.EndDate)
 				.OrderBy("updatedDate", JiraQueryOrderType.Desc)
 				.ToString();
 			var issueSearchOptions = new IssueSearchOptions(issueQuery)
