@@ -55,6 +55,10 @@
                 <CalendarWorklogItem Entity="@row.CalendarWorklog"
                                      IsLogged="@isLogged"
                                      OnAddPressed="CalendarAddAsync" />
+                @foreach (var child in row.CalendarWorklog.Children)
+                {
+                    <EstimatedActualWorklogItem Entity="@child" />
+                }
             }
         </td>
     </tr>
