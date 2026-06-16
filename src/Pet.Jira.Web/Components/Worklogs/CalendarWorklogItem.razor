@@ -1,0 +1,45 @@
+@using MudBlazor
+
+<MudElement Class="gap-2 d-flex flex-wrap border-none align-center">
+    <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 300px">
+        <MudElement Style="width:28px" />
+        <MudIcon Icon="@Icons.Material.Filled.Event"
+                 Color="Color.Tertiary"
+                 Size="Size.Small" />
+        <WorklogTimeRange StartDate="@Entity.RawStartDate"
+                          CompleteDate="@Entity.RawCompleteDate"
+                          Color="Color.Tertiary" />
+        <MudElement Class="pl-2" Style="flex:1;min-width:0;overflow:hidden">
+            <MudText Typo="Typo.body2"
+                     Style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                @Title
+            </MudText>
+        </MudElement>
+        @if (Entity.Issue is not null && !string.IsNullOrEmpty(Entity.Issue.Key))
+        {
+            <MudChip T="string"
+                     Href="@Entity.Issue.Link"
+                     Target="_blank"
+                     Size="Size.Small"
+                     Variant="Variant.Outlined"
+                     Color="Color.Tertiary"
+                     Style="height:20px;font-size:11px">
+                @Entity.Issue.Key
+            </MudChip>
+        }
+    </MudElement>
+    <MudElement Class="scalable-time-spent-container flex-none d-flex justify-end">
+        <MudElement Class="static-time-spent-container flex-none d-flex justify-end align-center gap-2">
+            <MudTextField @bind-Value="@Entity.RemainingTimeSpent"
+                          Class="pet-input-control"
+                          Variant="Variant.Text"
+                          IconSize="Size.Small" />
+            <MudIconButton Size="Size.Small"
+                           Icon="@Icons.Material.Filled.Add"
+                           Variant="Variant.Filled"
+                           Color="Color.Tertiary"
+                           OnClick="AddAsync"
+                           Disabled="@Entity.IsEmpty" />
+        </MudElement>
+    </MudElement>
+</MudElement>

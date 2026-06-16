@@ -47,11 +47,6 @@ namespace Pet.Jira.Application.Worklogs.Dto
 
         public string Comment { get; set; }
 
-        /// <summary>
-        /// True for calendar event placeholders added for time distribution — not real Jira worklogs.
-        /// </summary>
-        public bool IsVirtualCalendar { get; set; }
-
         public WorkingDayWorklog()
         {
             Children = new List<WorkingDayWorklog>();

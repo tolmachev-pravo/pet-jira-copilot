@@ -1,12 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Pet.Jira.Application.Authentication;
-using Pet.Jira.Application.Extensions.YandexCalendar.Dto;
-using Pet.Jira.Application.Extensions.YandexCalendar.Queries;
 using Pet.Jira.Application.Worklogs.Commands;
 using Pet.Jira.Application.Worklogs.Dto;
-using Pet.Jira.Domain.Models.Issues;
 using Pet.Jira.Web.Shared;
 using System;
 using System.Collections.Generic;
@@ -22,115 +18,102 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Inject] private IMediator Mediator { get; set; } = default!;
         [Inject] private ISnackbar Snackbar { get; set; } = default!;
         [Inject] private IDialogService DialogService { get; set; } = default!;
-        [Inject] private IIdentityService IdentityService { get; set; } = default!;
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; } = default!;
 
         public Color Color => Entity.IsWeekend ? Color.Error : Color.Default;
 
+        private string DayHeaderClass
+        {
+            get
+            {
+                if (Entity.IsWeekend) return "pet-day-header pet-day-header-weekend";
+                if (Entity.Progress >= 100) return "pet-day-header pet-day-header-done";
+                if (Entity.Progress > 0) return "pet-day-header pet-day-header-progress";
+                return "pet-day-header";
+            }
+        }
+
+        private string DayDateText => Entity.Date.ToString("ddd, dd MMM");
+        private string ProgressPercent => Entity.IsWeekend && Entity.Progress == 0 ? "—" : $"{Entity.Progress}%";
+
+        private static string FormatTime(TimeSpan ts)
+        {
+            var hours = (int)ts.TotalHours;
+            var minutes = ts.Minutes;
+            if (hours == 0 && minutes == 0) return "0ч";
+            if (minutes == 0) return $"{hours}ч";
+            return $"{hours}ч {minutes}м";
+        }
+
         private List<DayRow> _dayRows = new();
-        private bool _isLoadingCalendar = true;
         private WorkingDay? _previousEntity;
 
-        protected override async Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
             if (_previousEntity == Entity) return;
             _previousEntity = Entity;
-            _isLoadingCalendar = true;
-            await RebuildDayRows();
+            RebuildDayRows();
         }
 
-        private async Task RebuildDayRows()
+        private void RebuildDayRows()
         {
-            // Remove virtual calendar placeholders from a previous call
-            var oldVirtual = Entity.Worklogs.Where(w => w.IsVirtualCalendar).ToList();
-            foreach (var v in oldVirtual) Entity.Worklogs.Remove(v);
+            // Actual worklogs matched to keyless blocked events are shown as children
+            // of the blocked event row, so exclude them from standalone worklog rows.
+            var blockedMatchedWorklogs = Entity.BlockedCalendarEvents
+                .Select(e => Entity.ActualWorklogs
+                    .FirstOrDefault(w => w.StartDate == e.Start && w.CompleteDate == e.End))
+                .Where(w => w != null)
+                .ToHashSet();
 
-            IReadOnlyList<YandexCalendarEventDto> loadedEvents = Array.Empty<YandexCalendarEventDto>();
-            Entity.CalendarBlockedTime = TimeSpan.Zero;
-            try
-            {
-                var username = IdentityService.CurrentUser?.Username;
-                if (!string.IsNullOrEmpty(username))
-                {
-                    loadedEvents = await Mediator.Send(
-                        new GetYandexCalendarEvents.Query(username, DateOnly.FromDateTime(Entity.Date)));
-
-                    var jiraWorklogs = Entity.ActualWorklogs
-                        .Where(w => !w.IsVirtualCalendar)
-                        .ToList();
-
-                    foreach (var e in loadedEvents)
-                    {
-                        bool isLogged = jiraWorklogs.Any(w => w.StartDate == e.Start && w.CompleteDate == e.End);
-                        if (!isLogged)
-                        {
-                            if (e.JiraIssueKeyHint is not null)
-                            {
-                                // Virtual actual worklog — participates in WorklogMatching with estimated worklogs
-                                Entity.Worklogs.Add(new WorkingDayWorklog
-                                {
-                                    StartDate = e.Start,
-                                    CompleteDate = e.End,
-                                    RawStartDate = e.Start,
-                                    RawCompleteDate = e.End,
-                                    Issue = new Issue { Key = e.JiraIssueKeyHint, Identifier = e.JiraIssueKeyHint },
-                                    Type = Domain.Models.Worklogs.WorklogType.Actual,
-                                    Source = Domain.Models.Worklogs.WorklogSource.Calendar,
-                                    IsVirtualCalendar = true
-                                });
-                            }
-                            else
-                            {
-                                // No issue key — block the time unconditionally
-                                Entity.CalendarBlockedTime += e.End - e.Start;
-                            }
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // Calendar unavailable — show worklogs only, silently
-            }
-            finally
-            {
-                Entity.Refresh();
-                _isLoadingCalendar = false;
-            }
-
-            // Build calendar rows after Refresh so Parent assignments from WorklogMatching are final.
-            // CalendarChildren: worklogs that overlap the event but were NOT matched to an estimated worklog.
-            // Worklogs matched to an estimated (Parent != null) stay under their estimated parent instead.
-            var allJiraWorklogs = Entity.ActualWorklogs.Where(w => !w.IsVirtualCalendar).ToList();
-
-            var calRows = loadedEvents.Select(e =>
-            {
-                var children = allJiraWorklogs
-                    .Where(w => w.Parent == null && w.StartDate == e.Start && w.CompleteDate == e.End)
-                    .ToList();
-                return new DayRow(
-                    e.Start,
-                    CalendarEvent: e,
-                    IsCalendarEventLogged: allJiraWorklogs.Any(w => w.StartDate == e.Start && w.CompleteDate == e.End),
-                    CalendarChildren: children);
-            }).ToList();
-
-            var calendarChildSet = calRows.SelectMany(r => r.CalendarChildren).ToHashSet();
-
-            // Exclude worklogs already shown as children of a calendar event row
             var worklogRows = Entity.ActualWorklogs
-                .Where(w => w.Parent == null && !w.IsVirtualCalendar && !calendarChildSet.Contains(w))
+                .Where(w => w.Parent == null && !blockedMatchedWorklogs.Contains(w))
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
-            var estimatedRows = Entity.EstimatedWorklogs
+            var regularEstimatedRows = Entity.EstimatedWorklogs
+                .Where(w => w.Source != Domain.Models.Worklogs.WorklogSource.Calendar)
                 .Select(w => new DayRow(w.RawStartDate, EstimatedWorklog: w));
 
+            var calendarEstimatedRows = Entity.EstimatedWorklogs
+                .Where(w => w.Source == Domain.Models.Worklogs.WorklogSource.Calendar)
+                .Select(w => new DayRow(w.RawStartDate, CalendarWorklog: w));
+
+            var blockedRows = Entity.BlockedCalendarEvents.Select(e =>
+            {
+                var template = CreateBlockedTemplate(e);
+                var matched = Entity.ActualWorklogs
+                    .FirstOrDefault(w => w.StartDate == e.Start && w.CompleteDate == e.End);
+                if (matched != null)
+                {
+                    template.Children.Add(matched);
+                    template.UpdateRemainingTimeSpent(TimeSpan.Zero);
+                }
+                return new DayRow(e.Start, CalendarWorklog: template, BlockedEventRef: e);
+            });
+
             _dayRows = worklogRows
-                .Concat(estimatedRows)
-                .Concat(calRows)
+                .Concat(regularEstimatedRows)
+                .Concat(calendarEstimatedRows)
+                .Concat(blockedRows)
                 .OrderBy(r => r.Time)
                 .ToList();
+        }
+
+        private static WorkingDayWorklog CreateBlockedTemplate(BlockedCalendarEvent e)
+        {
+            var template = new WorkingDayWorklog
+            {
+                RawStartDate = e.Start,
+                RawCompleteDate = e.End,
+                StartDate = e.Start,
+                CompleteDate = e.End,
+                Comment = e.Title,
+                Issue = null,
+                Type = Domain.Models.Worklogs.WorklogType.Actual,
+                Source = Domain.Models.Worklogs.WorklogSource.Calendar
+            };
+            template.UpdateRemainingTimeSpent(e.Duration);
+            return template;
         }
 
         private async Task AddWorklogAsync(WorkingDayWorklog entity)
@@ -143,7 +126,7 @@ namespace Pet.Jira.Web.Components.Worklogs
                     $"Worklog {entity.Issue.Key} added successfully!",
                     Severity.Success,
                     config => { config.ActionColor = Color.Success; });
-                await RebuildDayRows();
+                RebuildDayRows();
                 StateHasChanged();
             }
             catch (Exception e)
@@ -152,30 +135,21 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        private async Task OpenCalendarWorklogDialog(YandexCalendarEventDto calEvent)
+        private async Task CalendarAddAsync(WorkingDayWorklog worklog)
         {
-            var template = new WorkingDayWorklog
+            if (worklog.Issue == null || string.IsNullOrEmpty(worklog.Issue.Key))
             {
-                StartDate = calEvent.Start,
-                CompleteDate = calEvent.End,
-                RawStartDate = calEvent.Start,
-                RawCompleteDate = calEvent.End,
-                Comment = calEvent.Summary,
-                Issue = calEvent.JiraIssueKeyHint is not null
-                    ? new Issue { Key = calEvent.JiraIssueKeyHint, Identifier = calEvent.JiraIssueKeyHint }
-                    : null,
-                Type = Domain.Models.Worklogs.WorklogType.Actual,
-                Source = Domain.Models.Worklogs.WorklogSource.Calendar
-            };
-
-            var parameters = new DialogParameters
-            {
-                { nameof(WorklogDayItemDialog.WorkingDay), Entity },
-                { nameof(WorklogDayItemDialog.WorklogTemplate), template }
-            };
-            var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("Add worklog", parameters);
-            var result = await dialog.Result;
-            if (result.Data is WorkingDayWorklog worklog)
+                var parameters = new DialogParameters
+                {
+                    { nameof(WorklogDayItemDialog.WorkingDay), Entity },
+                    { nameof(WorklogDayItemDialog.WorklogTemplate), worklog }
+                };
+                var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("Add worklog", parameters);
+                var result = await dialog.Result;
+                if (result.Data is WorkingDayWorklog created)
+                    await AddWorklogAsync(created);
+            }
+            else
             {
                 await AddWorklogAsync(worklog);
             }
@@ -185,8 +159,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
             WorkingDayWorklog? EstimatedWorklog = null,
-            YandexCalendarEventDto? CalendarEvent = null,
-            bool IsCalendarEventLogged = false,
-            IReadOnlyList<WorkingDayWorklog>? CalendarChildren = null);
+            WorkingDayWorklog? CalendarWorklog = null,
+            BlockedCalendarEvent? BlockedEventRef = null);
     }
 }

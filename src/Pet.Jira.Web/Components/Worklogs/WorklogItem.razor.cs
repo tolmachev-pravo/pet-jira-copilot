@@ -31,5 +31,13 @@ namespace Pet.Jira.Web.Components.Worklogs
 			WorklogSource.Tester => Color.Secondary,
 			_ => Color.Info
 		};
+
+        public string Icon => Entity.Source switch
+        {
+            WorklogSource.Assignee => Icons.Material.Filled.Assignment,
+            WorklogSource.Tester => Icons.Material.Filled.BugReport,
+            WorklogSource.Comment => Icons.Material.Filled.Comment,
+            _ => Icons.Material.Filled.Assignment
+        };
 	}
 }
