@@ -61,7 +61,10 @@ namespace Pet.Jira.Web.Components.Worklogs
                 var matched = Entity.ActualWorklogs
                     .FirstOrDefault(w => w.StartDate == e.Start && w.CompleteDate == e.End);
                 if (matched != null)
+                {
                     template.Children.Add(matched);
+                    template.UpdateRemainingTimeSpent(TimeSpan.Zero);
+                }
                 return new DayRow(e.Start, CalendarWorklog: template, BlockedEventRef: e);
             });
 

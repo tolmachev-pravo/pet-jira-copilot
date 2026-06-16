@@ -150,6 +150,10 @@ app {
     }
 }
 
+:root {
+    --pet-logged-opacity: 0.55;
+}
+
 @media (min-width: 768px) {
     app {
         flex-direction: row;
