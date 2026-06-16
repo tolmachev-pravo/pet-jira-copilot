@@ -1,14 +1,14 @@
 @using MudBlazor
 
 <MudElement Class="gap-2 d-flex flex-wrap border-none align-center"
-            Style="@(IsLogged ? "opacity:0.45" : "")">
+            Style="@(IsLogged ? "opacity:0.65" : "")">
     <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 300px">
         <MudElement Style="width:28px" />
         <WorklogTimeRange StartDate="@Entity.RawStartDate"
                           CompleteDate="@Entity.RawCompleteDate"
-                          Color="@(IsLogged ? Color.Default : Color.Success)" />
+                          Color="Color.Tertiary" />
         <MudIcon Icon="@Icons.Material.Filled.Event"
-                 Color="@(IsLogged ? Color.Default : Color.Success)"
+                 Color="Color.Tertiary"
                  Size="Size.Small"
                  Class="ml-1" />
         <MudElement Style="flex:1;min-width:0;overflow:hidden">
@@ -24,7 +24,7 @@
                      Target="_blank"
                      Size="Size.Small"
                      Variant="Variant.Outlined"
-                     Color="@(IsLogged ? Color.Default : Color.Success)"
+                     Color="Color.Tertiary"
                      Style="height:20px;font-size:11px">
                 @Entity.Issue.Key
             </MudChip>
