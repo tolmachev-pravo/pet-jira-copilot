@@ -56,6 +56,34 @@ namespace Pet.Jira.UnitTests.Application.Worklogs
         }
 
         [Test]
+        public void KeylessEvent_Unlogged_ContributesToEstimatedWorklogTimeSpent()
+        {
+            var meeting = Meeting();
+            var day = DayWith(new List<BlockedCalendarEvent> { meeting });
+
+            day.Refresh();
+
+            Assert.That(day.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.FromHours(1)));
+        }
+
+        [Test]
+        public void KeylessEvent_Logged_DoesNotContributeToEstimatedWorklogTimeSpent()
+        {
+            var meeting = Meeting();
+            var logged = new WorkingDayWorklog(
+                new DateTime(2026, 6, 1, 12, 0, 0),
+                new DateTime(2026, 6, 1, 13, 0, 0),
+                new Issue { Key = "PROJ-1" },
+                WorklogType.Actual,
+                WorklogSource.Calendar);
+            var day = DayWith(new List<BlockedCalendarEvent> { meeting }, new List<WorkingDayWorklog> { logged });
+
+            day.Refresh();
+
+            Assert.That(day.EstimatedWorklogTimeSpent, Is.EqualTo(TimeSpan.Zero));
+        }
+
+        [Test]
         public void TwoEvents_OneLogged_OnlyUnloggedEventBlocksTime()
         {
             var logged = Meeting(); // 12:00-13:00

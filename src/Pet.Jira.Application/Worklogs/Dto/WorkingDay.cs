@@ -62,7 +62,7 @@ namespace Pet.Jira.Application.Worklogs.Dto
         /// <summary>
         /// Estimated worklog time spent
         /// </summary>
-        public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.RemainingTimeSpent();
+        public TimeSpan EstimatedWorklogTimeSpent => EstimatedWorklogs.RemainingTimeSpent() + CalendarBlockedTime;
 
         /// <summary>
         /// Worklog time spent
