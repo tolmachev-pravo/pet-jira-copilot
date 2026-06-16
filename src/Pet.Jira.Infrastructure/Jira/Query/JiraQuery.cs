@@ -8,12 +8,12 @@ namespace Pet.Jira.Infrastructure.Jira.Query
 {
     public class JiraQuery
     {
-        private readonly List<JiraQueryCondition> _conditions;
+        private readonly List<string> _conditions;
         private readonly List<JiraQueryOrder> _orders;
 
         public JiraQuery()
         {
-            _conditions = new List<JiraQueryCondition>();
+            _conditions = new List<string>();
             _orders = new List<JiraQueryOrder>();
         }
 
@@ -24,7 +24,19 @@ namespace Pet.Jira.Infrastructure.Jira.Query
                 Left = left,
                 ComparisonType = comparisonType,
                 Right = GetStringValue(right)
-            });
+            }.ToString());
+            return this;
+        }
+
+        public JiraQuery WhereWas(string field, string value, DateTime duringFrom, DateTime duringTo)
+        {
+            _conditions.Add(new JiraQueryWasCondition
+            {
+                Field = field,
+                Value = value,
+                DuringFrom = duringFrom,
+                DuringTo = duringTo
+            }.ToString());
             return this;
         }
 
