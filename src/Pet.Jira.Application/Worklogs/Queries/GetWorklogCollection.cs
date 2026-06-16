@@ -120,7 +120,8 @@ namespace Pet.Jira.Application.Worklogs.Queries
                                     Issue = new Issue
                                     {
                                         Key = calendarEvent.JiraIssueKeyHint,
-                                        Identifier = calendarEvent.JiraIssueKeyHint
+                                        Identifier = calendarEvent.JiraIssueKeyHint,
+                                        Summary = calendarEvent.Summary
                                     },
                                     Author = user.Username,
                                     Source = WorklogSource.Calendar

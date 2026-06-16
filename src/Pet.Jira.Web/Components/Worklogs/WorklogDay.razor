@@ -47,40 +47,14 @@
             {
                 <ActualWorklogItem Entity="@row.Worklog" />
             }
-            else if (row.BlockedEvent is not null)
+            else if (row.CalendarWorklog is not null)
             {
-                var blockedLogged = Entity.IsCalendarEventLogged(row.BlockedEvent);
-                <MudElement Class="gap-2 d-flex flex-wrap border-none align-center"
-                            Style="@(blockedLogged ? "opacity:0.45" : "opacity:0.7")">
-                    <MudElement Style="width:28px" />
-                    <WorklogTimeRange StartDate="@row.BlockedEvent.Start"
-                                      CompleteDate="@row.BlockedEvent.End"
-                                      Color="Color.Default" />
-                    <MudIcon Icon="@Icons.Material.Filled.EventBusy"
-                             Color="Color.Default"
-                             Size="Size.Small"
-                             Class="ml-1" />
-                    <MudText Typo="Typo.body2"
-                             Style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">
-                        @row.BlockedEvent.Title
-                    </MudText>
-                    @if (blockedLogged)
-                    {
-                        <MudIconButton Size="Size.Small"
-                                       Icon="@Icons.Material.Filled.Check"
-                                       Color="Color.Default"
-                                       Disabled="true" />
-                    }
-                    else
-                    {
-                        <MudTooltip Text="Залогировать">
-                            <MudIconButton Size="Size.Small"
-                                           Icon="@Icons.Material.Filled.Add"
-                                           Color="Color.Success"
-                                           OnClick="@(() => OpenBlockedEventDialog(row.BlockedEvent))" />
-                        </MudTooltip>
-                    }
-                </MudElement>
+                var isLogged = row.BlockedEventRef != null
+                    ? Entity.IsCalendarEventLogged(row.BlockedEventRef)
+                    : row.CalendarWorklog.ChildrenTimeSpent > TimeSpan.Zero;
+                <CalendarWorklogItem Entity="@row.CalendarWorklog"
+                                     IsLogged="@isLogged"
+                                     OnAddPressed="CalendarAddAsync" />
             }
         </td>
     </tr>

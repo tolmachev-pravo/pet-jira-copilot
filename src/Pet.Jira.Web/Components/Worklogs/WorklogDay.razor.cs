@@ -39,17 +39,40 @@ namespace Pet.Jira.Web.Components.Worklogs
                 .Where(w => w.Parent == null)
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
-            var estimatedRows = Entity.EstimatedWorklogs
+            var regularEstimatedRows = Entity.EstimatedWorklogs
+                .Where(w => w.Source != Domain.Models.Worklogs.WorklogSource.Calendar)
                 .Select(w => new DayRow(w.RawStartDate, EstimatedWorklog: w));
 
+            var calendarEstimatedRows = Entity.EstimatedWorklogs
+                .Where(w => w.Source == Domain.Models.Worklogs.WorklogSource.Calendar)
+                .Select(w => new DayRow(w.RawStartDate, CalendarWorklog: w));
+
             var blockedRows = Entity.BlockedCalendarEvents
-                .Select(e => new DayRow(e.Start, BlockedEvent: e));
+                .Select(e => new DayRow(e.Start, CalendarWorklog: CreateBlockedTemplate(e), BlockedEventRef: e));
 
             _dayRows = worklogRows
-                .Concat(estimatedRows)
+                .Concat(regularEstimatedRows)
+                .Concat(calendarEstimatedRows)
                 .Concat(blockedRows)
                 .OrderBy(r => r.Time)
                 .ToList();
+        }
+
+        private static WorkingDayWorklog CreateBlockedTemplate(BlockedCalendarEvent e)
+        {
+            var template = new WorkingDayWorklog
+            {
+                RawStartDate = e.Start,
+                RawCompleteDate = e.End,
+                StartDate = e.Start,
+                CompleteDate = e.End,
+                Comment = e.Title,
+                Issue = null,
+                Type = Domain.Models.Worklogs.WorklogType.Actual,
+                Source = Domain.Models.Worklogs.WorklogSource.Calendar
+            };
+            template.UpdateRemainingTimeSpent(e.Duration);
+            return template;
         }
 
         private async Task AddWorklogAsync(WorkingDayWorklog entity)
@@ -71,28 +94,21 @@ namespace Pet.Jira.Web.Components.Worklogs
             }
         }
 
-        private async Task OpenBlockedEventDialog(BlockedCalendarEvent calendarEvent)
+        private async Task CalendarAddAsync(WorkingDayWorklog worklog)
         {
-            var template = new WorkingDayWorklog
+            if (worklog.Issue == null || string.IsNullOrEmpty(worklog.Issue.Key))
             {
-                StartDate = calendarEvent.Start,
-                CompleteDate = calendarEvent.End,
-                RawStartDate = calendarEvent.Start,
-                RawCompleteDate = calendarEvent.End,
-                Comment = calendarEvent.Title,
-                Issue = null,
-                Type = Domain.Models.Worklogs.WorklogType.Actual,
-                Source = Domain.Models.Worklogs.WorklogSource.Calendar
-            };
-
-            var parameters = new DialogParameters
-            {
-                { nameof(WorklogDayItemDialog.WorkingDay), Entity },
-                { nameof(WorklogDayItemDialog.WorklogTemplate), template }
-            };
-            var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("Add worklog", parameters);
-            var result = await dialog.Result;
-            if (result.Data is WorkingDayWorklog worklog)
+                var parameters = new DialogParameters
+                {
+                    { nameof(WorklogDayItemDialog.WorkingDay), Entity },
+                    { nameof(WorklogDayItemDialog.WorklogTemplate), worklog }
+                };
+                var dialog = await DialogService.ShowAsync<WorklogDayItemDialog>("Add worklog", parameters);
+                var result = await dialog.Result;
+                if (result.Data is WorkingDayWorklog created)
+                    await AddWorklogAsync(created);
+            }
+            else
             {
                 await AddWorklogAsync(worklog);
             }
@@ -102,6 +118,7 @@ namespace Pet.Jira.Web.Components.Worklogs
             DateTime Time,
             WorkingDayWorklog? Worklog = null,
             WorkingDayWorklog? EstimatedWorklog = null,
-            BlockedCalendarEvent? BlockedEvent = null);
+            WorkingDayWorklog? CalendarWorklog = null,
+            BlockedCalendarEvent? BlockedEventRef = null);
     }
 }
