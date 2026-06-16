@@ -106,21 +106,45 @@ namespace Pet.Jira.Application.Worklogs.Dto
                 parents: EstimatedWorklogs,
                 children: ActualWorklogs);
 
-            // Remaining estimated worklog time spent for logging
-            var remainingWorklogTimeSpent = EstimatedWorklogs
+            var unmatchedEstimated = EstimatedWorklogs
                 .Where(worklog => worklog.ChildrenTimeSpent == TimeSpan.Zero)
-                .Select(worklog => worklog.TimeSpent)
+                .ToList();
+
+            // Calendar and Comment events use their own time directly — not scaled to day capacity
+            var fixedTimeUnmatched = unmatchedEstimated
+                .Where(w => w.Source == WorklogSource.Calendar || w.Source == WorklogSource.Comment)
+                .ToList();
+
+            // Assignee and Tester events are scaled proportionally from remaining day time
+            var proportionalUnmatched = unmatchedEstimated
+                .Where(w => w.Source != WorklogSource.Calendar && w.Source != WorklogSource.Comment)
+                .ToList();
+
+            foreach (var estimatedWorklog in EstimatedWorklogs.Where(w => w.ChildrenTimeSpent > TimeSpan.Zero))
+            {
+                estimatedWorklog.UpdateRemainingTimeSpent(TimeSpan.Zero);
+            }
+
+            foreach (var worklog in fixedTimeUnmatched)
+            {
+                worklog.UpdateRemainingTimeSpent(worklog.RawTimeSpent);
+            }
+
+            var remainingWorklogTimeSpent = proportionalUnmatched
+                .Select(w => w.TimeSpent)
                 .Sum();
 
-            // Remaining day time spent for logging, calendar events are treated as hard blocks
-            var remainingDayTimeSpent = Settings.WorkingTime - ActualWorklogs.TimeSpent() - CalendarBlockedTime;
+            // Fixed events and keyless calendar blocks reduce the pool available for proportional events.
+            // Raw time is used for fixed events — they may fall outside working hours but still consume time.
+            var fixedRawTimeSpent = fixedTimeUnmatched.Select(w => w.RawTimeSpent).Sum();
+            var remainingDayTimeSpent = Settings.WorkingTime
+                - ActualWorklogs.TimeSpent()
+                - CalendarBlockedTime
+                - fixedRawTimeSpent;
 
-            // Fill estimated remaining time spent for each estimated worklog in proportions
-            foreach (var estimatedWorklog in EstimatedWorklogs)
+            foreach (var estimatedWorklog in proportionalUnmatched)
             {
-                if (remainingWorklogTimeSpent > TimeSpan.Zero
-                    && remainingDayTimeSpent > TimeSpan.Zero
-                    && estimatedWorklog.ChildrenTimeSpent == TimeSpan.Zero)
+                if (remainingWorklogTimeSpent > TimeSpan.Zero && remainingDayTimeSpent > TimeSpan.Zero)
                 {
                     var percent = estimatedWorklog.TimeSpent / remainingWorklogTimeSpent;
                     var estimatedTimeSpent = percent * remainingDayTimeSpent;
