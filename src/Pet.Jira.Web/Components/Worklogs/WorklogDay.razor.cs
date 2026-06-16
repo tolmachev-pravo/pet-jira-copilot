@@ -23,6 +23,29 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         public Color Color => Entity.IsWeekend ? Color.Error : Color.Default;
 
+        private string DayHeaderClass
+        {
+            get
+            {
+                if (Entity.IsWeekend) return "pet-day-header pet-day-header-weekend";
+                if (Entity.Progress >= 100) return "pet-day-header pet-day-header-done";
+                if (Entity.Progress > 0) return "pet-day-header pet-day-header-progress";
+                return "pet-day-header";
+            }
+        }
+
+        private string DayDateText => Entity.Date.ToString("ddd, dd MMM");
+        private string ProgressPercent => Entity.IsWeekend && Entity.Progress == 0 ? "—" : $"{Entity.Progress}%";
+
+        private static string FormatTime(TimeSpan ts)
+        {
+            var hours = (int)ts.TotalHours;
+            var minutes = ts.Minutes;
+            if (hours == 0 && minutes == 0) return "0ч";
+            if (minutes == 0) return $"{hours}ч";
+            return $"{hours}ч {minutes}м";
+        }
+
         private List<DayRow> _dayRows = new();
         private WorkingDay? _previousEntity;
 
