@@ -35,8 +35,16 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         private void RebuildDayRows()
         {
+            // Actual worklogs matched to keyless blocked events are shown as children
+            // of the blocked event row, so exclude them from standalone worklog rows.
+            var blockedMatchedWorklogs = Entity.BlockedCalendarEvents
+                .Select(e => Entity.ActualWorklogs
+                    .FirstOrDefault(w => w.StartDate == e.Start && w.CompleteDate == e.End))
+                .Where(w => w != null)
+                .ToHashSet();
+
             var worklogRows = Entity.ActualWorklogs
-                .Where(w => w.Parent == null)
+                .Where(w => w.Parent == null && !blockedMatchedWorklogs.Contains(w))
                 .Select(w => new DayRow(w.RawStartDate, Worklog: w));
 
             var regularEstimatedRows = Entity.EstimatedWorklogs
@@ -47,8 +55,15 @@ namespace Pet.Jira.Web.Components.Worklogs
                 .Where(w => w.Source == Domain.Models.Worklogs.WorklogSource.Calendar)
                 .Select(w => new DayRow(w.RawStartDate, CalendarWorklog: w));
 
-            var blockedRows = Entity.BlockedCalendarEvents
-                .Select(e => new DayRow(e.Start, CalendarWorklog: CreateBlockedTemplate(e), BlockedEventRef: e));
+            var blockedRows = Entity.BlockedCalendarEvents.Select(e =>
+            {
+                var template = CreateBlockedTemplate(e);
+                var matched = Entity.ActualWorklogs
+                    .FirstOrDefault(w => w.StartDate == e.Start && w.CompleteDate == e.End);
+                if (matched != null)
+                    template.Children.Add(matched);
+                return new DayRow(e.Start, CalendarWorklog: template, BlockedEventRef: e);
+            });
 
             _dayRows = worklogRows
                 .Concat(regularEstimatedRows)
