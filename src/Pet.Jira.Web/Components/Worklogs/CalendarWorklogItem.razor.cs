@@ -9,6 +9,7 @@ namespace Pet.Jira.Web.Components.Worklogs
         [Parameter] public WorkingDayWorklog Entity { get; set; } = default!;
         [Parameter] public bool IsLogged { get; set; }
         [Parameter] public EventCallback<WorkingDayWorklog> OnAddPressed { get; set; }
+        [Parameter] public EventCallback<WorkingDayWorklog> OnMenuCreatedPressed { get; set; }
 
         private string Title => Entity.Issue?.Summary ?? Entity.Comment ?? string.Empty;
 

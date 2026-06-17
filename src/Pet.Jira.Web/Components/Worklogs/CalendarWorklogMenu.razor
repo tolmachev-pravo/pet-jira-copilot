@@ -1,0 +1,15 @@
+@using MudBlazor
+
+<MudMenu Icon="@Icons.Material.Filled.MoreVert"
+         Color="@Color"
+         Size="Size.Small"
+         Dense="true"
+         Class="pet-vertical-align-middle"
+         AnchorOrigin="Origin.BottomLeft"
+         TransformOrigin="Origin.TopLeft">
+    <ChildContent>
+        <MudMenuItem OnClick="(async () => await CreateWorklogAsync())">Create worklog</MudMenuItem>
+    </ChildContent>
+</MudMenu>
+
+@code {}

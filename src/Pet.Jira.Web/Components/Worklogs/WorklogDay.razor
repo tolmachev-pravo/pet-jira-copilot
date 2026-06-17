@@ -46,7 +46,8 @@
                     : row.CalendarWorklog.ChildrenTimeSpent > TimeSpan.Zero;
                 <CalendarWorklogItem Entity="@row.CalendarWorklog"
                                      IsLogged="@isLogged"
-                                     OnAddPressed="CalendarAddAsync" />
+                                     OnAddPressed="CalendarAddAsync"
+                                     OnMenuCreatedPressed="AddWorklogAsync" />
                 @foreach (var child in row.CalendarWorklog.Children)
                 {
                     <EstimatedActualWorklogItem Entity="@child" />
