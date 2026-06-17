@@ -2,7 +2,9 @@
 
 <MudElement Class="gap-2 d-flex flex-wrap border-none align-center">
     <MudElement Class="flex-auto d-flex gap-1 align-center" Style="width: 300px">
-        <MudElement Style="width:28px" />
+        <CalendarWorklogMenu Entity="@Entity"
+                             Color="Color.Tertiary"
+                             OnCreatedPressed="OnMenuCreatedPressed" />
         <MudIcon Icon="@Icons.Material.Filled.Event"
                  Color="Color.Tertiary"
                  Size="Size.Small" />

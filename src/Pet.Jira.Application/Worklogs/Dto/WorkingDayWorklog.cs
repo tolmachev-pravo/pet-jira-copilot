@@ -129,6 +129,9 @@ namespace Pet.Jira.Application.Worklogs.Dto
 
             result.UpdateRemainingTimeSpent(result.TimeSpent);
 
+            if (result.Source == WorklogSource.Calendar && result.Issue?.Summary != null)
+                result.Comment = result.Issue.Summary;
+
             return result;
         }
 
