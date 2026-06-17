@@ -161,7 +161,7 @@ app {
     padding: 8px 12px;
     border-left: 3px solid var(--mud-palette-divider);
     background: var(--mud-palette-background-grey);
-    border-radius: 0 8px 8px 0;
+    border-radius: 0;
 }
 .pet-day-header-done {
     border-left-color: var(--mud-palette-success);
