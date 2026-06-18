@@ -6,6 +6,6 @@ namespace Pet.Jira.Application.Extensions.YandexCalendar
 {
     public interface IYandexCalendarSettingsProvider
     {
-        Task<YandexCalendarSettingsDto?> GetSettingsAsync(string username, CancellationToken ct = default);
+        Task<YandexCalendarSettingsDto?> GetSettingsAsync(string username, CancellationToken cancellationToken = default);
     }
 }

@@ -7,6 +7,7 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
         public DateTime CreatedDate { get; set; }
         public IssueDto Issue { get; set; }
         public string Author { get; set; }
+        public string? Body { get; set; }
 
         public static IssueCommentDto Create(
             Atlassian.Jira.Comment comment,
@@ -16,7 +17,8 @@ namespace Pet.Jira.Infrastructure.Jira.Dto
             {
                 CreatedDate = comment.CreatedDate.Value,
                 Issue = issue,
-                Author = comment.Author
+                Author = comment.Author,
+                Body = comment.Body
             };
         }
     }

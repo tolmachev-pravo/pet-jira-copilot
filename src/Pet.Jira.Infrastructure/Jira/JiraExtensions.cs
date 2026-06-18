@@ -3,6 +3,7 @@ using Pet.Jira.Domain.Models.Worklogs;
 using Pet.Jira.Infrastructure.Jira.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Pet.Jira.Infrastructure.Jira
@@ -24,6 +25,28 @@ namespace Pet.Jira.Infrastructure.Jira
 			WorklogSource worklogSource)
             where T : IWorklog, new()
         {
+            return issueChangeLogItems
+                .ToStatusIntervals(issueStatusId, timeProvider, timeZoneInfo)
+                .Select(interval => new T
+                {
+                    StartDate = interval.Start,
+                    CompleteDate = interval.End,
+                    Issue = interval.Issue.Adapt(),
+                    Author = interval.Author,
+                    Source = worklogSource
+                });
+        }
+
+        /// <summary>
+        /// Pairs ordered status-change changelog items into the time intervals an
+        /// issue spent in <paramref name="issueStatusId"/>. Worklog-agnostic core
+        /// shared by the worklog and event pipelines.
+        /// </summary>
+        public static IEnumerable<StatusInterval> ToStatusIntervals(this IList<IssueChangeLogItemDto> issueChangeLogItems,
+            string issueStatusId,
+            ITimeProvider timeProvider,
+            TimeZoneInfo timeZoneInfo)
+        {
             var i = 0;
             while (i < issueChangeLogItems.Count)
             {
@@ -31,38 +54,29 @@ namespace Pet.Jira.Infrastructure.Jira
                 // 1. Первый элемент сразу выходит из прогресса. Значит это завершающий
                 if (item.FromId == issueStatusId)
                 {
-                    yield return new T()
-                    {
-                        CompleteDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
-                        StartDate = DateTime.MinValue,
-                        Issue = item.ChangeLog.Issue.Adapt(),
-                        Author = item.Author,
-                        Source = worklogSource
-					};
+                    yield return new StatusInterval(
+                        Start: DateTime.MinValue,
+                        End: timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
+                        Author: item.Author,
+                        Issue: item.ChangeLog.Issue);
                 }
                 // 2. Это последний элемент и он не завершается
                 else if (i == (issueChangeLogItems.Count - 1))
                 {
-                    yield return new T()
-                    {
-                        CompleteDate = DateTime.MaxValue,
-                        StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
-                        Issue = item.ChangeLog.Issue.Adapt(),
-                        Author = item.Author,
-                        Source = worklogSource
-					};
+                    yield return new StatusInterval(
+                        Start: timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
+                        End: DateTime.MaxValue,
+                        Author: item.Author,
+                        Issue: item.ChangeLog.Issue);
                 }
                 // 3. Обычный случай когда после FromInProgress следует ToInProgress
                 else
                 {
-                    yield return new T()
-                    {
-                        CompleteDate = timeProvider.ConvertToUserTimezone(issueChangeLogItems[i + 1].ChangeLog.CreatedDate, timeZoneInfo),
-                        StartDate = timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
-                        Issue = item.ChangeLog.Issue.Adapt(),
-                        Author = item.Author,
-                        Source = worklogSource
-					};
+                    yield return new StatusInterval(
+                        Start: timeProvider.ConvertToUserTimezone(item.ChangeLog.CreatedDate, timeZoneInfo),
+                        End: timeProvider.ConvertToUserTimezone(issueChangeLogItems[i + 1].ChangeLog.CreatedDate, timeZoneInfo),
+                        Author: item.Author,
+                        Issue: item.ChangeLog.Issue);
                 }
 
                 i += 2;
