@@ -36,12 +36,21 @@
                           Class="pet-input-control"
                           Variant="Variant.Text"
                           IconSize="Size.Small" />
-            <MudIconButton Size="Size.Small"
-                           Icon="@Icons.Material.Filled.Add"
-                           Variant="Variant.Filled"
-                           Color="Color.Tertiary"
-                           OnClick="AddAsync"
-                           Disabled="@Entity.IsEmpty" />
+            @if (_isAdding)
+            {
+                <MudElement Class="d-flex align-center justify-center" Style="width:30px;height:30px">
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Tertiary" />
+                </MudElement>
+            }
+            else
+            {
+                <MudIconButton Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Add"
+                               Variant="Variant.Filled"
+                               Color="Color.Tertiary"
+                               OnClick="AddAsync"
+                               Disabled="@Entity.IsEmpty" />
+            }
         </MudElement>
     </MudElement>
 </MudElement>
