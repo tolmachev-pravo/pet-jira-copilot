@@ -14,10 +14,21 @@ namespace Pet.Jira.Web.Components.Worklogs
 
         [CascadingParameter] public ErrorHandler ErrorHandler { get; set; }
 
+        private bool _isAdding;
+
         private async Task AddAsync()
         {
-            var worklog = WorkingDayWorklog.CreateActualByEstimated(Entity);
-            await OnAddPressed.InvokeAsync(worklog);
+            _isAdding = true;
+            StateHasChanged();
+            try
+            {
+                var worklog = WorkingDayWorklog.CreateActualByEstimated(Entity);
+                await OnAddPressed.InvokeAsync(worklog);
+            }
+            finally
+            {
+                _isAdding = false;
+            }
         }
 
         private async Task AddCustomAsync(WorkingDayWorklog worklog)

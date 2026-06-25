@@ -18,12 +18,23 @@ namespace Pet.Jira.Web.Components.Worklogs
             !string.IsNullOrEmpty(Entity.Issue.Key) &&
             !Entity.IsEmpty;
 
+        private bool _isAdding;
+
         private async Task AddAsync()
         {
-            var worklog = IsReadyToLog
-                ? WorkingDayWorklog.CreateActualByEstimated(Entity)
-                : Entity;
-            await OnAddPressed.InvokeAsync(worklog);
+            _isAdding = true;
+            StateHasChanged();
+            try
+            {
+                var worklog = IsReadyToLog
+                    ? WorkingDayWorklog.CreateActualByEstimated(Entity)
+                    : Entity;
+                await OnAddPressed.InvokeAsync(worklog);
+            }
+            finally
+            {
+                _isAdding = false;
+            }
         }
     }
 }
