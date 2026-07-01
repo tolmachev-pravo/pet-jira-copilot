@@ -229,3 +229,80 @@
     50%       { box-shadow: 0 0 16px var(--mud-palette-success), 0 0 24px rgba(var(--mud-palette-success-rgb), .4); }
 }
 
+/* ============================================================
+   Features section ("Новинки") — reuses the .extv-glow card
+   language; only the feature-specific bits live here.
+   ============================================================ */
+.pet-section-head {
+    max-width: 720px;
+}
+.feat-card {
+    cursor: pointer;
+}
+.feat-card__preview {
+    color: var(--mud-palette-text-secondary);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+.feat-card__preview .mud-markdown-body p { margin-bottom: 0; }
+.feat-card__date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    color: var(--mud-palette-text-secondary);
+}
+.feat-card__date-icon { opacity: .55; }
+.feat-page__skeleton { border-radius: 16px; }
+
+/* Latest-features promo shown in the worklog empty state */
+/* The worklog empty state centers text; keep the promo left-aligned like /features. */
+.feat-promo, .feat-card { text-align: left; }
+.feat-widget__eyebrow {
+    font-size: .66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--mud-palette-primary);
+}
+.feat-promo__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.feat-promo__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Feature detail dialog */
+.feat-detail__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .82rem;
+    color: var(--mud-palette-text-secondary);
+}
+.feat-detail__meta-icon { opacity: .6; color: var(--mud-palette-primary); }
+.feat-detail__dot { opacity: .5; }
+
+/* Tooltip markdown (ComponentMarkdownViewer). Scoped to a custom class so it
+   does not leak to other .mud-markdown-body content on the page. */
+.pet-component-markdown .mud-markdown-body p {
+    margin-bottom: 0em !important;
+    text-align: left !important;
+    font-size: small !important;
+    max-width: 300px;
+}
+/* Tame MudMarkdown heading sizes inside the detail dialog. */
+.feat-detail .mud-markdown-body h1 { font-size: 1.6rem; font-weight: 700; margin: .2rem 0 .6rem; }
+.feat-detail .mud-markdown-body h2 { font-size: 1.2rem; font-weight: 600; margin: 1rem 0 .4rem; }
+.feat-detail .mud-markdown-body h3 { font-size: 1.05rem; font-weight: 600; margin: .8rem 0 .3rem; }
+.feat-detail .mud-markdown-body img { max-width: 100%; border-radius: 8px; }
+

@@ -8,6 +8,16 @@
       "port": 5050
     },
     {
+      "name": "web-mock",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/Pet.Jira.Web", "--no-build", "--no-launch-profile", "--urls", "http://localhost:5050"],
+      "port": 5050,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_IS_MOCK": "true"
+      }
+    },
+    {
       "name": "mockups",
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8743", "--directory", "docs/superpowers/specs/mockups"],

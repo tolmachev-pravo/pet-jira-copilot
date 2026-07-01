@@ -1,0 +1,8 @@
+{
+  "id": "bearer-token-authorization",
+  "title": "Авторизация по токену (Bearer)",
+  "author": "tolmachev-pravo",
+  "date": "2023-10-29",
+  "tags": ["authentication", "security"],
+  "isHighlighted": false
+}
