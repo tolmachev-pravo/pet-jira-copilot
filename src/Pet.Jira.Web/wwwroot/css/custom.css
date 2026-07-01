@@ -233,7 +233,7 @@
    Features section ("Новинки") — reuses the .extv-glow card
    language; only the feature-specific bits live here.
    ============================================================ */
-.feat-page__head {
+.pet-section-head {
     max-width: 720px;
 }
 .feat-card {
