@@ -79,14 +79,6 @@ namespace Pet.Jira.Web.Components.Features
             return new FeatureDetail(metadata, index);
         }
 
-        public async Task<FeatureSummary> GetRandomFeatureAsync(CancellationToken cancellationToken = default)
-        {
-            var features = await GetFeaturesAsync(cancellationToken);
-            return features.Count == 0
-                ? null
-                : features[Random.Shared.Next(features.Count)];
-        }
-
         private static async Task<FeatureMetadata> ReadMetadataAsync(string directory, CancellationToken cancellationToken)
         {
             var path = Path.Combine(directory, MetadataFileName);

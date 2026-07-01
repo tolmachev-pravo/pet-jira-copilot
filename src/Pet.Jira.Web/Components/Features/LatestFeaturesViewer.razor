@@ -1,0 +1,32 @@
+@using Pet.Jira.Web.Components.Common
+
+@if (_isLoading)
+{
+    <!-- Reading features is fast; render nothing to avoid a flash of fallback content. -->
+}
+else if (_features.Count == 0)
+{
+    <Stub Message="@FallbackMessage" />
+}
+else
+{
+    <div class="feat-promo">
+        <div class="feat-promo__head">
+            <div>
+                <div class="feat-widget__eyebrow">Новые возможности</div>
+                <MudText Typo="Typo.h6" Style="font-weight:700" Class="mt-1">Что нового в Jira Copilot</MudText>
+            </div>
+            <MudLink Href="/features" Class="feat-promo__all">
+                Все возможности
+                <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+            </MudLink>
+        </div>
+
+        <div class="extv-glow__grid mt-4">
+            @foreach (var feature in _features)
+            {
+                <FeatureCard Feature="feature" />
+            }
+        </div>
+    </div>
+}

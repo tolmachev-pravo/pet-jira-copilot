@@ -20,10 +20,5 @@ namespace Pet.Jira.Web.Components.Features
         /// Returns the full detail for a single feature, or <c>null</c> when it does not exist.
         /// </summary>
         Task<FeatureDetail> GetFeatureAsync(string id, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Returns a randomly chosen feature summary, or <c>null</c> when no features exist.
-        /// </summary>
-        Task<FeatureSummary> GetRandomFeatureAsync(CancellationToken cancellationToken = default);
     }
 }

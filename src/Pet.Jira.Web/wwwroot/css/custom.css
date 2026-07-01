@@ -255,23 +255,9 @@
 .feat-card__date-icon { opacity: .55; }
 .feat-page__skeleton { border-radius: 16px; }
 
-/* Random-feature widget shown in the worklog empty state */
-.feat-widget {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-}
-.feat-widget__icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    color: var(--mud-palette-primary);
-    background: rgba(var(--mud-palette-primary-rgb), .12);
-    border: 1px solid rgba(var(--mud-palette-primary-rgb), .25);
-}
+/* Latest-features promo shown in the worklog empty state */
+/* The worklog empty state centers text; keep the promo left-aligned like /features. */
+.feat-promo, .feat-card { text-align: left; }
 .feat-widget__eyebrow {
     font-size: .66rem;
     font-weight: 700;
@@ -279,12 +265,21 @@
     letter-spacing: .12em;
     color: var(--mud-palette-primary);
 }
-.feat-widget__preview {
-    color: var(--mud-palette-text-secondary);
-    font-size: .92rem;
-    line-height: 1.5;
+.feat-promo__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
 }
-.feat-widget__preview .mud-markdown-body p { margin-bottom: 0; }
+.feat-promo__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
 /* Feature detail dialog */
 .feat-detail__meta {
