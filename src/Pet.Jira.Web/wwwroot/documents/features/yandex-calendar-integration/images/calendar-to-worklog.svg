@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <!-- self-contained figure background so it reads on light and dark themes -->
+  <rect x="10" y="10" width="740" height="320" rx="18" fill="#F7F8FA" stroke="#E4E7EE"/>
+
+  <!-- ===== Left: calendar event ===== -->
+  <text x="40" y="52" fill="#8A93A6" font-size="14" font-weight="600" letter-spacing="1">СОБЫТИЕ В ЯНДЕКС.КАЛЕНДАРЕ</text>
+  <rect x="36" y="66" width="300" height="204" rx="14" fill="#FFFFFF" stroke="#E4E7EE"/>
+
+  <!-- calendar icon -->
+  <rect x="60" y="92" width="34" height="34" rx="8" fill="#ECE7FB" stroke="#8260E5"/>
+  <rect x="60" y="92" width="34" height="11" rx="8" fill="#8260E5"/>
+  <circle cx="70" cy="114" r="2.5" fill="#8260E5"/>
+  <circle cx="84" cy="114" r="2.5" fill="#8260E5"/>
+  <text x="106" y="106" fill="#1F2430" font-size="16" font-weight="700">Яндекс.Календарь</text>
+  <text x="106" y="124" fill="#8A93A6" font-size="12">CalDAV</text>
+
+  <line x1="60" y1="146" x2="312" y2="146" stroke="#EEF0F5"/>
+
+  <text x="60" y="178" fill="#8A93A6" font-size="14">11:00 – 11:30</text>
+  <text x="60" y="206" fill="#1F2430" font-size="17" font-weight="600">Core Daily Sync</text>
+
+  <!-- task key chip inside the event title -->
+  <rect x="60" y="222" width="122" height="28" rx="8" fill="#ECE7FB"/>
+  <text x="121" y="241" fill="#8260E5" font-size="14" font-weight="700" text-anchor="middle" font-family="Consolas, monospace">CASEM-73656</text>
+
+  <!-- ===== Arrow ===== -->
+  <text x="398" y="150" fill="#8A93A6" font-size="12" font-weight="600" text-anchor="middle">номер задачи</text>
+  <text x="398" y="166" fill="#8A93A6" font-size="12" font-weight="600" text-anchor="middle">распознаётся</text>
+  <text x="398" y="182" fill="#8260E5" font-size="12" font-weight="700" text-anchor="middle">автоматически</text>
+  <line x1="352" y1="200" x2="440" y2="200" stroke="#8260E5" stroke-width="2.5"/>
+  <path d="M440 200 l-11 -6 v12 z" fill="#8260E5"/>
+
+  <!-- ===== Right: Jira worklog ===== -->
+  <text x="464" y="52" fill="#8A93A6" font-size="14" font-weight="600" letter-spacing="1">ВОРКЛОГ В JIRA</text>
+  <rect x="460" y="66" width="264" height="204" rx="14" fill="#FFFFFF" stroke="#E4E7EE"/>
+
+  <rect x="484" y="96" width="122" height="28" rx="8" fill="#ECE7FB"/>
+  <text x="545" y="115" fill="#8260E5" font-size="14" font-weight="700" text-anchor="middle" font-family="Consolas, monospace">CASEM-73656</text>
+
+  <text x="484" y="156" fill="#1F2430" font-size="16" font-weight="600">Core Daily Sync</text>
+
+  <!-- time + confirmed -->
+  <text x="484" y="200" fill="#8A93A6" font-size="14">Списано</text>
+  <text x="484" y="226" fill="#1F2430" font-size="20" font-weight="700">30 мин</text>
+
+  <circle cx="694" cy="212" r="18" fill="#E7F8F3" stroke="#1FC8A5"/>
+  <path d="M686 212 l6 6 l10 -12" fill="none" stroke="#1FC8A5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
