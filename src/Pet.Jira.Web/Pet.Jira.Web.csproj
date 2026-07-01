@@ -80,4 +80,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\documents\features\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,33 @@
+@using Pet.Jira.Web.Components.Common
+
+<div class="feat-page">
+    <div class="feat-page__head">
+        <MudText Typo="Typo.h5" Style="font-weight:700">Features</MudText>
+        <MudText Typo="Typo.body2" Style="opacity:.6" Class="mt-1">
+            Свежие возможности приложения — что нового и как этим пользоваться.
+        </MudText>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="extv-glow__grid mt-5">
+            @for (var i = 0; i < 3; i++)
+            {
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="210px" Class="feat-page__skeleton" />
+            }
+        </div>
+    }
+    else if (_features.Count == 0)
+    {
+        <Stub Message="Новинок пока нет. Загляните позже!" />
+    }
+    else
+    {
+        <div class="extv-glow__grid mt-5">
+            @foreach (var feature in _features)
+            {
+                <FeatureCard Feature="feature" />
+            }
+        </div>
+    }
+</div>

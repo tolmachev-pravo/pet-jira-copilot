@@ -1,0 +1,90 @@
+---
+name: feature-docs
+description: Generate self-documentation for a Pet.Jira feature — scaffolds wwwroot/documents/features/{id}/ with index.md (full description), preview.md (short blurb for preview cards), metadata.json and an images/ folder. Use when the user wants to document a feature, add a "what's new" entry, or create a feature description for the site's Features section / worklog random-feature widget.
+---
+
+# Feature documentation generator
+
+This skill creates a self-documenting feature folder that the app reads to render
+the **Features** section (`/features`) and the **random-feature** widget shown in the
+worklog window's empty state.
+
+## When to use
+
+Use this when the user asks to "document a feature", "add a what's-new entry",
+"describe feature X for the site", or after shipping a feature that should appear in
+the Features section.
+
+## Where files go
+
+All feature docs live under:
+
+```
+src/Pet.Jira.Web/wwwroot/documents/features/{feature-id}/
+├── index.md          full description (rendered in the detail dialog)
+├── preview.md        short blurb (rendered on cards and the worklog widget)
+├── metadata.json     structured metadata (title, author, date, tags…)
+└── images/           screenshots referenced by the markdown
+```
+
+- `{feature-id}` is **kebab-case**, unique, stable (it is the URL/key). Example: `yandex-calendar-integration`.
+- The folder is served statically, so images are referenced by absolute URL:
+  `/documents/features/{feature-id}/images/{file}.png`. **Never** use a relative path.
+
+## Steps
+
+1. **Gather inputs.** Determine, asking the user only for what you cannot infer:
+   - `id` (kebab-case slug), `title` (human-readable, the app's UI language is Russian),
+     `author` (default: current git user / repo owner), `date` (today, `YYYY-MM-DD`),
+     `tags` (optional), short summary, and the full description.
+   - If documenting an existing feature, read the relevant code/components first so the
+     description is accurate.
+2. **Create the folder** `src/Pet.Jira.Web/wwwroot/documents/features/{id}/` and an empty
+   `images/` subfolder (add a `.gitkeep` if there are no images yet so the folder is tracked).
+3. **Write `metadata.json`** from `templates/metadata.json` — fill every field.
+4. **Write `preview.md`** from `templates/preview.md` following the rules below.
+5. **Write `index.md`** from `templates/index.md`.
+6. **Images.** If the user provides screenshots, place them in `images/` and reference them
+   in `index.md`. Otherwise leave `images/` empty (with `.gitkeep`) and omit image tags.
+7. **Confirm** the created paths back to the user. Do **not** edit the app's C# / Razor code —
+   this skill only produces content files; the app already discovers them automatically.
+
+## metadata.json schema
+
+```json
+{
+  "id": "yandex-calendar-integration",
+  "title": "Интеграция с Яндекс.Календарём",
+  "author": "tolmachev-pravo",
+  "date": "2026-06-30",
+  "tags": ["extensions", "calendar"],
+  "isHighlighted": false
+}
+```
+
+- `id` MUST equal the folder name.
+- `date` is ISO `YYYY-MM-DD`; the app sorts features by this descending (newest first)
+  and shows a "new" badge for recent ones.
+- `isHighlighted` (optional, default `false`) pins the feature to the top of the section.
+- `tags` is optional.
+
+## preview.md rules
+
+The preview is rendered on small cards and inside the worklog widget — keep it tight:
+
+- **No H1/H2 headings.** One short paragraph, ideally **≤ 280 characters**.
+- Lead with the user benefit, not implementation detail.
+- At most **one** inline image, and only if it genuinely helps at thumbnail size.
+- No links that navigate away — the card itself links to the detail view.
+
+## index.md rules
+
+- **Do not repeat the feature title as an H1** — the Features section and the detail dialog
+  already render the title from `metadata.json`. Start with a short intro paragraph.
+- Use `##` for subsections (e.g. "Что это даёт", "Как пользоваться").
+- Explain what it does, why it's useful, and how to use it. Use lists and images.
+- Reference images by absolute URL (see above). Keep image widths reasonable.
+
+## Templates
+
+See the `templates/` folder for ready-to-copy skeletons.
