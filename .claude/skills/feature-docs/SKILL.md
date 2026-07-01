@@ -45,7 +45,9 @@ src/Pet.Jira.Web/wwwroot/documents/features/{feature-id}/
 4. **Write `preview.md`** from `templates/preview.md` following the rules below.
 5. **Write `index.md`** from `templates/index.md`.
 6. **Images.** If the user provides screenshots, place them in `images/` and reference them
-   in `index.md`. Otherwise leave `images/` empty (with `.gitkeep`) and omit image tags.
+   in `index.md`. If there is no screenshot, consider generating a schematic SVG illustration
+   (see **Image rules** below). If neither fits, leave `images/` empty (with `.gitkeep`) and
+   omit image tags.
 7. **Confirm** the created paths back to the user. Do **not** edit the app's C# / Razor code —
    this skill only produces content files; the app already discovers them automatically.
 
@@ -91,6 +93,34 @@ The preview is rendered on small cards and inside the worklog widget — keep it
   `> 💡 <совет>` or `> ⚠️ <важное ограничение>`. **Footnote syntax (`[^id]`) is not
   supported** by the renderer and will be dropped — use blockquotes instead.
 - Reference images by absolute URL (see above). Keep image widths reasonable.
+
+## Image rules
+
+A picture helps a feature land. Prefer, in this order:
+
+1. **A real screenshot** provided by the user — most accurate.
+2. **A schematic SVG** you generate — when no screenshot exists. It must be an honest
+   *illustration* of the concept (e.g. "calendar event with a task key → Jira worklog"),
+   never a fake that pretends to be a real UI screenshot.
+3. **No image** — better than a misleading or low-value one.
+
+When generating a schematic SVG, save it to the feature's `images/` folder (e.g.
+`images/<name>.svg`) and reference it from `index.md` by absolute URL. Follow these rules so
+it renders well everywhere:
+
+- **Theme-safe colours.** The SVG is loaded as an `<img>`, so it CANNOT read the app's
+  `--mud-palette-*` CSS variables. Use fixed hex colours and give the figure its own
+  **light rounded background panel** (e.g. `#F7F8FA` with a `#E4E7EE` border) so it stays
+  legible on both light and dark themes.
+- **Brand accents.** Reuse the app palette: primary purple `#8260E5` (chips/arrows/keys),
+  success green `#1FC8A5` (confirmations). Neutral text `#1F2430`, muted `#8A93A6`.
+- **Responsive.** Set a `viewBox` and omit fixed `width`/`height`; the detail dialog caps
+  images at `max-width: 100%`.
+- **Self-contained.** No external fonts or assets — use a generic
+  `font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif"` and inline everything.
+- **Verify** it renders in the feature detail dialog (open the card) before finishing.
+
+See `yandex-calendar-integration/images/calendar-to-worklog.svg` for a reference example.
 
 ## Templates
 
