@@ -296,6 +296,15 @@
 }
 .feat-detail__meta-icon { opacity: .6; color: var(--mud-palette-primary); }
 .feat-detail__dot { opacity: .5; }
+
+/* Tooltip markdown (ComponentMarkdownViewer). Scoped to a custom class so it
+   does not leak to other .mud-markdown-body content on the page. */
+.pet-component-markdown .mud-markdown-body p {
+    margin-bottom: 0em !important;
+    text-align: left !important;
+    font-size: small !important;
+    max-width: 300px;
+}
 /* Tame MudMarkdown heading sizes inside the detail dialog. */
 .feat-detail .mud-markdown-body h1 { font-size: 1.6rem; font-weight: 700; margin: .2rem 0 .6rem; }
 .feat-detail .mud-markdown-body h2 { font-size: 1.2rem; font-weight: 600; margin: 1rem 0 .4rem; }
