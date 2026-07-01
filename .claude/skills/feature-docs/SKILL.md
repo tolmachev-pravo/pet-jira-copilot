@@ -83,6 +83,13 @@ The preview is rendered on small cards and inside the worklog widget — keep it
   already render the title from `metadata.json`. Start with a short intro paragraph.
 - Use `##` for subsections (e.g. "Что это даёт", "Как пользоваться").
 - Explain what it does, why it's useful, and how to use it. Use lists and images.
+- **Call out interesting or non-obvious behaviour.** If a feature has a nuance, a hidden
+  trick, a prerequisite or a gotcha (e.g. "a task key in the event title is matched
+  automatically"), don't let it go unmentioned — add it in the relevant section as a
+  callout note so users actually benefit from it.
+- Write callouts as blockquotes, optionally led by an emoji, e.g.
+  `> 💡 <совет>` or `> ⚠️ <важное ограничение>`. **Footnote syntax (`[^id]`) is not
+  supported** by the renderer and will be dropped — use blockquotes instead.
 - Reference images by absolute URL (see above). Keep image widths reasonable.
 
 ## Templates
